@@ -126,6 +126,15 @@ namespace claims.src
         public HashSet<string> CITY_PLOTS_COLOR_AVAILABLE_COLORS_GUI = new HashSet<string> { "white", "blue", "red", "orange", "black", "aqua", "yellow", "cyan", "pink", "gold", "indigo", "ivory", "lime", "green", "red", "purple", "silver",
         "violet"};
         public bool NO_ACCESS_WITH_FOR_NOT_CLAIMED_AREA = false;
+        public HashSet<int> POSSIBLE_BROKEN_BLOCKS_IN_WILDERNESS = new HashSet<int>();
+        public HashSet<int> POSSIBLE_BUILD_BLOCKS_IN_WILDERNESS = new HashSet<int>();
+        public HashSet<int> POSSIBLE_USED_BLOCKS_IN_WILDERNESS = new HashSet<int>();
+        public HashSet<int> POSSIBLE_BUILD_ITEMS_IN_WILDERNESS = new HashSet<int>();
+
+        public HashSet<string> BLOCK_CODES_CAN_BE_BROKEN_IN_WILDERNESS = new HashSet<string> { "game:ladder-wood-*", "game:woodbucket", "game:water-*-*", "game:firepit-construct*" };
+        public HashSet<string> BLOCK_CODES_CAN_BE_BUILD_IN_WILDERNESS = new HashSet<string> { "game:ladder-wood-north" };
+        public HashSet<string> BLOCK_CODES_CAN_BE_USED_IN_WILDERNESS = new HashSet<string> { };
+        public HashSet<string> ITEMS_CODES_CAN_BE_BUILD_IN_WILDERNESS = new HashSet<string> { "game:drygrass", "game:agedfirewood", "game:firewood" };
 
         public int[] PLOT_COLORS;
 
@@ -139,6 +148,9 @@ namespace claims.src
         public int ZONE_PLOTS_LENGTH = 32;
         public int ZONE_BLOCKS_LENGTH = 512;
 
+        public int AREA_REGION_SIZE = 512;
+        public int AREA_MAP_SIZE = 2000;
+
 
         public string SELECTED_ECONOMY_HANDLER = "VIRTUAL_MONEY";
         public string CITY_ACCOUNT_STRING_PREFIX = "#city_";
@@ -150,16 +162,16 @@ namespace claims.src
         {
             try
             {
-                claims.config = api.LoadModConfig<Config>(claims.getModInstance().Mod.Info.ModID + ".json");
+                claims.config = api.LoadModConfig<Config>( "claims.json");
                 if (claims.config != null)
                 {
-                    api.StoreModConfig<Config>(claims.config, claims.getModInstance().Mod.Info.ModID + ".json");
+                    api.StoreModConfig<Config>(claims.config, "claims.json");
                     return;
                 }
                 else
                 {
                     claims.config = new Config();
-                    api.StoreModConfig<Config>(claims.config, claims.getModInstance().Mod.Info.ModID + ".json");
+                    api.StoreModConfig<Config>(claims.config, "claims.json");
                 }
             }
             catch (Exception ex)
@@ -167,7 +179,7 @@ namespace claims.src
                 if (claims.config == null)
                 {
                     claims.config = new Config();
-                    api.StoreModConfig<Config>(claims.config, claims.getModInstance().Mod.Info.ModID + ".json");
+                    api.StoreModConfig<Config>(claims.config, "claims.json");
                     return;
                 }
             }

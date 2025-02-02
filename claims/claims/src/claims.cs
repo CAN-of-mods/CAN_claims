@@ -30,6 +30,7 @@ using claims.src.network.handlers;
 using Cairo;
 using System.Collections;
 using claims.src.blocks;
+using claims.src.auxialiry.claimAreas;
 
 namespace claims.src
 {
@@ -42,6 +43,7 @@ namespace claims.src
         public const string harmonyID = "claims.Patches";
 
         public static claims modInstance;
+        public static claims clientModInstance;
         public static ICoreServerAPI sapi;
         public static ICoreClientAPI capi;
         internal static IServerNetworkChannel serverChannel;
@@ -71,7 +73,7 @@ namespace claims.src
 
         public claims()
         {
-            modInstance = this;
+            //modInstance = this;
             playerCityInfo = null;
         }
         public static claims getModInstance()
@@ -104,7 +106,7 @@ namespace claims.src
         public override void StartClientSide(ICoreClientAPI api)
         {
             base.StartClientSide(api);
-
+            clientModInstance = this;
             capi = api;
 
             AddCustomIcons();
@@ -149,6 +151,7 @@ namespace claims.src
         public override void StartServerSide(ICoreServerAPI api)
         {
             base.StartServerSide(api);
+            modInstance = this;
             sapi = api;
             Config.LoadConfig(sapi);
 
@@ -174,7 +177,7 @@ namespace claims.src
             ///////////////////////////////
             harmonyInstance = new Harmony(harmonyID);
             ApplyPatches.ApplyServerPatches(harmonyInstance, harmonyID);
-            serverPlayerMovementListener = new PlayerMovementsListnerServer();
+            serverPlayerMovementListener = new PlayerMovementsListnerServer();           
             //uses playermovement method
             events.ServerEvents.AddEvents(sapi);
             commands.register.ServerCommands.RegisterCommands(sapi);
@@ -202,6 +205,14 @@ namespace claims.src
                     }
                 }
             }
+
+            string claimAreas = sapi.WorldManager.SaveGame.GetData<string>("claimareas");
+
+            if (claimAreas != null)
+            {
+                claims.dataStorage.serverClaimAreaHandler.DeserializeData(claimAreas);
+            }
+
         }           
         public static bool loadDatabase()
         {
@@ -233,29 +244,34 @@ namespace claims.src
 
         public static void ShutDownServer()
         {
+            ServerEvents.onShutdown();
+            harmonyInstance.UnpatchAll(harmonyID);
             harmonyInstance = null;
             modInstance = null;
+            
             serverChannel = null;
             databaseHandler = null;
             dataStorage = null;
             serverPlayerMovementListener = null;
             config = null;
             economyHandler = null;
+
         }
 
         public static void ShutDownClient()
         {
-            if (claims.modInstance.pmlc != null && clientDataStorage != null)
+            if (claims.clientModInstance.pmlc != null && clientDataStorage != null)
             {
-                claims.modInstance.pmlc.saveActiveZonesToDb();
+                claims.clientModInstance.pmlc.saveActiveZonesToDb();
             }
-            if (claims.modInstance.pmlc != null)
+            if (claims.clientModInstance.pmlc != null)
             {
-                claims.modInstance.pmlc.OnShutDown();
+                claims.clientModInstance.pmlc.OnShutDown();
             }
             CANCityGui = null;
+            harmonyInstance.UnpatchAll(harmonyID);
             harmonyInstance = null;
-            modInstance = null;
+            clientModInstance = null;
             clientChannel = null;
             clientDataStorage = null;
             playerCityInfo = null;

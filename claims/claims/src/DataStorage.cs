@@ -54,6 +54,8 @@ namespace claims.src
         protected Dictionary<Vec2i, ServerZoneInfo> PlotZones = new Dictionary<Vec2i, ServerZoneInfo>();
         public Dictionary<Vec2i, long> serverZonesTimestamps = new Dictionary<Vec2i, long>();
         public Dictionary<long, ClaimArea> claimAreas = new Dictionary<long, ClaimArea>();
+        public ClaimAreaHandler clientClaimAreaHandler;
+        public ClaimAreaHandler serverClaimAreaHandler;
         //CLIENT SIDE
         //############################################
         //############################################
@@ -82,11 +84,13 @@ namespace claims.src
                     claims.sapi.Groups.AddPlayerGroup(claimsPlayerGroup);
                     claimsPlayerGroup.Md5Identifier = GameMath.Md5Hash(claimsPlayerGroup.Uid.ToString() + "null");
                 }
+                serverClaimAreaHandler = new ClaimAreaHandler(serverSide);
             }
             else
             {              
                 ClientSavedPlotsInZones = new Dictionary<Vec2i, ClientSavedZone>();
                 clientPlayerInfo = new ClientPlayerInfo();
+                clientClaimAreaHandler = new ClaimAreaHandler();
             }
         }
         /*==============================================================================================*/
@@ -512,6 +516,10 @@ namespace claims.src
                 }                   
             }
             claimant = "";
+            if(claims.config.NO_ACCESS_WITH_FOR_NOT_CLAIMED_AREA)
+            {
+                return false;
+            }
             //plot is free, do whatever you want
             return true;
         }
@@ -593,6 +601,44 @@ namespace claims.src
                 }
             }
             return true;
+        }
+        public void FillHashSets(ICoreAPI api)
+        {
+            foreach (var it in claims.config.BLOCK_CODES_CAN_BE_BROKEN_IN_WILDERNESS)
+            {
+                var blocksList = api.World.SearchBlocks(new AssetLocation(it));
+                foreach (var block in blocksList)
+                {
+                    claims.config.POSSIBLE_BROKEN_BLOCKS_IN_WILDERNESS.Add(block.Id);
+                }
+            }
+
+            foreach (var it in claims.config.BLOCK_CODES_CAN_BE_BUILD_IN_WILDERNESS)
+            {
+                var blocksList = api.World.SearchBlocks(new AssetLocation(it));
+                foreach (var block in blocksList)
+                {
+                    claims.config.POSSIBLE_BUILD_BLOCKS_IN_WILDERNESS.Add(block.Id);
+                }
+            }
+
+            foreach (var it in claims.config.BLOCK_CODES_CAN_BE_USED_IN_WILDERNESS)
+            {
+                var blocksList = api.World.SearchBlocks(new AssetLocation(it));
+                foreach (var block in blocksList)
+                {
+                    claims.config.POSSIBLE_USED_BLOCKS_IN_WILDERNESS.Add(block.Id);
+                }
+            }
+
+            foreach (var it in claims.config.ITEMS_CODES_CAN_BE_BUILD_IN_WILDERNESS)
+            {
+                var blocksList = api.World.SearchItems(new AssetLocation(it));
+                foreach (var item in blocksList)
+                {
+                    claims.config.POSSIBLE_BUILD_ITEMS_IN_WILDERNESS.Add(item.Id);
+                }
+            }
         }
     }
 }

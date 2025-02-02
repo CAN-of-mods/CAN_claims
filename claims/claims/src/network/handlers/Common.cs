@@ -21,6 +21,9 @@ namespace claims.src.network.handlers
 
             api.Logger.VerboseDebug("[claims] RegisterMessageType(ConfigUpdateValuesPacket)");
             channel.RegisterMessageType(typeof(ConfigUpdateValuesPacket));
+
+            api.Logger.VerboseDebug("[claims] RegisterMessageType(ClaimAreasPacket)");
+            channel.RegisterMessageType(typeof(ClaimAreasPacket));
         }
     }
 }

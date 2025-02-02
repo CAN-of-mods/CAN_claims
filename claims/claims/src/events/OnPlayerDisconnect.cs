@@ -9,6 +9,10 @@ namespace claims.src.events
     {
         public static void Event_OnPlayerDisconnect(IServerPlayer player)
         {
+            if(claims.modInstance == null)
+            {
+                return;
+            }
             claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
             if(playerInfo == null)
             {

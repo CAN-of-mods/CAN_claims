@@ -23,6 +23,7 @@ namespace claims.src.commands.register
             RegisterCitizenCommands(parsers, sapi);
             RegisterPlotCommands(parsers, sapi);
             RegisterCAdminCommands(parsers, sapi);
+            RegisterClaimAreaCommands(parsers, sapi);
 
             sapi.ChatCommands.Create("cc").HandleWith(commands.ClaimsChatCommands.onCommandCC)
              .RequiresPlayer().RequiresPrivilege(Privilege.chat);
@@ -1464,8 +1465,8 @@ namespace claims.src.commands.register
                          }
                          return TextCommandResult.Error("");
                      })
-                    .HandleWith(commands.CAdminCommand.triggerNextDay)
-                    .WithDesc("Trigger new day events")
+                    .HandleWith(commands.ClaimAreaCommands.NewArea)
+                    .WithDesc("Start a new claim area")
                 .EndSub()
                 .BeginSub("start")
                      .WithPreCondition((TextCommandCallingArgs args) =>
@@ -1482,8 +1483,8 @@ namespace claims.src.commands.register
                          }
                          return TextCommandResult.Error("");
                      })
-                    .HandleWith(commands.CAdminCommand.triggerNextDay)
-                    .WithDesc("Trigger new day events")
+                    .HandleWith(commands.ClaimAreaCommands.StartPoint)
+                    .WithDesc("Select start point of claim area")
                 .EndSub()
                 .BeginSub("end")
                      .WithPreCondition((TextCommandCallingArgs args) =>
@@ -1500,8 +1501,8 @@ namespace claims.src.commands.register
                          }
                          return TextCommandResult.Error("");
                      })
-                    .HandleWith(commands.CAdminCommand.triggerNextDay)
-                    .WithDesc("Trigger new day events")
+                    .HandleWith(commands.ClaimAreaCommands.EndPoint)
+                    .WithDesc("Select end point of claim area")
                 .EndSub()
                 .BeginSub("save")
                      .WithPreCondition((TextCommandCallingArgs args) =>
@@ -1518,8 +1519,9 @@ namespace claims.src.commands.register
                          }
                          return TextCommandResult.Error("");
                      })
-                    .HandleWith(commands.CAdminCommand.triggerNextDay)
-                    .WithDesc("Trigger new day events")
+                    .HandleWith(commands.ClaimAreaCommands.SaveArea)
+                    .WithArgs(parsers.Word("areaName"))
+                    .WithDesc("Save claim area by selected start/end")
                 .EndSub()
                 .BeginSub("list")
                      .WithPreCondition((TextCommandCallingArgs args) =>
@@ -1536,10 +1538,11 @@ namespace claims.src.commands.register
                          }
                          return TextCommandResult.Error("");
                      })
-                    .HandleWith(commands.CAdminCommand.triggerNextDay)
-                    .WithDesc("Trigger new day events")
+                    .HandleWith(commands.ClaimAreaCommands.ListAreas)
+                    .WithArgs(parsers.Int("pageNume"))
+                    .WithDesc("List page of claim areas")
                 .EndSub()
-                .BeginSub("show")
+                /*.BeginSub("showid")
                      .WithPreCondition((TextCommandCallingArgs args) =>
                      {
 
@@ -1554,8 +1557,26 @@ namespace claims.src.commands.register
                          }
                          return TextCommandResult.Error("");
                      })
-                    .HandleWith(commands.CAdminCommand.triggerNextDay)
+                    .HandleWith(commands.ClaimAreaCommands.ShowAreaById)
                     .WithDesc("Trigger new day events")
+                .EndSub()*/
+                 .BeginSub("showhere")
+                     .WithPreCondition((TextCommandCallingArgs args) =>
+                     {
+
+                         if (args.Caller.Player is IServerPlayer player)
+                         {
+                             if (!player.Role.Code.Equals("admin"))
+                             {
+                                 return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                             }
+                             return TextCommandResult.Success();
+
+                         }
+                         return TextCommandResult.Error("");
+                     })
+                    .HandleWith(commands.ClaimAreaCommands.ShowAreaHere)
+                    .WithDesc("Show borders of area claim on player's position")
                 .EndSub()
                 .BeginSub("delete")
                      .WithPreCondition((TextCommandCallingArgs args) =>
@@ -1572,10 +1593,11 @@ namespace claims.src.commands.register
                          }
                          return TextCommandResult.Error("");
                      })
-                    .HandleWith(commands.CAdminCommand.triggerNextDay)
-                    .WithDesc("Trigger new day events")
+                    .HandleWith(commands.ClaimAreaCommands.DeleteAreaName)
+                    .WithArgs(parsers.Word("areaName"))
+                    .WithDesc("Delete claim area by it's name")
                 .EndSub()
-                .BeginSub("set")
+                .BeginSub("deletenum")
                      .WithPreCondition((TextCommandCallingArgs args) =>
                      {
 
@@ -1590,8 +1612,65 @@ namespace claims.src.commands.register
                          }
                          return TextCommandResult.Error("");
                      })
-                    .HandleWith(commands.CAdminCommand.triggerNextDay)
-                    .WithDesc("Trigger new day events")
+                     .WithArgs(parsers.Int("areaNum"))
+                    .HandleWith(commands.ClaimAreaCommands.DeleteAreaNumber)
+                    .WithDesc("Delete claim area by it's number in the list")
+                .EndSub()
+                .BeginSub("setaccess")
+                     .WithPreCondition((TextCommandCallingArgs args) =>
+                     {
+
+                         if (args.Caller.Player is IServerPlayer player)
+                         {
+                             if (!player.Role.Code.Equals("admin"))
+                             {
+                                 return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                             }
+                             return TextCommandResult.Success();
+
+                         }
+                         return TextCommandResult.Error("");
+                     })
+                    .HandleWith(commands.ClaimAreaCommands.SetAreaBlockAccess)
+                    .WithArgs(parsers.WordRange("flag", "build","use","attack","break"), parsers.WordRange("state", "on", "off"))
+                    .WithDesc("Set acces flag - build, use, attack, break - on/off")
+                .EndSub()
+                .BeginSub("setflag")
+                     .WithPreCondition((TextCommandCallingArgs args) =>
+                     {
+
+                         if (args.Caller.Player is IServerPlayer player)
+                         {
+                             if (!player.Role.Code.Equals("admin"))
+                             {
+                                 return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                             }
+                             return TextCommandResult.Success();
+
+                         }
+                         return TextCommandResult.Error("");
+                     })
+                     .WithArgs(parsers.WordRange("flag", "pvp", "fire", "blast"), parsers.WordRange("state", "on", "off"))
+                    .HandleWith(commands.ClaimAreaCommands.SetAreaBlockAccess)
+                    .WithDesc("Set flag - pvp, fire, blast - on/off")
+                .EndSub().BeginSub("info")
+                     .WithPreCondition((TextCommandCallingArgs args) =>
+                     {
+
+                         if (args.Caller.Player is IServerPlayer player)
+                         {
+                             if (!player.Role.Code.Equals("admin"))
+                             {
+                                 return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                             }
+                             return TextCommandResult.Success();
+
+                         }
+                         return TextCommandResult.Error("");
+                     })
+                     .WithArgs(parsers.Word("areaName"))
+                    .HandleWith(commands.ClaimAreaCommands.ShowAreaInfoHere)
+                    .WithDesc("Show info about claim area by it's name")
                 .EndSub();
         }
     }

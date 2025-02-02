@@ -126,14 +126,12 @@ namespace claims.src.gui.playerGui
         }
         private void OnClickCellMiddle(int cellIndex)
         {
-            ClientEventManager clientEventManager = (ClientEventManager)typeof(ClientMain)
-                       .GetField("eventManager", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(claims.capi.World as ClientMain);
+            ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
             clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/accept " + claims.clientDataStorage.clientPlayerInfo?.ReceivedInvitations[cellIndex].CityName, EnumChatType.Macro, "");
         }     
         private void OnClickCellRight(int cellIndex)
         {
-            ClientEventManager clientEventManager = (ClientEventManager)typeof(ClientMain)
-                       .GetField("eventManager", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(claims.capi.World as ClientMain);
+            ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
             clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/deny " + claims.clientDataStorage.clientPlayerInfo?.ReceivedInvitations[cellIndex].CityName, EnumChatType.Macro, "");
         }
         public void BuildMainWindow()
@@ -672,8 +670,7 @@ namespace claims.src.gui.playerGui
                 {
                     if (t)
                     {
-                        ClientEventManager clientEventManager = (ClientEventManager)typeof(ClientMain)
-                        .GetField("eventManager", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(claims.capi.World as ClientMain);
+                        ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                         clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/plot nfs", EnumChatType.Macro, "");
                     }
                 }, setPlotNotForSaleButtonBounds);
@@ -722,8 +719,7 @@ namespace claims.src.gui.playerGui
                 {
                     //if (t)
                     {
-                        ClientEventManager clientEventManager = (ClientEventManager)typeof(ClientMain)
-                       .GetField("eventManager", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(claims.capi.World as ClientMain);
+                        ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                         clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/plot borders " + "on", EnumChatType.Macro, "");
                     }
                 }, showPlotBordersButtonBounds);
@@ -733,8 +729,7 @@ namespace claims.src.gui.playerGui
                 {
                     //if (t)
                     {
-                        ClientEventManager clientEventManager = (ClientEventManager)typeof(ClientMain)
-                       .GetField("eventManager", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(claims.capi.World as ClientMain);
+                        ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                         clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/plot borders " + "off", EnumChatType.Macro, "");
                     }
                 }, hidePlotBordersButtonBounds);
@@ -828,8 +823,7 @@ namespace claims.src.gui.playerGui
                     {
                         return true;
                     }
-                    ClientEventManager clientEventManager = (ClientEventManager)typeof(ClientMain)
-                        .GetField("eventManager", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(claims.capi.World as ClientMain);
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                     clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/city set colorint " + selectedColor, EnumChatType.Macro, "");
                     selectedColor = -1;
                     return true;
@@ -902,8 +896,7 @@ namespace claims.src.gui.playerGui
 
                 Composers["canclaimsgui-upper"].AddButton("-->", new ActionConsumable(() =>
                 {
-                    ClientEventManager clientEventManager = (ClientEventManager)typeof(ClientMain)
-                        .GetField("eventManager", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(claims.capi.World as ClientMain);
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                     clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/city new " + collectedNewCityName, EnumChatType.Macro, "");
                     Composers["canclaimsgui-upper"].GetTextInput("collectedNewCityName").SetValue("");
                     collectedNewCityName = "";
@@ -921,8 +914,7 @@ namespace claims.src.gui.playerGui
 
                 Composers["canclaimsgui-upper"].AddButton("agree", new ActionConsumable(() =>
                 {
-                    ClientEventManager clientEventManager = (ClientEventManager)typeof(ClientMain)
-                        .GetField("eventManager", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(claims.capi.World as ClientMain);
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                     clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/agree", EnumChatType.Macro, "");
                     CreateNewCityState = EnumUpperWindowSelectedState.NONE;
                     //Composers["canclaimsgui-upper"].GetTextInput("collectedNewCityName").SetValue("");
@@ -946,8 +938,7 @@ namespace claims.src.gui.playerGui
 
                 Composers["canclaimsgui-upper"].AddButton("Invite", new ActionConsumable(() =>
                 {
-                    ClientEventManager clientEventManager = (ClientEventManager)typeof(ClientMain)
-                        .GetField("eventManager", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(claims.capi.World as ClientMain);
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                     clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/city invite " + collectedNewCityName, EnumChatType.Macro, "");
                     Composers["canclaimsgui-upper"].GetTextInput("collectedNewCityName").SetValue("");
                     collectedNewCityName = "";
@@ -975,8 +966,7 @@ namespace claims.src.gui.playerGui
 
                 Composers["canclaimsgui-upper"].AddButton("Kick", new ActionConsumable(() =>
                 {
-                    ClientEventManager clientEventManager = (ClientEventManager)typeof(ClientMain)
-                        .GetField("eventManager", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(claims.capi.World as ClientMain);
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                     clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/city kick " + collectedNewCityName, EnumChatType.Macro, "");
                     collectedNewCityName = "";
                     CreateNewCityState = EnumUpperWindowSelectedState.NONE;
@@ -999,8 +989,7 @@ namespace claims.src.gui.playerGui
 
                 Composers["canclaimsgui-upper"].AddButton("Uninvite", new ActionConsumable(() =>
                 {
-                    ClientEventManager clientEventManager = (ClientEventManager)typeof(ClientMain)
-                        .GetField("eventManager", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(claims.capi.World as ClientMain);
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                     clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/city uninvite " + collectedNewCityName, EnumChatType.Macro, "");
                     Composers["canclaimsgui-upper"].GetTextInput("collectedNewCityName").SetValue("");
                     collectedNewCityName = "";
@@ -1020,8 +1009,7 @@ namespace claims.src.gui.playerGui
 
                 Composers["canclaimsgui-upper"].AddButton("Yes", new ActionConsumable(() =>
                 {
-                    ClientEventManager clientEventManager = (ClientEventManager)typeof(ClientMain)
-                        .GetField("eventManager", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(claims.capi.World as ClientMain);
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                     clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/city claim", EnumChatType.Macro, "");
                     CreateNewCityState = EnumUpperWindowSelectedState.NONE;
                     BuildUpperWindow();
@@ -1048,8 +1036,7 @@ namespace claims.src.gui.playerGui
 
                 Composers["canclaimsgui-upper"].AddButton("Yes", new ActionConsumable(() =>
                 {
-                    ClientEventManager clientEventManager = (ClientEventManager)typeof(ClientMain)
-                        .GetField("eventManager", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(claims.capi.World as ClientMain);
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                     clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/city unclaim", EnumChatType.Macro, "");
                     CreateNewCityState = EnumUpperWindowSelectedState.NONE;
                     BuildUpperWindow();
@@ -1081,8 +1068,7 @@ namespace claims.src.gui.playerGui
                 ElementBounds pvpToggleButtonBounds = pvpToggleTextBounds.RightCopy(0, 0);
                 Composers["canclaimsgui-upper"].AddSwitch((t) => 
                                     {
-                                        ClientEventManager clientEventManager = (ClientEventManager)typeof(ClientMain)
-                                         .GetField("eventManager", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(claims.capi.World as ClientMain);
+                                        ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                                         clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/plot set pvp " + (t ? "on" : "off"), EnumChatType.Macro, "");
                                     },
                                                 pvpToggleButtonBounds,
@@ -1098,8 +1084,7 @@ namespace claims.src.gui.playerGui
                 ElementBounds fireToggleButtonBounds = fireToggleTextBounds.RightCopy(0, 0);
                 Composers["canclaimsgui-upper"].AddSwitch((t) => 
                                 {
-                                    ClientEventManager clientEventManager = (ClientEventManager)typeof(ClientMain)
-                                         .GetField("eventManager", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(claims.capi.World as ClientMain);
+                                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                                     clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/plot set fire " + (t ? "on" : "off"), EnumChatType.Macro, "");
                                 },
                                                 fireToggleButtonBounds,
@@ -1114,8 +1099,7 @@ namespace claims.src.gui.playerGui
                 ElementBounds blastToggleButtonBounds = blastToggleTextBounds.RightCopy(0, 0);
                 Composers["canclaimsgui-upper"].AddSwitch((t) => 
                                  {
-                                     ClientEventManager clientEventManager = (ClientEventManager)typeof(ClientMain)
-                                         .GetField("eventManager", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(claims.capi.World as ClientMain);
+                                     ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                                      clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/plot set blast " + (!t ? "on" : "off"), EnumChatType.Macro, "");
                                  },
                                                 blastToggleButtonBounds,
@@ -1132,8 +1116,7 @@ namespace claims.src.gui.playerGui
                 ElementBounds friendBuildBounds = buildTextBounds.RightCopy(0, 0);
                 Composers["canclaimsgui-upper"].AddSwitch((t) =>
                 {
-                    ClientEventManager clientEventManager = (ClientEventManager)typeof(ClientMain)
-                         .GetField("eventManager", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(claims.capi.World as ClientMain);
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                     clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/plot set p friend build " + (t ? "on" : "off"), EnumChatType.Macro, "");
                 }, friendBuildBounds, "friend-build");
                 
@@ -1145,8 +1128,7 @@ namespace claims.src.gui.playerGui
                 ElementBounds citizenBuildBounds = friendBuildBounds.RightCopy(5, 0);
                 Composers["canclaimsgui-upper"].AddSwitch((t) =>
                 {
-                    ClientEventManager clientEventManager = (ClientEventManager)typeof(ClientMain)
-                         .GetField("eventManager", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(claims.capi.World as ClientMain);
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                     clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/plot set p citizen build " + (t ? "on" : "off"), EnumChatType.Macro, "");
                 }, citizenBuildBounds, "citizen-build");
                 Composers["canclaimsgui-upper"].GetSwitch("citizen-build").SetValue(claims.clientDataStorage.clientPlayerInfo.CurrentPlotInfo.PermsHandler.getPerm(perms.PermGroup.CITIZEN, perms.type.PermType.BUILD_AND_DESTROY_PERM));
@@ -1154,8 +1136,7 @@ namespace claims.src.gui.playerGui
                 ElementBounds strangerBuildBounds = citizenBuildBounds.RightCopy(5, 0);
                 Composers["canclaimsgui-upper"].AddSwitch((t) =>
                 {
-                    ClientEventManager clientEventManager = (ClientEventManager)typeof(ClientMain)
-                         .GetField("eventManager", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(claims.capi.World as ClientMain);
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                     clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/plot set p stranger build " + (t ? "on" : "off"), EnumChatType.Macro, "");
                 }, strangerBuildBounds, "stranger-build");
                 Composers["canclaimsgui-upper"].GetSwitch("stranger-build").SetValue(claims.clientDataStorage.clientPlayerInfo.CurrentPlotInfo.PermsHandler.getPerm(perms.PermGroup.STRANGER, perms.type.PermType.BUILD_AND_DESTROY_PERM));
@@ -1173,8 +1154,7 @@ namespace claims.src.gui.playerGui
                 ElementBounds friendUseBounds = useTextBounds.RightCopy(0, 0);
                 Composers["canclaimsgui-upper"].AddSwitch((t) =>
                 {
-                    ClientEventManager clientEventManager = (ClientEventManager)typeof(ClientMain)
-                         .GetField("eventManager", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(claims.capi.World as ClientMain);
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                     clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/plot set p friend use " + (t ? "on" : "off"), EnumChatType.Macro, "");
                 }, friendUseBounds, "friend-use");
                 
@@ -1186,8 +1166,7 @@ namespace claims.src.gui.playerGui
                 ElementBounds citizenUseBounds = friendUseBounds.RightCopy(5, 0);
                 Composers["canclaimsgui-upper"].AddSwitch((t) =>
                 {
-                    ClientEventManager clientEventManager = (ClientEventManager)typeof(ClientMain)
-                         .GetField("eventManager", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(claims.capi.World as ClientMain);
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                     clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/plot set p citizen use " + (t ? "on" : "off"), EnumChatType.Macro, "");
                 }, citizenUseBounds, "citizen-use");
                 Composers["canclaimsgui-upper"].GetSwitch("citizen-use").SetValue(claims.clientDataStorage.clientPlayerInfo.CurrentPlotInfo.PermsHandler.getPerm(perms.PermGroup.CITIZEN, perms.type.PermType.USE_PERM));
@@ -1195,8 +1174,7 @@ namespace claims.src.gui.playerGui
                 ElementBounds strangerUseBounds = citizenUseBounds.RightCopy(5, 0);
                 Composers["canclaimsgui-upper"].AddSwitch((t) =>
                 {
-                    ClientEventManager clientEventManager = (ClientEventManager)typeof(ClientMain)
-                         .GetField("eventManager", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(claims.capi.World as ClientMain);
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                     clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/plot set p stranger use " + (t ? "on" : "off"), EnumChatType.Macro, "");
                 }, strangerUseBounds, "stranger-use");
                 Composers["canclaimsgui-upper"].GetSwitch("stranger-use").SetValue(claims.clientDataStorage.clientPlayerInfo.CurrentPlotInfo.PermsHandler.getPerm(perms.PermGroup.STRANGER, perms.type.PermType.USE_PERM));
@@ -1217,8 +1195,7 @@ namespace claims.src.gui.playerGui
 
                 Composers["canclaimsgui-upper"].AddButton("Add", new ActionConsumable(() =>
                 {
-                    ClientEventManager clientEventManager = (ClientEventManager)typeof(ClientMain)
-                        .GetField("eventManager", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(claims.capi.World as ClientMain);
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                     clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/citizen friend add " + collectedNewCityName, EnumChatType.Macro, "");
                     Composers["canclaimsgui-upper"].GetTextInput("collectedFriendName").SetValue("");
                     collectedNewCityName = "";
@@ -1246,8 +1223,7 @@ namespace claims.src.gui.playerGui
 
                 Composers["canclaimsgui-upper"].AddButton("Remove", new ActionConsumable(() =>
                 {
-                    ClientEventManager clientEventManager = (ClientEventManager)typeof(ClientMain)
-                        .GetField("eventManager", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(claims.capi.World as ClientMain);
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                     clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/citizen friend remove " + collectedNewCityName, EnumChatType.Macro, "");
                     collectedNewCityName = "";
                     CreateNewCityState = EnumUpperWindowSelectedState.NONE;
@@ -1270,8 +1246,7 @@ namespace claims.src.gui.playerGui
 
                 Composers["canclaimsgui-upper"].AddButton("Set price", new ActionConsumable(() =>
                 {
-                    ClientEventManager clientEventManager = (ClientEventManager)typeof(ClientMain)
-                        .GetField("eventManager", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(claims.capi.World as ClientMain);
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                     clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/plot fs " + collectedNewCityName, EnumChatType.Macro, "");
                     Composers["canclaimsgui-upper"].GetTextInput("collectedFriendName").SetValue("");
                     collectedNewCityName = "";
@@ -1295,8 +1270,7 @@ namespace claims.src.gui.playerGui
 
                 Composers["canclaimsgui-upper"].AddButton("Set tax", new ActionConsumable(() =>
                 {
-                    ClientEventManager clientEventManager = (ClientEventManager)typeof(ClientMain)
-                        .GetField("eventManager", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(claims.capi.World as ClientMain);
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                     clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/plot set fee " + collectedNewCityName, EnumChatType.Macro, "");
                     Composers["canclaimsgui-upper"].GetTextInput("collectedFriendName").SetValue("");
                     collectedNewCityName = "";
@@ -1325,8 +1299,7 @@ namespace claims.src.gui.playerGui
 
                 Composers["canclaimsgui-upper"].AddButton("Set type", new ActionConsumable(() =>
                 {
-                    ClientEventManager clientEventManager = (ClientEventManager)typeof(ClientMain)
-                        .GetField("eventManager", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(claims.capi.World as ClientMain);
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                     clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/plot set type " + collectedNewCityName, EnumChatType.Macro, "");
                     collectedNewCityName = "";
                     CreateNewCityState = EnumUpperWindowSelectedState.NONE;
@@ -1349,8 +1322,7 @@ namespace claims.src.gui.playerGui
 
                 Composers["canclaimsgui-upper"].AddButton("Set name", new ActionConsumable(() =>
                 {
-                    ClientEventManager clientEventManager = (ClientEventManager)typeof(ClientMain)
-                        .GetField("eventManager", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(claims.capi.World as ClientMain);
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                     clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/plot set name " + collectedNewCityName, EnumChatType.Macro, "");
                     Composers["canclaimsgui-upper"].GetTextInput("collectedFriendName").SetValue("");
                     collectedNewCityName = "";
@@ -1370,8 +1342,7 @@ namespace claims.src.gui.playerGui
 
                 Composers["canclaimsgui-upper"].AddButton("Yes", new ActionConsumable(() =>
                 {
-                    ClientEventManager clientEventManager = (ClientEventManager)typeof(ClientMain)
-                        .GetField("eventManager", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(claims.capi.World as ClientMain);
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                     clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/plot claim", EnumChatType.Macro, "");
                     CreateNewCityState = EnumUpperWindowSelectedState.NONE;
                     BuildUpperWindow();
@@ -1397,8 +1368,7 @@ namespace claims.src.gui.playerGui
 
                 Composers["canclaimsgui-upper"].AddButton("Yes", new ActionConsumable(() =>
                 {
-                    ClientEventManager clientEventManager = (ClientEventManager)typeof(ClientMain)
-                        .GetField("eventManager", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(claims.capi.World as ClientMain);
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                     clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/plot unclaim", EnumChatType.Macro, "");
                     CreateNewCityState = EnumUpperWindowSelectedState.NONE;
                     BuildUpperWindow();
@@ -1424,8 +1394,7 @@ namespace claims.src.gui.playerGui
 
                 Composers["canclaimsgui-upper"].AddButton("Yes", new ActionConsumable(() =>
                 {
-                    ClientEventManager clientEventManager = (ClientEventManager)typeof(ClientMain)
-                        .GetField("eventManager", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(claims.capi.World as ClientMain);
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                     clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/city leave", EnumChatType.Macro, "");
                     CreateNewCityState = EnumUpperWindowSelectedState.NONE;
                     BuildUpperWindow();
@@ -1452,8 +1421,7 @@ namespace claims.src.gui.playerGui
 
                 Composers["canclaimsgui-upper"].AddButton("Yes", new ActionConsumable(() =>
                 {
-                    ClientEventManager clientEventManager = (ClientEventManager)typeof(ClientMain)
-                        .GetField("eventManager", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(claims.capi.World as ClientMain);
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                     clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/city rank remove " + firstValueCollected + " " +  secondValueCollected, EnumChatType.Macro, "");
                     CreateNewCityState = EnumUpperWindowSelectedState.NONE;
                     var cell = claims.clientDataStorage.clientPlayerInfo.CityInfo.CitizensRanks.FirstOrDefault(c => c.RankName ==  firstValueCollected);
@@ -1497,8 +1465,7 @@ namespace claims.src.gui.playerGui
 
                 Composers["canclaimsgui-upper"].AddButton("Add", new ActionConsumable(() =>
                 {
-                    ClientEventManager clientEventManager = (ClientEventManager)typeof(ClientMain)
-                        .GetField("eventManager", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(claims.capi.World as ClientMain);
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                     clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/city rank add " + firstValueCollected + " " + collectedNewCityName, EnumChatType.Macro, "");
                     CreateNewCityState = EnumUpperWindowSelectedState.NONE;
                     BuildUpperWindow();
@@ -1528,8 +1495,7 @@ namespace claims.src.gui.playerGui
 
                 Composers["canclaimsgui-upper"].AddButton("Set name", new ActionConsumable(() =>
                 {
-                    ClientEventManager clientEventManager = (ClientEventManager)typeof(ClientMain)
-                        .GetField("eventManager", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(claims.capi.World as ClientMain);
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                     clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/city set name " + collectedNewCityName, EnumChatType.Macro, "");
                     Composers["canclaimsgui-upper"].GetTextInput("collectedFriendName").SetValue("");
                     collectedNewCityName = "";

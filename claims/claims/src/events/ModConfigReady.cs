@@ -29,14 +29,16 @@ namespace claims.src.events
             }
             if(claims.config.SELECTED_ECONOMY_HANDLER == "REAL_MONEY")
             {
-                claims.economyHandler = new RealMoneyEconomyHandler();
+                claims.economyHandler = caneconomy.caneconomy.getHandler();
+                //new RealMoneyEconomyHandler();
                 caneconomy.caneconomy.OnBlockRemovedBlockEntityOpenableContainer += OnEconomyActions.OnBlockRemoved;
                 caneconomy.caneconomy.OnReceivedClientPacketBlockEntitySign += OnEconomyActions.OnButtonSave;
             }
             if (claims.config.SELECTED_ECONOMY_HANDLER == "VIRTUAL_MONEY")
             {
                 var parsers = claims.sapi.ChatCommands.Parsers;
-                claims.economyHandler = new VirtualMoneyEconomyHandler();
+                claims.economyHandler = caneconomy.caneconomy.getHandler();
+                   // new VirtualMoneyEconomyHandler();
 
                 claims.sapi.ChatCommands.Get("city")
                                             .BeginSub("balance")
@@ -54,6 +56,8 @@ namespace claims.src.events
 
                                             ;
             }
+            claims.dataStorage.FillHashSets(claims.sapi);
         }
+
     }
 }

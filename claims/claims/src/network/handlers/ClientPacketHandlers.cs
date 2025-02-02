@@ -32,20 +32,20 @@ namespace claims.src.network.handlers
                             foreach (var plot in zone.Value)
                             {
                                 claims.clientDataStorage.addClientSavedPlots(plot.Key, plot.Value);
-                                claims.getModInstance().plotsMapLayer.OnResChunkPixels(plot.Key, claims.clientDataStorage.ClientGetCityColor(plot.Value.cityName), plot.Value.cityName);
+                                claims.clientModInstance.plotsMapLayer.OnResChunkPixels(plot.Key, claims.clientDataStorage.ClientGetCityColor(plot.Value.cityName), plot.Value.cityName);
                             }
                         }
                         break;
                     case PacketsContentEnum.ADD_SINGLE_PLOT:
                         Tuple<Vec2i, SavedPlotInfo> savedPlotTuple = JsonConvert.DeserializeObject<Tuple<Vec2i, SavedPlotInfo>>(packet.data);
                         claims.clientDataStorage.addClientSavedPlots(savedPlotTuple.Item1, savedPlotTuple.Item2);
-                        claims.getModInstance().plotsMapLayer.OnResChunkPixels(savedPlotTuple.Item1, claims.clientDataStorage.ClientGetCityColor(savedPlotTuple.Item2.cityName), savedPlotTuple.Item2.cityName);
+                        claims.clientModInstance.plotsMapLayer.OnResChunkPixels(savedPlotTuple.Item1, claims.clientDataStorage.ClientGetCityColor(savedPlotTuple.Item2.cityName), savedPlotTuple.Item2.cityName);
                         break;
                     case PacketsContentEnum.REMOVE_SINGLE_PLOT:
                         //try to send saved plot as null without creating object
                         Tuple<Vec2i, SavedPlotInfo> savedPlotTupleRemove = JsonConvert.DeserializeObject<Tuple<Vec2i, SavedPlotInfo>>(packet.data);
                         claims.clientDataStorage.removeClientSavedPlots(savedPlotTupleRemove.Item1);
-                        claims.getModInstance().plotsMapLayer.OnResChunkPixels(savedPlotTupleRemove.Item1, 0, "");
+                        claims.clientModInstance.plotsMapLayer.OnResChunkPixels(savedPlotTupleRemove.Item1, 0, "");
                         break;
                     case PacketsContentEnum.ALL_CITY_COLORS:
                         Dictionary<string, int> colors = JsonConvert.DeserializeObject<Dictionary<string, int>>(packet.data);
@@ -60,10 +60,10 @@ namespace claims.src.network.handlers
                             //if zone was already known, but updated info from server arrived
                             if (claims.clientDataStorage.getClientSavedZone(tup.Item1, out var savedZone))
                             {
-                                claims.getModInstance().plotsMapLayer.clearZoneSavedPlotsFromMap(tup.Item1);
+                                claims.clientModInstance.plotsMapLayer.clearZoneSavedPlotsFromMap(tup.Item1);
                                 savedZone.savedPlots = tup.Item3.ToDictionary(x => x.Key, x => x.Value);
                                 savedZone.timestamp = tup.Item2;
-                                claims.getModInstance().plotsMapLayer.generateFromZoneSavedPlotsOnMap(tup.Item1);
+                                claims.clientModInstance.plotsMapLayer.generateFromZoneSavedPlotsOnMap(tup.Item1);
                             }
                             //no such zone, reset it
                             else
@@ -71,7 +71,7 @@ namespace claims.src.network.handlers
                                 ClientSavedZone newZone = new ClientSavedZone(tup.Item3.ToDictionary(x => x.Key, x => x.Value));
                                 newZone.timestamp = tup.Item2;
                                 claims.clientDataStorage.addClientSavedZone(tup.Item1, newZone);
-                                claims.getModInstance().plotsMapLayer.generateFromZoneSavedPlotsOnMap(tup.Item1);
+                                claims.clientModInstance.plotsMapLayer.generateFromZoneSavedPlotsOnMap(tup.Item1);
                             }
                         }
                         break;
@@ -80,7 +80,7 @@ namespace claims.src.network.handlers
                         foreach (var savedPlot in plotsToRemove)
                         {
                             claims.clientDataStorage.removeClientSavedPlots(savedPlot);
-                            claims.getModInstance().plotsMapLayer.OnResChunkPixels(savedPlot, 0, "");
+                            claims.clientModInstance.plotsMapLayer.OnResChunkPixels(savedPlot, 0, "");
                         }
                         break;
                     case PacketsContentEnum.SERVER_UPDATE_COLLECTED_PLOTS:
@@ -180,6 +180,35 @@ namespace claims.src.network.handlers
                 claims.config.CITY_NAME_CHANGE_COST = packet.CITY_NAME_CHANGE_COST;
                 claims.config.CITY_BASE_CARE = packet.CITY_BASE_CARE;
                 claims.config.PLOT_COLORS = packet.PLOTS_COLORS;
+                claims.config.NO_ACCESS_WITH_FOR_NOT_CLAIMED_AREA = packet.NO_ACCESS_WITH_FOR_NOT_CLAIMED_AREA;
+            });
+            claims.clientChannel.SetMessageHandler<ClaimAreasPacket>((packet) =>
+            {
+                switch (packet.type)
+                {                   
+                    case ClaimAreasPacketEnum.Init:
+                        claims.clientDataStorage.clientClaimAreaHandler.InitAreasHashSet(packet.claims);
+                        break;
+                    case ClaimAreasPacketEnum.Add:
+                        foreach (var claimArea in packet.claims)
+                        {
+                            claims.clientDataStorage.clientClaimAreaHandler.AddAreaClaim(claimArea);
+                        }
+                        break;
+                    case ClaimAreasPacketEnum.Remove:
+                        foreach (var claimArea in packet.claims)
+                        {
+                            claims.clientDataStorage.clientClaimAreaHandler.RemoveAreaClaim(claimArea);
+                        }
+                        break;
+                    case ClaimAreasPacketEnum.Update:
+                        foreach (var claimArea in packet.claims)
+                        {
+                            claims.clientDataStorage.clientClaimAreaHandler.UpdateClaimArea(claimArea);
+                        }
+                        break;
+
+                }
             });
         }
     }

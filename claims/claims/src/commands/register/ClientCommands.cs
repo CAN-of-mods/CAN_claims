@@ -15,7 +15,7 @@ namespace claims.src.commands.register
         {
             capi.ChatCommands.Create("cmap")
                 .WithDescription("todo")
-                .HandleWith(claims.getModInstance().plotsMapLayer.onMapCmd)
+                .HandleWith(claims.clientModInstance.plotsMapLayer.onMapCmd)
                .RequiresPlayer().RequiresPrivilege(Privilege.chat)
                .WithArgs(parsers.Word("todo"))
                ;

@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Vintagestory.API.Common;
 using Vintagestory.API.Server;
+using Vintagestory.Common;
 using Vintagestory.GameContent;
 using Vintagestory.Server;
 
@@ -19,6 +20,9 @@ namespace claims.src.harmony
         {
             harmonyInstance = new Harmony(harmonyID);
             harmonyInstance.Patch(typeof(Vintagestory.Common.WorldMap).GetMethod("TryAccess"), prefix: new HarmonyMethod(typeof(harmonyPatches).GetMethod("Prefix_tryAccess")));
+            harmonyInstance.Patch(typeof(Vintagestory.Common.WorldMap).GetMethod("TryAccess"), postfix: new HarmonyMethod(typeof(harmonyPatches).GetMethod("Postfix_tryAccess")));
+            //harmonyInstance.Patch(typeof(WorldMap).GetMethod("testBlockAccessInternal", BindingFlags.NonPublic | BindingFlags.Instance), prefix: new HarmonyMethod(typeof(harmonyPatches).GetMethod("Prefix_testBlockAccessInternal")));
+
         }
         public static void ApplyServerPatches(Harmony harmonyInstance, string harmonyID)
         {
@@ -51,7 +55,8 @@ namespace claims.src.harmony
             harmonyInstance.Patch(typeof(ServerSystemEntitySimulation).GetMethod("OnPlayerRespawn", BindingFlags.NonPublic | BindingFlags.Instance), transpiler: new HarmonyMethod(typeof(harmonyPatches).GetMethod("Transpiler_ComposeSlotOverlays_Add_Socket_Overlays_Not_Draw_ItemDamage")));
             
             harmonyInstance.Patch(typeof(ServerSystemBlockSimulation).GetMethod("HandleBlockPlaceOrBreak", BindingFlags.NonPublic | BindingFlags.Instance), transpiler: new HarmonyMethod(typeof(harmonyPatches).GetMethod("Transpiler_ServerSystemBlockSimulation_HandleBlockPlaceOrBreak")));
-            harmonyInstance.Patch(typeof(BlockBehaviorLadder).GetMethod("TryCollectLowest", BindingFlags.NonPublic | BindingFlags.Instance), transpiler: new HarmonyMethod(typeof(harmonyPatches).GetMethod("Transpiler_BlockBehaviorLadder_TryCollectLowest")));
+            harmonyInstance.Patch(typeof(ServerSystemBlockSimulation).GetMethod("HandleBlockInteract", BindingFlags.NonPublic | BindingFlags.Instance), transpiler: new HarmonyMethod(typeof(harmonyPatches).GetMethod("Transpiler_ServerSystemBlockSimulation_HandleBlockInteract")));
+            
         }
     }
 }

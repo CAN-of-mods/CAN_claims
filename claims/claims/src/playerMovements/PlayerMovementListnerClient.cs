@@ -269,7 +269,7 @@ namespace claims.src.playerMovements
                     {
                         claims.clientDataStorage.addClientSavedZone(tmpZoneCoords.Copy(), clientSavedZone);
                         zonesTimestamps.Add(new Tuple<Vec2i, long>(tmpZoneCoords.Copy(), clientSavedZone.timestamp));
-                        claims.getModInstance().plotsMapLayer.generateFromZoneSavedPlotsOnMap(tmpZoneCoords.Copy());
+                        claims.clientModInstance.plotsMapLayer.generateFromZoneSavedPlotsOnMap(tmpZoneCoords.Copy());
                     }
                     else
                     {
@@ -298,7 +298,7 @@ namespace claims.src.playerMovements
             IClientPlayer byPlayer = claims.capi.World.Player;
             if (byPlayer != null && claims.capi.World.Player == byPlayer)
             {
-                claims.getModInstance().plotsMapLayer = claims.capi.ModLoader.GetModSystem<WorldMapManager>().MapLayers.OfType<PlotsMapLayer>().FirstOrDefault();
+                claims.clientModInstance.plotsMapLayer = claims.capi.ModLoader.GetModSystem<WorldMapManager>().MapLayers.OfType<PlotsMapLayer>().FirstOrDefault();
                 handleZoneChange(new Vec2i((int)byPlayer.Entity.Pos.X / claims.config.PLOT_SIZE,
                     (int)byPlayer.Entity.Pos.Z / claims.config.PLOT_SIZE), byPlayer);
                 ClientCommands.RegisterCommands(claims.capi);

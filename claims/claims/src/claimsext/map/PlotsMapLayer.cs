@@ -91,7 +91,7 @@ namespace claims.src.claimsext.map
         {
             //var mapmgr = api.ModLoader.GetModSystem<WorldMapManager>();
             // mapmgr.MapLayers.Remove(mapmgr.MapLayers[0]);
-            IServerPlayer player = args.Caller.Player as IServerPlayer;
+            IPlayer player = args.Caller.Player;
             TextCommandResult tcr = new TextCommandResult();
             tcr.Status = EnumCommandStatus.Success;
             string cmd = (string)args.LastArg;

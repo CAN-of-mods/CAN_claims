@@ -1,4 +1,5 @@
 ﻿using claims.src.auxialiry.innerclaims;
+using claims.src.network.packets;
 using claims.src.perms;
 using ProtoBuf;
 using System;
@@ -10,19 +11,24 @@ using Vintagestory.API.MathTools;
 
 namespace claims.src.auxialiry.claimAreas
 {
+    [ProtoContract]
     public class ClaimArea
     {
         /*
          { 0, "use"},
          { 1, "build" },
-         { 2, "attack" }};*/
+         { 2, "attack" }};
+          3  destroy*/
         [ProtoMember(1)]
         public Vec3i pos1;
         [ProtoMember(2)]
         public Vec3i pos2;
         [ProtoMember(3)]
-        public bool[] permissionsFlags = new bool[4] { false, false, false, false };
-        public bool pvpFlag, fireFlag, blastFlag;
+        public bool[] permissionsFlags;
+        [ProtoMember(4)]
+        public bool[] settingFlags;
+        [ProtoMember(5)]
+        public string areaName = "";
         public int MinX => Math.Min(pos1.X, pos2.X);
 
         public int MinY => Math.Min(pos1.Y, pos2.Y);
@@ -87,13 +93,20 @@ namespace claims.src.auxialiry.claimAreas
         {
 
         }
-        public ClaimArea(Vec3i pos1, Vec3i pos2, bool[] permissionsFlags)
+        public ClaimArea(string name, Vec3i pos1, Vec3i pos2, bool[] permissionsFlags, bool[] settingFlags)
         {
+            this.areaName = name;
             this.pos1 = pos1;
             this.pos2 = pos2;
+
             this.permissionsFlags[0] = permissionsFlags[0];
             this.permissionsFlags[1] = permissionsFlags[1];
             this.permissionsFlags[2] = permissionsFlags[2];
+            this.permissionsFlags[3] = permissionsFlags[3];
+
+            this.settingFlags[0] = settingFlags[0];
+            this.settingFlags[1] = settingFlags[1];
+            this.settingFlags[2] = settingFlags[2];
         }
 
         public override string ToString()
@@ -103,5 +116,19 @@ namespace claims.src.auxialiry.claimAreas
                 Append(permissionsFlags[1] ? "1" : "0").Append(",").Append(permissionsFlags[2] ? "1" : "0").Append(":");
             return sb.ToString();
         }
+        public string GetAreaInfo()
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.Append("pvp: ").Append(settingFlags[(int)EnumCANClaimSettingFlag.PVP] ? "off" : "on").Append("| ");
+            stringBuilder.Append("fire: ").Append(settingFlags[(int)EnumCANClaimSettingFlag.FIRE] ? "off" : "on").Append("| ");
+            stringBuilder.Append("blast: ").Append(settingFlags[(int)EnumCANClaimSettingFlag.BLAST] ? "off" : "on").Append("\n");
+            stringBuilder.Append("use: ").Append(permissionsFlags[(int)EnumCANPlotAccessFlags.Use] ? "on" : "off").Append("\n");
+            stringBuilder.Append("build: ").Append(permissionsFlags[(int)EnumCANPlotAccessFlags.Build] ? "on" : "off").Append("\n");
+            stringBuilder.Append("break: ").Append(permissionsFlags[(int)EnumCANPlotAccessFlags.Break] ? "on" : "off").Append("\n");
+            stringBuilder.Append("attack animals: ").Append(permissionsFlags[(int)EnumCANPlotAccessFlags.Attack] ? "on" : "off").Append("\n");
+            stringBuilder.Append("\n");
+            return stringBuilder.ToString();
+        }
+
     }
 }

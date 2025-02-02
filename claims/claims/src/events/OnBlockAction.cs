@@ -93,10 +93,10 @@ namespace claims.src.events
             claims.dataStorage.getClaimedPlots().TryGetValue(PlotPosition.fromBlockPos(blockSel.Position), out Plot plot);
             if (plot == null)
             {
-                /*if (claims.config.NO_ACCESS_WITH_FOR_NOT_CLAIMED_AREA)
+                if (claims.config.NO_ACCESS_WITH_FOR_NOT_CLAIMED_AREA)
                 {
-                    return CheckLandClaimPresence(blockSel.Position.ToVec3d());
-                }*/
+                    return false;
+                }
                 return true;
             }
             claimant = "claims";
@@ -180,10 +180,10 @@ namespace claims.src.events
             claims.dataStorage.getClaimedPlots().TryGetValue(PlotPosition.fromBlockPos(blockSel.Position), out Plot plot);
             if(plot == null)
             {
-                /*if (claims.config.NO_ACCESS_WITH_FOR_NOT_CLAIMED_AREA)
+                if (claims.config.NO_ACCESS_WITH_FOR_NOT_CLAIMED_AREA)
                 {
-                    return CheckLandClaimPresence(blockSel.Position.ToVec3d());
-                }*/
+                    return false;
+                }
                 return true;
             }
             PlotPosition currentPosPlayer = PlotPosition.fromXZ(blockSel.Position.X, blockSel.Position.Z);
@@ -259,10 +259,10 @@ namespace claims.src.events
             claims.dataStorage.getClaimedPlots().TryGetValue(PlotPosition.fromXZ((int)vec3.X, (int)vec3.Z), out Plot plot);
             if (plot == null)
             {
-                /*if (claims.config.NO_ACCESS_WITH_FOR_NOT_CLAIMED_AREA)
+                if (claims.config.NO_ACCESS_WITH_FOR_NOT_CLAIMED_AREA)
                 {
-                    return CheckLandClaimPresence(vec3);
-                }*/
+                    return false;
+                }
                 return true;
             }
             PlotPosition currentPosPlayer = PlotPosition.fromXZ((int)vec3.X, (int)vec3.Z);
@@ -316,10 +316,10 @@ namespace claims.src.events
             claims.dataStorage.getClaimedPlots().TryGetValue(PlotPosition.fromXZ((int)pos.X, (int)pos.Z), out Plot plot);
             if (plot == null)
             {
-                /*if (claims.config.NO_ACCESS_WITH_FOR_NOT_CLAIMED_AREA)
+                if (claims.config.NO_ACCESS_WITH_FOR_NOT_CLAIMED_AREA)
                 {
-                    return CheckLandClaimPresence(pos);
-                }*/
+                    return false;
+                }
                 return true;
             }
             PlotPosition currentPosPlayer = PlotPosition.fromXZ((int)pos.X, (int)pos.Z);
