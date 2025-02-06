@@ -704,13 +704,37 @@ namespace claims.src.harmony
                         cpos.X = bestP.X + 0.5;
                         cpos.Y = bestP.Y + 2.5;
                         cpos.Z = bestP.Z + 1.5;
+                        // EntityPlayer eplr = client.Player.Entity;
+                        /* eplr.TeleportTo(targetPos, delegate ()
+                         {
+                             eplr.Revive();
+                             this.server.serverUdpNetwork.physicsManager.UpdateTrackedEntitiesStates(new Dictionary<int, ConnectedClient>
+                 {
+                     {
+                         client.Id,
+                         client
+                     }
+                 });*/
+                        //});
+                        var inst = __instance;
                         plr.Entity.TeleportTo(cpos, (Action)(() =>
                         {
                             plr.Entity.Revive();
-                            
-                            MethodInfo dynMethod = __instance.GetType().GetMethod("SendEntityAttributeUpdates",
+                            var f = inst;
+                            var serv = typeof(ServerSystem).GetField("server", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(inst) as ServerMain;
+                            ConnectedClient client = serv.Clients[plr.ClientId];
+                            serv.ServerUdpNetwork.physicsManager.UpdateTrackedEntitiesStates(new Dictionary<int, ConnectedClient>
+                            {
+                                {
+                                    client.Id,
+                                    client
+                                }
+                            });
+                            //(__instance as ServerSystem)
+                            /*MethodInfo dynMethod = __instance.GetType().GetMethod("SendEntityAttributeUpdates",
                              BindingFlags.NonPublic | BindingFlags.Instance);
-                            dynMethod.Invoke(__instance, new object[] { });
+                            dynMethod.Invoke(__instance, new object[] { });*/
+
                             claims.sapi.World.RegisterCallback((dt) => { Particles.PlayerRespawnParticles(plr.Entity.Pos.XYZ); }, 1000);
                         }));
                         return true;

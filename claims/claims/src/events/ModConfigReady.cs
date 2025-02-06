@@ -27,14 +27,15 @@ namespace claims.src.events
                 world = new WorldInfo(claims.sapi.World.Seed.ToString(), Guid.NewGuid().ToString());
                 world.saveToDatabase();
             }
-            if(claims.config.SELECTED_ECONOMY_HANDLER == "REAL_MONEY")
+            if(caneconomy.caneconomy.config.SELECTED_ECONOMY_HANDLER == "REAL_MONEY")
             {
                 claims.economyHandler = caneconomy.caneconomy.getHandler();
                 //new RealMoneyEconomyHandler();
                 caneconomy.caneconomy.OnBlockRemovedBlockEntityOpenableContainer += OnEconomyActions.OnBlockRemoved;
                 caneconomy.caneconomy.OnReceivedClientPacketBlockEntitySign += OnEconomyActions.OnButtonSave;
             }
-            if (claims.config.SELECTED_ECONOMY_HANDLER == "VIRTUAL_MONEY")
+
+            if (caneconomy.caneconomy.config.SELECTED_ECONOMY_HANDLER == "VIRTUAL_MONEY")
             {
                 var parsers = claims.sapi.ChatCommands.Parsers;
                 claims.economyHandler = caneconomy.caneconomy.getHandler();

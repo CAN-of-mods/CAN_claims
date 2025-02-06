@@ -389,7 +389,8 @@ namespace claims.src.part
                 return false;
             }
 
-            if(claims.economyHandler.updateAccount(this.MoneyAccountName, new Dictionary<string, object> { { "lastknownname", filteredName } }))
+            if(caneconomy.caneconomy.config.SELECTED_ECONOMY_HANDLER == "REAL_MONEY" || 
+            (claims.economyHandler.updateAccount(this.MoneyAccountName, new Dictionary<string, object> { { "lastknownname", filteredName } })))
             {
                 claims.dataStorage.changeCityName(this, filteredName);
                 SetPartName(filteredName);
