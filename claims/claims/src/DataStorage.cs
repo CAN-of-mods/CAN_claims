@@ -39,6 +39,9 @@ namespace claims.src
         protected ConcurrentDictionary<string, City> guidToCityDict = new ConcurrentDictionary<string, City>();
         protected ConcurrentDictionary<string, City> nameToCityDict = new ConcurrentDictionary<string, City>();
 
+        protected ConcurrentDictionary<string, Alliance> guidToAllianceDict = new ConcurrentDictionary<string, Alliance>();
+        protected ConcurrentDictionary<string, Alliance> nameToAllianceDict = new ConcurrentDictionary<string, Alliance>();
+
         protected ConcurrentDictionary<string, PlayerInfo> nameToPlayerDict = new ConcurrentDictionary<string, PlayerInfo>();
         protected ConcurrentDictionary<string, PlayerInfo> uidToPlayerDict = new ConcurrentDictionary<string, PlayerInfo>();
 
@@ -233,6 +236,26 @@ namespace claims.src
             return nameToCityDict.TryAdd(newName, city);
         }
 
+        /*==============================================================================================*/
+        /*=====================================ALLIANCE=================================================*/
+        /*==============================================================================================*/
+
+        public bool getAllianceByGUID(string guid, out Alliance alliance)
+        {
+            if (guidToAllianceDict.TryGetValue(guid, out alliance))
+            {
+                return true;
+            }
+            return false;
+        }
+        public bool addAlliance(Alliance alliance)
+        {
+            if (guidToAllianceDict.TryAdd(alliance.Guid, alliance))
+            {
+                return nameToAllianceDict.TryAdd(alliance.GetPartName(), alliance);
+            }
+            return false;
+        }
         /*==============================================================================================*/
         /*=====================================PRISON===================================================*/
         /*==============================================================================================*/

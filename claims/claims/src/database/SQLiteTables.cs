@@ -94,5 +94,16 @@ namespace claims.src.database
            "x INTEGER," +
            "z INTEGER" +
            ");";
+        public static string allianceTable =
+           "CREATE TABLE IF NOT EXISTS ALLIANCIES(" +
+           "name TEXT," +
+           "guid TEXT PRIMARY KEY NOT NULL," +
+           "maincity TEXT," +
+           "cities TEXT," +
+           "hostiles TEXT," +
+           "comrades TEXT," +
+           "alliancefee INTEGER," +
+           "neutral INTEGER" +
+           ");";
     }
 }

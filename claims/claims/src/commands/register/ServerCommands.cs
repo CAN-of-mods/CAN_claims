@@ -1210,6 +1210,24 @@ namespace claims.src.commands.register
                         .WithDesc("Claim plot for city")
                         .WithArgs(parsers.Word("cityName"))
                     .EndSub()
+                    .BeginSub("radiusclaim")
+                        .WithPreCondition((TextCommandCallingArgs args) => {
+
+                            if (args.Caller.Player is IServerPlayer player)
+                            {
+                                if (!player.Role.Code.Equals("admin"))
+                                {
+                                    return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                }
+                                return TextCommandResult.Success();
+
+                            }
+                            return TextCommandResult.Error("");
+                        })
+                        .HandleWith(commands.CAdminCommand.cityRadiusClaim)
+                        .WithDesc("Claim plot for city in radius")
+                        .WithArgs(parsers.Word("cityName"), parsers.Int("radius"))
+                    .EndSub()
                     .BeginSub("unclaim")
                          .WithPreCondition((TextCommandCallingArgs args) => {
 

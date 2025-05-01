@@ -58,6 +58,13 @@ namespace claims.src.database
         abstract public bool loadAllCityPlotGroups();
         abstract public bool loadDummyCityPlotGroups();
 
+        //ALLIANCE
+        abstract public bool saveAlliance(Alliance alliance, bool update = true);
+        abstract public bool deleteFromDatabaseAlliance(Alliance alliance);
+        abstract public bool loadAlliance(DataRow it);
+        abstract public bool loadAllAlliancies();
+        abstract public bool loadDummyAlliancies();
+
         //General
         public bool loadEveryThing()
         {

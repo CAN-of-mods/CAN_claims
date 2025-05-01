@@ -154,6 +154,7 @@ namespace claims.src
 
         public string SELECTED_ECONOMY_HANDLER = "VIRTUAL_MONEY";
         public string CITY_ACCOUNT_STRING_PREFIX = "#city_";
+        public string ALLIANCE_ACCOUNT_STRING_PREFIX = "#alliance_";
 
         public OrderedDictionary<double, string> COINS_VALUES_TO_CODE = new OrderedDictionary<double, string> { };
         public OrderedDictionary<int, double> ID_TO_COINS_VALUES = new OrderedDictionary<int, double>();

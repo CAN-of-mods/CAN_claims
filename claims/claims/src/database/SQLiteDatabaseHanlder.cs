@@ -12,6 +12,7 @@ using System.Data;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
 
@@ -926,6 +927,105 @@ namespace claims.src.database
             {
                 CityPlotsGroup cpg = new CityPlotsGroup(it["name"].ToString(), it["guid"].ToString());
                 claims.dataStorage.addPlotsGroup(cpg);
+            }
+            return true;
+        }
+
+        //ALLIANCE
+        public override bool saveAlliance(Alliance alliance, bool update = true)
+        {
+            Dictionary<string, object> tmpDict = new Dictionary<string, object> {
+                { "@name", alliance.GetPartName() },
+                { "@guid", alliance.Guid },
+                { "@maincity", alliance.mainCity.Guid},
+                { "@cities", StringFunctions.concatStringsWithDelim(alliance.cities, ';') },
+                { "@hostiles", StringFunctions.concatStringsWithDelim(alliance.hostiles, ';') },
+                { "@comrades", StringFunctions.concatStringsWithDelim(alliance.comradAlliancies, ';') },
+                { "@alliancefee", alliance.allianceFee },
+                { "@neutral", alliance.neutral }
+            };
+
+            queryQueue.Enqueue(new QuerryInfo("ALLIANCIES", update ? QuerryType.UPDATE : QuerryType.INSERT, tmpDict));
+            return true;
+        }
+
+        public override bool deleteFromDatabaseAlliance(Alliance alliance)
+        {
+            Dictionary<string, object> tmpDict = new Dictionary<string, object> {
+                { "@GUID", alliance.Guid}
+            };
+
+            queryQueue.Enqueue(new QuerryInfo("ALLIANCIES", QuerryType.DELETE, tmpDict));
+            return true;
+        }
+
+        public override bool loadAlliance(DataRow it)
+        {
+            claims.dataStorage.getAllianceByGUID(it["guid"].ToString(), out Alliance alliance);
+            claims.dataStorage.getCityByGUID(it["maincity"].ToString(), out City city);
+            alliance.mainCity = city;
+            foreach (string str in it["cities"].ToString().Split(';'))
+            {
+                if (str.Length == 0)
+                    continue;
+
+                claims.dataStorage.getCityByGUID(str, out City cityToAdd);
+                alliance.cities.Add(cityToAdd);
+            }
+
+            foreach (string str in it["hostiles"].ToString().Split(';'))
+            {
+                if (str.Length == 0)
+                    continue;
+
+                claims.dataStorage.getAllianceByGUID(str, out Alliance alliance1);
+                alliance.hostiles.Add(alliance1);
+            }
+            foreach (string str in it["comrades"].ToString().Split(';'))
+            {
+                if (str.Length == 0)
+                    continue;
+
+                claims.dataStorage.getAllianceByGUID(str, out Alliance alliance1);
+                alliance.comradAlliancies.Add(alliance1);
+            }
+
+            alliance.allianceFee = int.Parse(it["allianceFee"].ToString());
+            alliance.neutral = it["neutral"].ToString().Equals("0") ? false : true;
+
+            return true;
+        }
+
+        public override bool loadAllAlliancies()
+        {
+            if (this.SqliteConnection.State != System.Data.ConnectionState.Open)
+            {
+                SqliteConnection.Open();
+            }
+            try
+            {
+                DataTable dt = readFromDatabase("SELECT * FROM ALLIANCIES", new Dictionary<string, object> { });
+                foreach (DataRow it in dt.Rows)
+                {
+                    loadAlliance(it);
+                }
+            }
+            catch (SqliteException e)
+            {
+                MessageHandler.sendErrorMsg("loadAllAlliancies::error" + e.Message);
+                return false;
+            }
+            return true;
+        }
+
+        public override bool loadDummyAlliancies()
+        {
+            MessageHandler.sendDebugMsg("Load dummy alliancies.");
+            DataTable dt = readFromDatabase("SELECT name, guid FROM ALLIANCIES", new Dictionary<string, object> { });
+            foreach (DataRow it in dt.Rows)
+            {
+                Alliance tmp = new Alliance(it["name"].ToString(), it["guid"].ToString());
+                claims.dataStorage.addAlliance(tmp);
             }
             return true;
         }

@@ -13,7 +13,12 @@ namespace claims.src.database
         public static readonly string DELETE_CITY = "DELETE FROM CITIES WHERE guid = @guid";
         public static readonly string INSERT_CITY = "INSERT INTO CITIES (NAME, MAYOR, GUID, TIMESTAMPCREATED, debtbalance, perm, plotgroups, prisons, defaultplotcost, invmsg, opencity, fee, criminals, istechnical, bonusplots, extrachunksbought, citycolor, templerespawnpoints) VALUES (@name, @mayor, @guid, @timestampcreated, @debtbalance,@perm,@plotgroups,@prisons,@defaultplotcost,@invmsg, @opencity, @fee, @criminals, @istechnical, @bonusplots, @extrachunksbought, @citycolor, @templerespawnpoints)";
         public static readonly string UPDATE_CITY = "UPDATE CITIES SET NAME=@name, MAYOR=@mayor, GUID=@guid, timestampcreated=@timestampcreated, debtbalance=@debtbalance, perm=@perm, plotgroups=@plotgroups, prisons=@prisons,defaultplotcost=@defaultplotcost, invmsg=@invmsg, opencity=@opencity, fee=@fee, criminals=@criminals, istechnical=@istechnical, bonusplots=@bonusplots, extrachunksbought=@extrachunksbought, citycolor=@citycolor, templerespawnpoints=@templerespawnpoints WHERE guid=@guid";
-        
+
+        //ALLIANCE
+        public static readonly string DELETE_ALLIANCE = "DELETE FROM ALLIANCIES WHERE guid=@guid";
+        public static readonly string INSERT_ALLIANCE = "INSERT INTO ALLIANCIES (name, guid,maincity,cities,hostiles,comrades,alliancefee,neutral,conqueredby,daysbeforefreedom, conflictscounter) VALUES (@name, @guid, @maincity, @cities, @hostiles,@comrades, @alliancefee,@neutral)";
+        public static readonly string UPDATE_ALLIANCE = "UPDATE ALLIANCIES SET name=@name, guid=@guid, maincity=@maincity, cities=@cities, hostiles=@hostiles, comrades=@comrades,alliancefee=@alliancefee,neutral=@neutral where guid=@guid";
+
         //PLAYER
         public static readonly string DELETE_PLAYER = "DELETE FROM PLAYERS WHERE UID=@uid";
         public static readonly string INSERT_PLAYER = "INSERT INTO PLAYERS (NAME, UID,timestampfirstjoined, timestamplastonline, comrades, city, citytitles, title, aftername, perms, prisonguid, prisonhoursleft) VALUES (@name, @uid, @timestampfirstjoined, @timestamplastonline, @comrades,@city,@citytitles,@title,@aftername,@perms,@prisonguid,@prisonhoursleft)";

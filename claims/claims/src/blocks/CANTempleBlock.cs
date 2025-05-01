@@ -204,16 +204,19 @@ namespace claims.src.blocks
         public override void OnBlockBroken(IWorldAccessor world, BlockPos pos, IPlayer byPlayer, float dropQuantityMultiplier = 1)
         {
             base.OnBlockBroken(world, pos, byPlayer, dropQuantityMultiplier);
-            claims.dataStorage.getPlot(PlotPosition.fromBlockPos(pos), out Plot plot);
-            if (plot == null)
+            if (world.Side == EnumAppSide.Server)
             {
-                return;
+                claims.dataStorage.getPlot(PlotPosition.fromBlockPos(pos), out Plot plot);
+                if (plot == null)
+                {
+                    return;
+                }
+                if (plot.getType() != PlotType.TEMPLE)
+                {
+                    return;
+                }
+                plot.getCity().RemoveTempleRespawnPoint(plot);
             }
-            if (plot.getType() != PlotType.TEMPLE)
-            {
-                return;
-            }
-            plot.getCity().RemoveTempleRespawnPoint(plot);
         }
 
         public Dictionary<string, ClutterTypeProps> clutterByCode = new Dictionary<string, ClutterTypeProps>();

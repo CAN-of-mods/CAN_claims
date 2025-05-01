@@ -250,6 +250,19 @@ namespace claims.src.auxialiry
             }
             return resultString.ToString();
         }
+        public static string concatStringsWithDelim(ICollection<Alliance> li, char delim)
+        {
+            StringBuilder resultString = new StringBuilder();
+            foreach (var it in li)
+            {
+                resultString.Append(it.Guid);
+                if (!it.Equals(li.Last()))
+                {
+                    resultString.Append(delim);
+                }
+            }
+            return resultString.ToString();
+        }
         public static string getNthPageOf(List<Invitation>li, int pageNumber, int pageSize = 4)
         {
             StringBuilder resultString = new StringBuilder();

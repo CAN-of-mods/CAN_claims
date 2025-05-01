@@ -295,6 +295,59 @@ namespace claims.src.commands
             cCityClaim(player, null, city, tcr, true);
             return tcr;
         }
+        public static TextCommandResult cityRadiusClaim(TextCommandCallingArgs args)
+        {
+            IServerPlayer player = args.Caller.Player as IServerPlayer;
+            TextCommandResult tcr = new TextCommandResult();
+            tcr.Status = EnumCommandStatus.Success;
+
+            string filteredName = Filter.filterName((string)args.Parsers[0].GetValue());
+            if (filteredName.Length == 0 || !Filter.checkForBlockedNames(filteredName))
+            {
+                tcr.StatusMessage = "claims:invalid_name";
+                return tcr;
+            }
+            claims.dataStorage.getCityByName(filteredName, out City city);
+            if (city == null)
+            {
+                tcr.StatusMessage = "claims:no_such_city";
+                return tcr;
+            }
+
+            if (args.ArgCount < 2)
+            {
+                tcr.StatusMessage = "claims:need_number";
+                return tcr;
+            }
+            int radius = 0;
+            try
+            {
+                radius = (int)args.Parsers[1].GetValue();
+            }
+            catch (FormatException e)
+            {
+                tcr.StatusMessage = "claims:need_number";
+                return tcr;
+            }
+            if (radius < 0)
+            {
+                tcr.StatusMessage = "claims:not_negative";
+                return tcr;
+            }
+
+            for(int i = -radius; i < radius; i++)
+            {
+                for(int j = - radius; j < radius; j++)
+                {
+                    cCityClaimByChankOffset(player, null, city, tcr, i, j, true);
+                }
+            }
+
+
+
+            //cCityClaim(player, null, city, tcr, true);
+            return tcr;
+        }
         public static TextCommandResult cityUnclaim(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
@@ -841,6 +894,40 @@ namespace claims.src.commands
         public static void cCityClaim(IServerPlayer player, CmdArgs args, City city, TextCommandResult res, bool force = false)
         {
             PlotPosition currentPlotPosition = PlotPosition.fromXZ((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Z);
+            claims.dataStorage.getPlot(currentPlotPosition, out Plot plotHere);
+            if (plotHere != null)
+            {
+                MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:plot_already_claimed"));
+                return;
+            }
+            plotHere = new Plot(currentPlotPosition);
+            plotHere.setCity(city);
+            if (!force && !claims.dataStorage.plotHasDistantEnoughFromOtherCities(plotHere))
+            {
+                MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:too_close_to_another_city"));
+                return;
+            }
+            MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:plot_has_been_claimed", currentPlotPosition.getPos().X, currentPlotPosition.getPos().Y, 0));
+            plotHere.setCity(city);
+            plotHere.getPermsHandler().setPerm(city.getPermsHandler());
+            plotHere.setPrice(-1);
+            claims.dataStorage.addClaimedPlot(currentPlotPosition, plotHere);
+            city.getCityPlots().Add(plotHere);
+            city.saveToDatabase();
+            plotHere.saveToDatabase();
+            TreeAttribute tree = new TreeAttribute();
+            tree.SetInt("chX", plotHere.getPos().X);
+            tree.SetInt("chZ", plotHere.getPos().Y);
+            tree.SetString("name", plotHere.getCity().GetPartName());
+            claims.sapi.World.Api.Event.PushEvent("plotclaimed", tree);
+            return;
+        }
+        public static void cCityClaimByChankOffset(IServerPlayer player, CmdArgs args, City city, TextCommandResult res, int xOffset, int yOffset, bool force = false)
+        {
+            PlotPosition currentPlotPosition = PlotPosition.fromXZ((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Z);
+            var curPos = currentPlotPosition.getPos();
+            currentPlotPosition.setX(curPos.X + xOffset); 
+            currentPlotPosition.setY(curPos.Y + yOffset);
             claims.dataStorage.getPlot(currentPlotPosition, out Plot plotHere);
             if (plotHere != null)
             {
