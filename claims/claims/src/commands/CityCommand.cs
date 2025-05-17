@@ -414,7 +414,8 @@ namespace claims.src.commands
             tree.SetString("name", plotHere.getCity().GetPartName());
             claims.sapi.World.Api.Event.PushEvent("plotclaimed", tree);
             UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid, EnumPlayerRelatedInfo.CLAIMED_PLOTS);
-            return SuccessWithParams("claims:plot_has_been_claimed", new object[] { (currentPlotPosition.getPos().X, currentPlotPosition.getPos().Y, claims.config.EXTRA_PLOT_COST) });
+            //return SuccessWithParams("claims:plot_has_been_claimed", new object[] { currentPlotPosition.getPos().X, currentPlotPosition.getPos().Y, claims.config.PLOT_CLAIM_PRICE });
+            return SuccessWithParams("claims:plot_has_been_claimed", new object[] { currentPlotPosition.getPos().X, currentPlotPosition.getPos().Y, claims.config.PLOT_CLAIM_PRICE });
         }
         /*==============================================================================================*/
         /*=====================================INVITES==================================================*/
@@ -701,13 +702,12 @@ namespace claims.src.commands
                 return TextCommandResult.Success("claims:not_enough_money");
             }
             
-
             if (city.rename((string)args.LastArg))
             {
                 if (claims.economyHandler.withdraw(playerInfo.City.MoneyAccountName, (decimal)claims.config.CITY_NAME_CHANGE_COST).ResultState == caneconomy.src.implementations.OperationResult.EnumOperationResultState.SUCCCESS)
                 {
                     UsefullPacketsSend.AddToQueueCityInfoUpdate(playerInfo.City.Guid, gui.playerGui.structures.EnumPlayerRelatedInfo.CITY_BALANCE);
-                    return TextCommandResult.Success();
+                    return SuccessWithParams("claims:city_name_changed_to", new object[] { (string)args.LastArg });
                 }
             }
             

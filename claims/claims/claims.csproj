@@ -8,21 +8,20 @@
 
   <ItemGroup>
     <Reference Include="caneconomy">
-      <HintPath>..\..\..\..\..\..\Desktop\for_vs_libs\caneconomy.dll</HintPath>
+      <HintPath>..\..\..\libs\caneconomy.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.Data.Sqlite">
-      <HintPath>..\..\..\..\..\..\AppData\Roaming\Vintagestory\Lib\Microsoft.Data.Sqlite.dll</HintPath>
+      <HintPath>..\..\..\..\..\AppData\Roaming\Vintagestory\Lib\Microsoft.Data.Sqlite.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="OpenTK.Graphics">
-      <HintPath>..\..\..\..\..\..\AppData\Roaming\Vintagestory\Lib\OpenTK.Graphics.dll</HintPath>
+      <HintPath>..\..\..\..\..\AppData\Roaming\Vintagestory\Lib\OpenTK.Graphics.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="SkiaSharp">
-      <HintPath>..\..\..\..\..\..\AppData\Roaming\Vintagestory\Lib\SkiaSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Drawing.Common">
-      <HintPath>..\..\..\..\..\..\AppData\Roaming\Vintagestory\Lib\System.Drawing.Common.dll</HintPath>
+      <HintPath>..\..\..\..\..\AppData\Roaming\Vintagestory\Lib\SkiaSharp.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="VintagestoryAPI">
       <HintPath>$(VINTAGE_STORY)/VintagestoryAPI.dll</HintPath>

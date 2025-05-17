@@ -38,7 +38,7 @@ namespace claims.src.commands
             {
                 return TextCommandResult.Success("claims:no_such_player_info");
             }
-            if (playerInfo.hasCity())
+            if (!playerInfo.hasCity())
             {
                 return TextCommandResult.Success("claims:has_city_or_village");
             }

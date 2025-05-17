@@ -53,6 +53,7 @@ namespace claims.src.events
                                             .BeginSub("withdraw")
                                                 .HandleWith(commands.MoneyCommands.OnCityWithdraw)
                                                 .WithDesc("Withdraw money from city account.")
+                                                .WithArgs(parsers.Int("amount"))
                                             .EndSub()
 
                                             ;
