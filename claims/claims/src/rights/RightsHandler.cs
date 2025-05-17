@@ -57,6 +57,7 @@ namespace claims.src
                         EnumPlayerPermissions.CITY_REMOVE_RANK,
                         EnumPlayerPermissions.CITY_SET_PLOTS_COLOR,
                         EnumPlayerPermissions.CITY_SEE_BALANCE
+                        EnumPlayerPermissions.CITY_BUY_EXTRA_PLOT
                     }
                 },
 
