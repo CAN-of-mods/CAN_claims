@@ -15,7 +15,14 @@ namespace claims.src.gui.playerGui.structures
         CITY_INVITE_ADD,
         CITY_INVITE_REMOVE,
         CITY_PLOTS_COLOR,
-        CITY_BALANCE
+        CITY_BALANCE,
+
+        CITY_CRIMINALS_LIST,
+        CITY_CRIMINAL_ADDED, CITY_CRIMINAL_REMOVED,
+        CITY_ADD_PRISON_CELL,
+        CITY_REMOVE_PRISON_CELL,
+        CITY_PRISON_CELL_ALL,
+        CITY_CELL_PRISON_UPDATE
 
     }
 }

@@ -1175,6 +1175,58 @@ namespace claims.src.commands
             plotHere.saveToDatabase();
             plotHere.getPrison().saveToDatabase();
             tcr.Status = EnumCommandStatus.Success;
+            tcr.StatusMessage = "claims:prison_cell_removed";
+            UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid, EnumPlayerRelatedInfo.CITY_REMOVE_PRISON_CELL);
+            return tcr;
+        }
+        public static TextCommandResult CRemovePrisonCell(TextCommandCallingArgs args)
+        {
+            IServerPlayer player = args.Caller.Player as IServerPlayer;
+            TextCommandResult tcr = new TextCommandResult();
+            tcr.Status = EnumCommandStatus.Error;
+            City city = null;
+
+            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            {
+                tcr.StatusMessage = "claims:no_such_player_info";
+                return tcr;
+            }
+            if (!playerInfo.hasCity())
+            {
+                tcr.StatusMessage = "claims:you_dont_have_city";
+                return tcr;
+            }
+            city = playerInfo.City;
+            Vec3i searchPoint = new Vec3i((int)args.Parsers[0].GetValue(), (int)args.Parsers[1].GetValue(), (int)args.Parsers[2].GetValue());
+            Plot savedPlot = null;
+            bool found = false;
+            foreach(var it in city.getPrisons())
+            {
+                foreach(var cell_it in it.getPrisonCells())
+                {
+                    if(cell_it.getSpawnPosition().Equals(searchPoint))
+                    { 
+                        savedPlot = it.getPlot();
+                        it.removePrisonCell(cell_it);
+                        found = true;
+                        break;
+                    }
+                }
+                if(found)
+                {
+                    break;
+                }
+            }
+            if(!found)
+            {
+                tcr.StatusMessage = "claims:no_cell_found";
+                return tcr;
+            }
+            savedPlot.saveToDatabase();
+            savedPlot.getPrison().saveToDatabase();
+            tcr.Status = EnumCommandStatus.Success;
+            tcr.StatusMessage = "claims:prison_cell_removed";
+            UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid, new Dictionary<string, object> { { "value", searchPoint } }, EnumPlayerRelatedInfo.CITY_REMOVE_PRISON_CELL);
             return tcr;
         }
         public static TextCommandResult AddPrisonCell(TextCommandCallingArgs args)
@@ -1194,11 +1246,13 @@ namespace claims.src.commands
                 tcr.Status = EnumCommandStatus.Success;
                 return tcr;
             }
-
-            plotHere.getPrison().addPrisonCell(new PrisonCellInfo(new Vec3i((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Y, (int)player.Entity.ServerPos.Z)));
+            var newPoint = player.Entity.ServerPos.AsBlockPos.AsVec3i.Clone();
+            plotHere.getPrison().addPrisonCell(new PrisonCellInfo(newPoint));
             plotHere.saveToDatabase();
             plotHere.getPrison().saveToDatabase();
+            tcr.StatusMessage = "claims:prison_cell_created";
             tcr.Status = EnumCommandStatus.Success;
+            UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid, new Dictionary<string, object> { { "value", new PrisonCellElement(newPoint, new HashSet<string>()) } },  EnumPlayerRelatedInfo.CITY_ADD_PRISON_CELL);
             return tcr;
         }
         /*==============================================================================================*/
@@ -1329,6 +1383,156 @@ namespace claims.src.commands
             }
             return true;
         }
+        /////CRIMINAL
+        
+        public static TextCommandResult CityCriminalList(TextCommandCallingArgs args)
+        {
+            IServerPlayer player = args.Caller.Player as IServerPlayer;
+            TextCommandResult tcr = new TextCommandResult();
+            tcr.Status = EnumCommandStatus.Error;
+
+            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            if (playerInfo == null)
+            {
+                tcr.StatusMessage = "claims:no_such_player_info";
+                return tcr;
+            }
+            City city = playerInfo.City;
+            if (city == null)
+            {
+                tcr.StatusMessage = "claims:you_dont_have_city";
+                tcr.Status = EnumCommandStatus.Success;
+                return tcr;
+            }
+            tcr.StatusMessage = "claims:criminals";
+            tcr.MessageParams = new object[] { StringFunctions.makeStringPlayersName(city.getCriminals(), ',') };
+
+            return tcr;
+        }
+        public static TextCommandResult CityCriminalAdd(TextCommandCallingArgs args)
+        {
+            IServerPlayer player = args.Caller.Player as IServerPlayer;
+            TextCommandResult tcr = new TextCommandResult();
+            tcr.Status = EnumCommandStatus.Error;
+
+            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            if (playerInfo == null)
+            {
+                tcr.StatusMessage = "claims:no_such_player_info";
+                return tcr;
+            }
+            City city = playerInfo.City;
+            if (city == null)
+            {
+                tcr.StatusMessage = "claims:you_dont_have_city";
+                tcr.Status = EnumCommandStatus.Success;
+                return tcr;
+            }
+            City targetCity = null;
+            PlayerInfo targetPlayer = null;
+            if (args.LastArg == null)
+            {
+                tcr.StatusMessage = "claims:need_player_name";
+                return tcr;
+            }
+            if (!helperFunctionCriminal(player, (string)args.LastArg, out targetCity, out targetPlayer, tcr))
+            {
+                return tcr;
+            }
+            if (city.getCriminals().Contains(targetPlayer))
+            {
+                tcr.StatusMessage = "claims:already_added_as_criminal";
+                return tcr;
+            }
+            city.getCriminals().Add(targetPlayer);
+            MessageHandler.sendMsgInCity(city, Lang.Get("claims:player_has_been_added_to_criminals", targetPlayer.GetPartName()));
+            MessageHandler.sendMsgToPlayerInfo(targetPlayer, Lang.Get("criminals:you_were_added_criminals_in_city", city.GetPartName()));
+            city.saveToDatabase();
+            tcr.Status = EnumCommandStatus.Success;
+            UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid, EnumPlayerRelatedInfo.CITY_CRIMINALS_LIST);
+            return tcr;
+        }
+        public static TextCommandResult CityCriminalRemove(TextCommandCallingArgs args)
+        {
+            IServerPlayer player = args.Caller.Player as IServerPlayer;
+            TextCommandResult tcr = new TextCommandResult();
+            tcr.Status = EnumCommandStatus.Error;
+
+            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            if (playerInfo == null)
+            {
+                tcr.StatusMessage = "claims:no_such_player_info";
+                return tcr;
+            }
+            City city = playerInfo.City;
+            if (city == null)
+            {
+                tcr.StatusMessage = "claims:you_dont_have_city";
+                tcr.Status = EnumCommandStatus.Success;
+                return tcr;
+            }
+            City targetCity = null;
+            PlayerInfo targetPlayer = null;
+            if (args.LastArg == null)
+            {
+                tcr.StatusMessage = "claims:need_player_name";
+                return tcr;
+            }
+            if (!helperFunctionCriminal(player, (string)args.LastArg, out targetCity, out targetPlayer, tcr))
+            {
+                return tcr;
+            }
+            if (!city.getCriminals().Contains(targetPlayer))
+            {
+                tcr.StatusMessage = "claims:not_criminal_here";
+                return tcr;
+            }
+            city.getCriminals().Remove(targetPlayer);
+            MessageHandler.sendMsgInCity(city, Lang.Get("claims:player_has_been_removed_from_criminals", targetPlayer.GetPartName()));
+            MessageHandler.sendMsgToPlayerInfo(targetPlayer, Lang.Get("criminals:you_were_removed_criminals_in_city", city.GetPartName()));
+            city.saveToDatabase();
+            tcr.Status = EnumCommandStatus.Success;
+            UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid, EnumPlayerRelatedInfo.CITY_CRIMINALS_LIST);
+            return tcr;
+        }
+        public static bool helperFunctionCriminal(IServerPlayer player, string targetPlayerName, out City targetCity, out PlayerInfo targetPlayer, TextCommandResult tcr)
+        {
+            targetCity = null;
+            targetPlayer = null;
+            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            if (playerInfo == null)
+            {
+                tcr.StatusMessage = "claims:no_such_player_info";
+                return false;
+            }
+            City city = playerInfo.City;
+            if (city == null)
+            {
+                tcr.StatusMessage = "claims:you_dont_have_city";
+                return false;
+            }
+
+            string name = Filter.filterName(targetPlayerName);
+            if (name.Length == 0 || !Filter.checkForBlockedNames(name))
+            {
+                tcr.StatusMessage = "claims:invalid_player_name";
+                return false;
+            }
+            claims.dataStorage.getPlayerByName(name, out targetPlayer);
+            if (targetPlayer == null)
+            {
+                tcr.StatusMessage = "claims:invalid_player_name";
+                return false;
+            }
+            targetCity = targetPlayer.City;
+            if (targetCity != null && city.Equals(targetCity))
+            {
+                tcr.StatusMessage = "claims:kick_before_add";
+                return false;
+            }
+            return true;
+        }
+
         /*
        
        
@@ -1544,156 +1748,10 @@ namespace claims.src.commands
             
         }
 
-        public static TextCommandResult processCityCriminalList(TextCommandCallingArgs args)
-        {
-            IServerPlayer player = args.Caller.Player as IServerPlayer;
-            TextCommandResult tcr = new TextCommandResult();
-            tcr.Status = EnumCommandStatus.Error;
-
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
-            if (playerInfo == null)
-            {
-                tcr.StatusMessage = "claims:no_such_player_info";
-                return tcr;
-            }
-            City city = playerInfo.City;
-            if (city == null)
-            {
-                tcr.StatusMessage = "claims:you_dont_have_city";
-                tcr.Status = EnumCommandStatus.Success;
-                return tcr;
-            }
-            tcr.StatusMessage = "claims:criminals";
-            tcr.MessageParams = new object[] { StringFunctions.makeStringPlayersName(city.getCriminals(), ',') };
-
-            return tcr;
-        }
-        public static TextCommandResult processCityCriminalAdd(TextCommandCallingArgs args)
-        {
-            IServerPlayer player = args.Caller.Player as IServerPlayer;
-            TextCommandResult tcr = new TextCommandResult();
-            tcr.Status = EnumCommandStatus.Error;
-
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
-            if (playerInfo == null)
-            {
-                tcr.StatusMessage = "claims:no_such_player_info";
-                return tcr;
-            }
-            City city = playerInfo.City;
-            if (city == null)
-            {
-                tcr.StatusMessage = "claims:you_dont_have_city";
-                tcr.Status = EnumCommandStatus.Success;
-                return tcr;
-            }
-            City targetCity = null;
-            PlayerInfo targetPlayer = null;
-            if(args.LastArg == null)
-            {
-                tcr.StatusMessage = "claims:need_player_name";
-                return tcr;
-            }
-            if(!helperFunctionCriminal(player, (string)args.LastArg, out targetCity, out targetPlayer, tcr))
-            {
-                return tcr;
-            }
-            if (city.getCriminals().Contains(targetPlayer))
-            {
-                tcr.StatusMessage = "claims:already_added_as_criminal";
-                return tcr;
-            }
-            city.getCriminals().Add(targetPlayer);
-            MessageHandler.sendMsgInCity(city, Lang.Get("claims:player_has_been_added_to_criminals", targetPlayer.GetPartName()));
-            MessageHandler.sendMsgToPlayerInfo(targetPlayer, Lang.Get("criminals:you_were_added_criminals_in_city", city.GetPartName()));
-            city.saveToDatabase();
-            tcr.Status = EnumCommandStatus.Success;
-            return tcr;
-        }
-        public static TextCommandResult processCityCriminalRemove(TextCommandCallingArgs args)
-        {
-            IServerPlayer player = args.Caller.Player as IServerPlayer;
-            TextCommandResult tcr = new TextCommandResult();
-            tcr.Status = EnumCommandStatus.Error;
-
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
-            if (playerInfo == null)
-            {
-                tcr.StatusMessage = "claims:no_such_player_info";
-                return tcr;
-            }
-            City city = playerInfo.City;
-            if (city == null)
-            {
-                tcr.StatusMessage = "claims:you_dont_have_city";
-                tcr.Status = EnumCommandStatus.Success;
-                return tcr;
-            }
-            City targetCity = null;
-            PlayerInfo targetPlayer = null;
-            if (args.LastArg == null)
-            {
-                tcr.StatusMessage = "claims:need_player_name";
-                return tcr;
-            }
-            if (!helperFunctionCriminal(player, (string)args.LastArg, out targetCity, out targetPlayer, tcr))
-            {
-                return tcr;
-            }
-            if (!city.getCriminals().Contains(targetPlayer))
-            {
-                tcr.StatusMessage = "claims:not_criminal_here";
-                return tcr;
-            }
-            city.getCriminals().Remove(targetPlayer);
-            MessageHandler.sendMsgInCity(city, Lang.Get("claims:player_has_been_removed_from_criminals", targetPlayer.GetPartName()));
-            MessageHandler.sendMsgToPlayerInfo(targetPlayer, Lang.Get("criminals:you_were_removed_criminals_in_city", city.GetPartName()));
-            city.saveToDatabase();
-            tcr.Status = EnumCommandStatus.Success;
-            return tcr;
-        }
-        public static bool helperFunctionCriminal(IServerPlayer player, string targetPlayerName, out City targetCity, out PlayerInfo targetPlayer, TextCommandResult tcr)
-        {
-            targetCity = null;
-            targetPlayer = null;
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
-            if (playerInfo == null)
-            {
-                tcr.StatusMessage = "claims:no_such_player_info";
-                return false;
-            }
-            City city = playerInfo.City;
-            if (city == null)
-            {
-                tcr.StatusMessage = "claims:you_dont_have_city";
-                return false;
-            }
-
-            if (!RightsHandler.hasRight(player, PermConstants.CITY_ADD_CRIMINAL))
-            {
-                tcr.StatusMessage = "claims:you_dont_have_right_for_that_command";
-                return false;
-            }
-            string name = Filter.filterName(targetPlayerName);
-            if (name.Length == 0 || !Filter.checkForBlockedNames(name))
-            {
-                tcr.StatusMessage = "claims:invalid_player_name";
-                return false;
-            }
-            claims.dataStorage.getPlayerByName(name, out targetPlayer);
-            if (targetPlayer == null)
-            {
-                tcr.StatusMessage = "claims:invalid_player_name";
-                return false;
-            }
-            targetCity = targetPlayer.City;
-            if (targetCity != null && city.Equals(targetCity))
-            {
-                tcr.StatusMessage = "claims:kick_before_add";
-                return false;
-            }
-            return true;
-        }
+        
+        
+        
+        
         
         
         public static bool checkForAtleastOneClaimedPlotOnBorderSameCity(Plot plot, TextCommandResult res)

@@ -565,15 +565,15 @@ namespace claims.src.commands.register
                          .EndSub()
                          .BeginSub("removecell")
                               .WithPreCondition((TextCommandCallingArgs args) => {
-                                  if (args.Caller is IServerPlayer player)
+                                  if (args.Caller.Player is IServerPlayer player)
                                   {
                                       if (commands.CityCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.CITY_PRISON_ALL, EnumPlayerPermissions.CITY_PRISON_REMOVE_CELL }))
                                       {
-                                          return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                          return TextCommandResult.Success();                              
                                       }
                                       else
                                       {
-                                          return TextCommandResult.Success();
+                                          return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
                                       }
 
                                   }
@@ -582,6 +582,87 @@ namespace claims.src.commands.register
                              .WithDesc("Remove prison cell by number.")
                              .HandleWith(commands.CityCommand.RemovePrisonCell)
                              .WithArgs(parsers.Int("prisonCellNumber"))
+                         .EndSub()
+                         .BeginSub("cremovecell")
+                              .WithPreCondition((TextCommandCallingArgs args) => {
+                                  if (args.Caller.Player is IServerPlayer player)
+                                  {
+                                      if (commands.CityCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.CITY_PRISON_ALL, EnumPlayerPermissions.CITY_PRISON_REMOVE_CELL }))
+                                      {
+                                          return TextCommandResult.Success();
+                                      }
+                                      else
+                                      {
+                                          return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                      }
+
+                                  }
+                                  return TextCommandResult.Error("");
+                              })
+                             .WithDesc("Remove prison cell by number.")
+                             .HandleWith(commands.CityCommand.CRemovePrisonCell)
+                             .WithArgs(parsers.Int("x"), parsers.Int("y"), parsers.Int("z"))
+                         .EndSub()
+                     .EndSub()
+                         ////
+                     .BeginSub("criminal")
+                         .BeginSub("list")
+                             .WithDesc("List all criminals for the city.")
+                              .WithPreCondition((TextCommandCallingArgs args) => {
+                                  if (args.Caller.Player is IServerPlayer player)
+                                  {
+                                      if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { }))
+                                      {
+                                          return TextCommandResult.Success();
+                                      }
+                                      else
+                                      {
+                                          return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                      }
+                                  }
+                                  return TextCommandResult.Error("");
+                              })
+                             .HandleWith(commands.CityCommand.CityCriminalList)
+                         .EndSub()
+                         .BeginSub("add")
+                             .WithDesc("Mark selected player as criminal for the city.")
+                             .WithPreCondition((TextCommandCallingArgs args) => {
+                                 if (args.Caller.Player is IServerPlayer player)
+                                 {
+                                     if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.CITY_ADD_CRIMINAL }))
+                                     {
+                                         return TextCommandResult.Success();
+                                     }
+                                     else
+                                     {
+                                         return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                     }
+                                 }
+                                 return TextCommandResult.Error("");
+                             })
+                             .WithArgs(parsers.Word("playerName"))
+                             .HandleWith(commands.CityCommand.CityCriminalAdd)
+                         .EndSub()
+                         .BeginSub("remove")
+                              .WithDesc("Remove player from criminals list for the city.")
+                              .WithPreCondition((TextCommandCallingArgs args) => {
+                                  if (args.Caller.Player is IServerPlayer player)
+                                  {
+                                      if (commands.CityCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.CITY_REMOVE_CRIMINAL }))
+                                      {
+                                          return TextCommandResult.Success();
+                                      }
+                                      else
+                                      {
+                                          return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                      }
+
+                                  }
+                                  return TextCommandResult.Error("");
+                              })
+                             .WithDesc("Remove prison cell by number.")
+                             .HandleWith(commands.CityCommand.CityCriminalRemove)
+                             .WithArgs(parsers.Word("playerName"))
                          .EndSub()
                      .EndSub()
                 /////////

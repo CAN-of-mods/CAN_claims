@@ -31,6 +31,7 @@ using Cairo;
 using System.Collections;
 using claims.src.blocks;
 using claims.src.auxialiry.claimAreas;
+using System;
 
 namespace claims.src
 {
@@ -86,7 +87,9 @@ namespace claims.src
         }
         public void AddCustomIcons()
         {
-            List<string> iconList = new List<string> { "queen-crown", "exit-door", "achievement", "flat-platform", "magnifying-glass", "price-tag", "qaitbay-citadel", "large-paint-brush" };
+            List<string> iconList = new List<string> { "queen-crown", "exit-door", "achievement",
+                                                       "flat-platform", "magnifying-glass", "price-tag",
+                                                       "qaitbay-citadel", "large-paint-brush", "prisoner" };
             foreach (var icon in iconList)
             {
                 capi.Gui.Icons.CustomIcons["claims:" + icon] = delegate (Context ctx, int x, int y, float w, float h, double[] rgba)

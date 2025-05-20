@@ -2,6 +2,7 @@
 using claims.src.clientMapHandling;
 using claims.src.delayed.teleportation;
 using claims.src.events;
+using claims.src.gui.playerGui.structures;
 using claims.src.messages;
 using claims.src.network.packets;
 using claims.src.part;
@@ -47,7 +48,7 @@ namespace claims.src
             claims.sapi.Event.Timer(checkAndSendUpdates, 10);
         }
         //Player change chunk position
-        public static string getMsgForChunkChange(Plot fromPlot, Plot toPlot, int state, PlayerInfo playerInfo)
+        /*public static string getMsgForChunkChange(Plot fromPlot, Plot toPlot, int state, PlayerInfo playerInfo)
         {
             StringBuilder stringBuilder = new StringBuilder();
             //state - 
@@ -72,6 +73,7 @@ namespace claims.src
                     playerInfo.PrisonedIn.getCity(),
                     Lang.Get("claims:player_escaped_prison", playerInfo.GetPartName()));
                     MessageHandler.sendMsgToPlayerInfo(playerInfo, Lang.Get("claims:you_escaped_prison"));
+                    
                     playerInfo.PrisonedIn = null;
                     playerInfo.PrisonHoursLeft = 0;
                     (claims.sapi.World.PlayerByUid(playerInfo.Guid) as IServerPlayer).SetSpawnPosition(new PlayerSpawnPos((int)claims.sapi.World.DefaultSpawnPosition.X, (int)claims.sapi.World.DefaultSpawnPosition.Y, (int)claims.sapi.World.DefaultSpawnPosition.Z));
@@ -162,7 +164,7 @@ namespace claims.src
             }
 
             return stringBuilder.ToString();
-        }
+        }*/
         public void onPlayerChangePlotEvent(string eventName, ref EnumHandling handling, IAttribute data)
         {
             TreeAttribute tree = data as TreeAttribute;
@@ -190,9 +192,16 @@ namespace claims.src
                     playerInfo.PrisonedIn.getCity(),
                     Lang.Get("claims:player_escaped_prison", playerInfo.GetPartName()));
                     MessageHandler.sendMsgToPlayerInfo(playerInfo, Lang.Get("claims:you_escaped_prison"));
+                    if(playerInfo.PrisonedIn.TryGetCellInWhichPlayer(playerInfo, out var cell))
+                    {
+                        UsefullPacketsSend.AddToQueueCityInfoUpdate(playerInfo.PrisonedIn.getCity().Guid, new Dictionary<string, object> { { "value", new PrisonCellElement(cell.spawnPostion, cell.playerNames) } },
+                            EnumPlayerRelatedInfo.CITY_CELL_PRISON_UPDATE);
+                    }
                     playerInfo.PrisonedIn = null;
                     playerInfo.PrisonHoursLeft = 0;
                     pl.SetSpawnPosition(new PlayerSpawnPos((int)claims.sapi.World.DefaultSpawnPosition.X, (int)claims.sapi.World.DefaultSpawnPosition.Y, (int)claims.sapi.World.DefaultSpawnPosition.Z));
+                    
+                    
                 }
             }
             if (playerInfo.showBorders)

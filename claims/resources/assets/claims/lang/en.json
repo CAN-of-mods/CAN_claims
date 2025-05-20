@@ -194,6 +194,7 @@
 
 
     "player_has_been_added_to_criminals": "Player {0} was added to criminals.",
+    "player_has_been_removed_from_criminals": "Player {0} was removed from criminals.",
     "you_were_added_criminals_in_city": "You were marked as criminal in {0}.",
     //ADMIN
 
@@ -273,7 +274,8 @@
     "economy_virtual_city_deposit_error": "Unexpected error during city deposit, missing account, no currency in the hand?",
     "economy_money_transaction_error": "Transaction failed.",
     "economy_no_city": "No city.",
-
+    //PRISON
+    "prison_cell_created": "New prison cell created.",
     "movementgui-city-name": "~{0}~",
     "movementgui-wild-lands": "Wild lands",
     "movementgui-pvp-on": "<font color=\"red\">PVP</font>",
@@ -281,6 +283,18 @@
     "movementgui-price": "Price: {0}",
     "movementgui-plot-name": "<font color=\"#82A0AB\">{0}</font>",
     "movementgui-group-name": "Group name: {0}",
+    "gui-prison-cell-coords": "X: {0} Y: {1} Z: {2}",
+    "gui-prison-cell-remove-confirm": "Remove prison cell at {0}?",
+    "gui-confirm-button": "Yes",
+    "gui-decline-button": "No",
+    "gui-remove-button": "Remove",
+    "gui-enter-player-name": "Enter player name: ",
+    "gui-add-button": "Add",
+    "gui-close-button": "Close",
+    "gui-enter-new-city-name": "Enter new city name:",
+    "gui-set-name-button": "Set name",
+    "gui-strip-rank-from-player": "Strip player {0} of {1} rank?",
+    "gui-leave-city-confirm-button": "Leave city?",
 
     "claimsguide": "Claims",
     "claimsguide-title": "Game Mechanic: Claims",
@@ -311,6 +325,7 @@
     "gui-plot-permissions": "Permissions",
     "gui-agree-city-creation": "Create city {0}?",
     "gui-city-balance": "Balance: {0}",
+    "gui-criminals": "Criminals: {0}",
     "game:tabname-Claims": "Claims",
 
     //blocks

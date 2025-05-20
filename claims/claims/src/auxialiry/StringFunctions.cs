@@ -44,6 +44,15 @@ namespace claims.src.auxialiry
             }
             return names;
         }
+        public static List<string> getNamesOfCriminals(City city)
+        {
+            List<string> names = new List<string>();
+            foreach (var it in city.criminals)
+            {
+                names.Add(it.GetPartName());
+            }
+            return names;
+        }
         public static List<string> getNamesOfCitiesFromInvitations(string prefix, List<CityPlotsGroupInvitation> li)
         {
             List<string> outList = new List<string>();

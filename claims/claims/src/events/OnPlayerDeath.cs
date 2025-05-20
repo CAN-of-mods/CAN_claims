@@ -1,4 +1,7 @@
-﻿using claims.src.auxialiry;
+﻿using System.Collections.Generic;
+using System.Runtime.ConstrainedExecution;
+using claims.src.auxialiry;
+using claims.src.gui.playerGui.structures;
 using claims.src.part;
 using claims.src.part.structure;
 using Vintagestory.API.Common;
@@ -12,21 +15,22 @@ namespace claims.src.events
     {
         public static void Event_OnPlayerDeath(IServerPlayer byPlayer, DamageSource damageSource)
         {
+            claims.dataStorage.getPlayerByUid(byPlayer.PlayerUID, out PlayerInfo playerInfo);
 
-             claims.dataStorage.getPlayerByUid(byPlayer.PlayerUID, out PlayerInfo playerInfo);
-
-            if (damageSource != null && damageSource.SourceEntity != null && damageSource.SourceEntity is EntityPlayer)
+            if (!playerInfo.isPrisoned() && damageSource != null && damageSource.SourceEntity != null && damageSource.SourceEntity is EntityPlayer)
             {
                 claims.dataStorage.getPlayerByName(damageSource.SourceEntity.GetName(), out PlayerInfo attackerPlayerInfo);
                 tryToPrison(damageSource.SourceEntity, byPlayer, playerInfo, attackerPlayerInfo);
-            }
-
-
-            // If player is jailed send them to their jailspawn.
-            if (playerInfo != null && playerInfo.isPrisoned())
-            {
-                var tmp = playerInfo.PrisonedIn.getRandomRespawnPoint();
-                byPlayer.SetSpawnPosition(new PlayerSpawnPos(tmp.X, tmp.Y, tmp.Z));
+                if (playerInfo.isPrisoned())
+                {
+                    if (playerInfo.PrisonedIn.TryGetRandomCell(out PrisonCellInfo cell))
+                    {
+                        cell.AddPlayer(playerInfo);
+                        byPlayer.SetSpawnPosition(new PlayerSpawnPos(cell.spawnPostion.X, cell.spawnPostion.Y, cell.spawnPostion.Z));
+                        UsefullPacketsSend.AddToQueueCityInfoUpdate(playerInfo.PrisonedIn.getCity().Guid, new Dictionary<string, object> { { "value", new PrisonCellElement(cell.spawnPostion, cell.playerNames) } },
+                            EnumPlayerRelatedInfo.CITY_CELL_PRISON_UPDATE);
+                    }
+                }
             }
         }
         public static void tryToPrison(Entity attacker, IServerPlayer killed, PlayerInfo playerInfoKilled, PlayerInfo playerInfoAttacker)
@@ -53,7 +57,12 @@ namespace claims.src.events
             if(plotKilled.hasCity() && plotKilled.getCity().isCitizen(playerInfoAttacker))
             {
                 if (playerInfoAttacker.City.hasPrison())
-                    playerInfoKilled.PrisonedIn = playerInfoAttacker.City.getRandomPrison();
+                {
+                    if(playerInfoAttacker.City.TryGetRandomPrisonWithCell(out Prison prison))
+                    {
+                        playerInfoKilled.PrisonedIn = prison;
+                    }
+                }
             }
         }
     }

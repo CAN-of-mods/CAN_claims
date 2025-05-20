@@ -26,9 +26,9 @@ namespace claims.src.gui.playerGui.structures
             CurrentPlotInfo = new CurrentPlotInfo();
         }
         public ClientPlayerInfo(string cityName, string mayorName, long timeStampCreated, HashSet<string> citizens, int maxCountPlots, int countPlots, string prefix,
-            string afterName, HashSet<string> cityTitles, EnumShowPlotMovement showPlotMovement, int PlotColor, double cityBalance)
+            string afterName, HashSet<string> cityTitles, EnumShowPlotMovement showPlotMovement, int PlotColor, double cityBalance, HashSet<string> criminals)
         {
-            CityInfo = new CityInfo(cityName, mayorName, timeStampCreated, citizens, maxCountPlots, countPlots, prefix, afterName, cityTitles, PlotColor, cityBalance);
+            CityInfo = new CityInfo(cityName, mayorName, timeStampCreated, citizens, maxCountPlots, countPlots, prefix, afterName, cityTitles, PlotColor, cityBalance, criminals);
             ShowPlotMovement = showPlotMovement;
         }
 
@@ -40,7 +40,7 @@ namespace claims.src.gui.playerGui.structures
             ShowPlotMovement = showPlotMovement;
         }
         public ClientPlayerInfo(string cityName, string mayorName, string timeStampCreated, string citizens, string maxCountPlots, string countPlots, string prefix,
-           string afterName, string cityTitles, string showPlotMovement, int PlotColor, double cityBalance)
+           string afterName, string cityTitles, string showPlotMovement, int PlotColor, double cityBalance, string cityCriminals)
         {
             long.TryParse(timeStampCreated, out long longStamp);
 
@@ -53,12 +53,14 @@ namespace claims.src.gui.playerGui.structures
 
             int.TryParse(showPlotMovement, out int showInt);
 
-            CityInfo = new CityInfo(cityName, mayorName, longStamp, citizenList, maxCountInt, curCountPlotInt, prefix, afterName, titles, PlotColor, cityBalance);
+            HashSet<string> criminals = JsonConvert.DeserializeObject<HashSet<string>>(cityCriminals);
+
+            CityInfo = new CityInfo(cityName, mayorName, longStamp, citizenList, maxCountInt, curCountPlotInt, prefix, afterName, titles, PlotColor, cityBalance, criminals);
             ShowPlotMovement = (EnumShowPlotMovement)showInt;
         }
 
         public static ClientPlayerInfo OnJoinAllInfo(string cityName, string mayorName, string timeStampCreated, string citizens, string maxCountPlots, string countPlots, string prefix,
-                                                     string afterName, string cityTitles, string showPlotMovement, string friendsList, int PlotColor, double cityBalance)
+                                                     string afterName, string cityTitles, string showPlotMovement, string friendsList, int PlotColor, double cityBalance, string cityCriminals)
         {
             long.TryParse(timeStampCreated, out long longStamp);
 
@@ -74,7 +76,9 @@ namespace claims.src.gui.playerGui.structures
 
             List<ClientToCityInvitation> receivedInvitations = new List<ClientToCityInvitation>(); //todo
 
-            CityInfo cityInfo = new CityInfo(cityName, mayorName, longStamp, citizenList, maxCountInt, curCountPlotInt, prefix, afterName, titles, PlotColor, cityBalance);
+            HashSet<string> criminals = JsonConvert.DeserializeObject<HashSet<string>>(cityCriminals);
+
+            CityInfo cityInfo = new CityInfo(cityName, mayorName, longStamp, citizenList, maxCountInt, curCountPlotInt, prefix, afterName, titles, PlotColor, cityBalance, criminals);
 
             return new ClientPlayerInfo(cityInfo, friends, receivedInvitations, (EnumShowPlotMovement)showInt);
         }
@@ -219,11 +223,74 @@ namespace claims.src.gui.playerGui.structures
 
             if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_BALANCE, out string cityBalance))
             {
-                CityInfo.cityBalance = (double)decimal.Parse(cityBalance);
+                CityInfo.CityBalance = (double)decimal.Parse(cityBalance);
             }
 
-            
+            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_CRIMINAL_ADDED, out string criminalAdded))
+            {
+                HashSet<string> hs = JsonConvert.DeserializeObject<HashSet<string>>(criminalAdded);
+                foreach (var it in hs)
+                {
+                    CityInfo.Criminals.Add(it);
+                }
+            }
 
+            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_CRIMINAL_REMOVED, out string criminalRemoved))
+            {
+                HashSet<string> hs = JsonConvert.DeserializeObject<HashSet<string>>(criminalRemoved);
+                foreach (var it in hs)
+                {
+                    CityInfo.Criminals.Remove(it);
+                }
+            }
+
+            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_CRIMINALS_LIST, out string criminalsList))
+            {
+                
+                HashSet<string> hs = JsonConvert.DeserializeObject<HashSet<string>>(criminalsList);
+                CityInfo.Criminals = hs;              
+            }
+
+            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_PRISON_CELL_ALL, out string prisonCellList))
+            {
+                HashSet<PrisonCellElement> pc = JsonConvert.DeserializeObject<HashSet<PrisonCellElement>>(prisonCellList);
+                CityInfo.PrisonCells = pc.ToList();
+            }
+
+            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_ADD_PRISON_CELL, out string prisonCellAdd))
+            {
+                HashSet<PrisonCellElement> pc = JsonConvert.DeserializeObject<HashSet<PrisonCellElement>>(prisonCellAdd);
+                foreach(var it in pc)
+                {
+                    CityInfo.PrisonCells.Add(it);
+                }
+            }
+
+            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_REMOVE_PRISON_CELL, out string prisonCellRemove))
+            {
+                HashSet<PrisonCellElement> pc = JsonConvert.DeserializeObject<HashSet<PrisonCellElement>>(prisonCellRemove);
+                foreach(var it in pc)
+                {
+                    CityInfo.PrisonCells.Remove(it);
+                }
+            }
+
+            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_CELL_PRISON_UPDATE, out string prisonCelUpdate))
+            {
+                HashSet<PrisonCellElement> pc = JsonConvert.DeserializeObject<HashSet<PrisonCellElement>>(prisonCelUpdate);
+                foreach (var it in pc)
+                {
+                    foreach(var it_current in CityInfo.PrisonCells.ToArray())
+                    {
+                        if(it_current.SpawnPosition.Equals(it.SpawnPosition))
+                        {
+                            CityInfo.PrisonCells.Remove(it_current);
+                            CityInfo.PrisonCells.Add(it);
+                            break;
+                        }
+                    }
+                }
+            }
         }
     }
 }
