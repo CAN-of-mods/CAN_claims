@@ -1,5 +1,4 @@
 using Cake.Common;
-using Cake.Common.Build.GoCD;
 using Cake.Common.IO;
 using Cake.Common.Tools.DotNet;
 using Cake.Common.Tools.DotNet.Clean;
@@ -11,7 +10,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
-using System.Resources;
 using Vintagestory.API.Common;
 
 public static class Program
@@ -37,7 +35,6 @@ public class BuildContext : FrostingContext
     {
         BuildConfiguration = context.Argument("configuration", "Release");
         SkipJsonValidation = context.Argument("skipJsonValidation", false);
-        //var c = $"../{BuildContext.ProjectName}/modinfo.json"; C: \Users\koeni\Source\Repos\CAN_claims\claims\resources\modinfo.json
         var modInfo = context.DeserializeJsonFromFile<ModInfo>($"../resources/modinfo.json");
         Version = modInfo.Version;
         Name = modInfo.ModID;
@@ -53,7 +50,7 @@ public sealed class ValidateJsonTask : FrostingTask<BuildContext>
         {
             return;
         }
-        var jsonFiles = context.GetFiles($"../{BuildContext.ProjectName}/assets/**/*.json");
+        var jsonFiles = context.GetFiles($"../resources/**/*.json");
         foreach (var file in jsonFiles)
         {
             try
@@ -100,12 +97,7 @@ public sealed class PackageTask : FrostingTask<BuildContext>
         context.CleanDirectory("../Releases");
         context.EnsureDirectoryExists($"../Releases/{context.Name}");
         context.CopyFiles($"../{BuildContext.ProjectName}/bin/{context.BuildConfiguration}/Mods/mod/publish/*", $"../Releases/{context.Name}");
-        context.CopyDirectory($"../resources/assets", $"../Releases/{context.Name}/assets");
-        context.CopyFile($"../resources/modinfo.json", $"../Releases/{context.Name}/modinfo.json");
-        if (context.FileExists($"../{BuildContext.ProjectName}/modicon.png"))
-        {
-            context.CopyFile($"../{BuildContext.ProjectName}/modicon.png", $"../Releases/{context.Name}/modicon.png");
-        }
+        context.CopyDirectory($"../resources", $"../Releases/{context.Name}/");
         context.Zip($"../Releases/{context.Name}", $"../Releases/{context.Name}_{context.Version}.zip");
     }
 }
