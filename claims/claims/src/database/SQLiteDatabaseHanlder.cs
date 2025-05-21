@@ -780,7 +780,7 @@ namespace claims.src.database
                 { "@guid", prison.Guid },
                 { "@x", prison.getPlot().getPos().X },
                 { "@z", prison.getPlot().getPos().Y },
-                { "@prisonCells", prison.ToString() },
+                { "@prisonCells", prison.SerializeCells() },
                 { "@city", prison.getCity().Guid },
             };
 
@@ -801,7 +801,7 @@ namespace claims.src.database
         public override bool loadPrison(DataRow it)
         {
             claims.dataStorage.getPrison(it["guid"].ToString(), out Prison prison);
-            prison.fromString(it["prisonCells"].ToString());
+            prison.DeserializeCells(it["prisonCells"].ToString());
             claims.dataStorage.getCityByGUID(it["city"].ToString(), out City city);
             prison.setCity(city);
             claims.dataStorage.getPlot(new PlotPosition(int.Parse(it["x"].ToString()), int.Parse(it["z"].ToString())), out Plot plot);

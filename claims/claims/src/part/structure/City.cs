@@ -127,9 +127,20 @@ namespace claims.src.part
             return prisons;
         }
 
-        public Prison getRandomPrison()
+        public bool TryGetRandomPrisonWithCell(out Prison prison)
         {
-            return prisons[claims.dataStorage.r.Next() % prisons.Count];
+            Random random = claims.dataStorage.r;
+            int[] cellNumber = Enumerable.Range(0, prisons.Count).OrderBy(x => claims.dataStorage.r.Next()).ToArray();
+            foreach(var it in cellNumber)
+            {
+                if (prisons[it].getPrisonCells().Count > 0)
+                {
+                    prison = prisons[it];
+                    return true;
+                }
+            }
+            prison = null;
+            return false;
         }
 
         public bool hasPrison()

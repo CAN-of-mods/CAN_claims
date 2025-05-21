@@ -34,6 +34,7 @@ namespace claims.src
                     { 
                         EnumPlayerPermissions.PLOT_CLAIM,
                         EnumPlayerPermissions.PLOT_UNCLAIM,
+                        EnumPlayerPermissions.PLOT_SET_ALL_CITY_PLOTS,
                         EnumPlayerPermissions.CITY_HERE,
                         EnumPlayerPermissions.CITY_INFO
 
@@ -57,7 +58,9 @@ namespace claims.src
                         EnumPlayerPermissions.CITY_REMOVE_RANK,
                         EnumPlayerPermissions.CITY_SET_PLOTS_COLOR,
                         EnumPlayerPermissions.CITY_SEE_BALANCE,
-                        EnumPlayerPermissions.CITY_BUY_EXTRA_PLOT
+                        EnumPlayerPermissions.CITY_BUY_EXTRA_PLOT,
+                        EnumPlayerPermissions.CITY_REMOVE_CRIMINAL,
+                        EnumPlayerPermissions.CITY_ADD_CRIMINAL
                     }
                 },
 

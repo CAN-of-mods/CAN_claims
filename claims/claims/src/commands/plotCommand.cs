@@ -2,6 +2,7 @@
 using claims.src.auxialiry.innerclaims;
 using claims.src.clientMapHandling;
 using claims.src.events;
+using claims.src.gui.playerGui.structures;
 using claims.src.messages;
 using claims.src.part;
 using claims.src.part.structure;
@@ -111,6 +112,9 @@ namespace claims.src.commands
                     playerInfo.PlayerPlots.Add(plot);
                     plot.saveToDatabase();
                     playerInfo.saveToDatabase();
+                    claims.dataStorage.clearCacheForPlayersInPlot(plot);
+                    claims.dataStorage.setNowEpochZoneTimestampFromPlotPosition(plot.getPos());
+                    claims.serverPlayerMovementListener.markPlotToWasReUpdated(plot.getPos());
                     UsefullPacketsSend.SendCurrentPlotUpdate(player, plot);
                     return SuccessWithParams("claims:plot_has_been_claimed_by_player_paid", new object[] { savedPrice });
                 }
@@ -150,6 +154,9 @@ namespace claims.src.commands
                 plot.setPlotOwner(null);
                 playerInfo.PlayerPlots.Remove(plot);
                 playerInfo.saveToDatabase();
+                claims.dataStorage.clearCacheForPlayersInPlot(plot);
+                claims.dataStorage.setNowEpochZoneTimestampFromPlotPosition(plot.getPos());
+                claims.serverPlayerMovementListener.markPlotToWasReUpdated(plot.getPos());
                 UsefullPacketsSend.SendCurrentPlotUpdate(player, plot);
                 plot.saveToDatabase();
                 return TextCommandResult.Success("claims:plot_has_been_unclaimed_by_player");
@@ -354,6 +361,7 @@ namespace claims.src.commands
                 claims.dataStorage.setNowEpochZoneTimestampFromPlotPosition(plotHere.getPos());
                 claims.serverPlayerMovementListener.markPlotToWasReUpdated(plotHere.getPos());
                 UsefullPacketsSend.SendCurrentPlotUpdate(player, plotHere);
+                UsefullPacketsSend.AddToQueueCityInfoUpdate(plotHere.getCity().Guid, new Dictionary<string, object> { { "value", new PrisonCellElement(player.Entity.ServerPos.AsBlockPos.AsVec3i.Clone(), new HashSet<string>()) } }, EnumPlayerRelatedInfo.CITY_ADD_PRISON_CELL);
                 return tcr;
             }
             else

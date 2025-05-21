@@ -1,32 +1,25 @@
-﻿using Cairo;
-using claims.src.auxialiry;
-using claims.src.gui.playerGui.structures;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static OpenTK.Graphics.OpenGL.GL;
+using Cairo;
+using claims.src.gui.playerGui.structures;
 using Vintagestory.API.Client;
+using static claims.src.gui.playerGui.CANClaimsGui;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
-using Vintagestory.API.Util;
-using System.Collections;
 using Vintagestory.API.Config;
-using System.Reflection.Emit;
-using static claims.src.gui.playerGui.CANClaimsGui;
-using System.Reflection;
 using Vintagestory.Client.NoObf;
 
 namespace claims.src.gui.playerGui.GuiElements
 {
-    internal class GuiElementCityRanks : GuiElementTextBase, IGuiElementCell, IDisposable
+    public class GuiElementCityPrisonCell: GuiElementTextBase, IGuiElementCell, IDisposable
     {
         public static int counter = 0;
         private List<GuiElementButtonWithAdditionalText> buttons = new List<GuiElementButtonWithAdditionalText>();
+        private List<GuiElementStaticText> texts = new List<GuiElementStaticText>();
         private GuiElementToggleButton addRankButton;
-        private GuiElementStaticText rankName;
         public GuiElementRichtext richTextElem;
         public enum HighlightedTexture
         {
@@ -34,7 +27,7 @@ namespace claims.src.gui.playerGui.GuiElements
         }
         public static double unscaledRightBoxWidth = 40.0;
 
-        private RankCellElement rankCell;
+        private PrisonCellElement prisonCell;
 
         private bool showModifyIcons = true;
 
@@ -54,9 +47,6 @@ namespace claims.src.gui.playerGui.GuiElements
 
         private LoadedTexture modcellTexture;
 
-        private static IAsset cancelIcon;
-        private static IAsset approveIcon;
-
         private ICoreClientAPI capi;
 
         public Action<int> OnMouseDownOnCellLeft;
@@ -71,50 +61,42 @@ namespace claims.src.gui.playerGui.GuiElements
         {
             base.ComposeElements(ctx, surface);
         }
-        public GuiElementCityRanks(ICoreClientAPI capi, RankCellElement rankCell, ElementBounds bounds)
+        public GuiElementCityPrisonCell(ICoreClientAPI capi, PrisonCellElement prisonCell, ElementBounds bounds)
             : base(capi, "", null, bounds)
         {
-            this.rankCell = rankCell;
+            this.prisonCell = prisonCell;
             this.Font = CairoFont.WhiteSmallishText();
             modcellTexture = new LoadedTexture(capi);
 
-            cancelIcon = capi.Assets.Get(new AssetLocation("claims:textures/icons/cancel.svg"));
-            approveIcon = capi.Assets.Get(new AssetLocation("claims:textures/icons/check-mark.svg"));
-
             this.capi = capi;
-            this.text = rankCell.RankName;
-
-
-
-  
-            
-            //button.SetOrientation(CairoFont.ButtonText().Orientation);
-           // ElementBounds textBounds = ElementBounds.Fixed(0.0, 0.0, 900.0, 100.0).WithEmptyParent();
-            double unScaledTextCellHeight = 25.0;
+            this.text = Lang.Get("claims:gui-prison-cell-coords",
+                                    (prisonCell.SpawnPosition.X - capi.World.DefaultSpawnPosition.AsBlockPos.X).ToString(),
+                                    (prisonCell.SpawnPosition.Y - capi.World.DefaultSpawnPosition.AsBlockPos.Y).ToString(),
+                                    (prisonCell.SpawnPosition.Z - capi.World.DefaultSpawnPosition.AsBlockPos.Z).ToString());
             double unScaledButtonCellHeight = 35.0;
             var height = unScaledButtonCellHeight;
             var font = CairoFont.WhiteDetailText();
             var offY = (height - font.UnscaledFontsize) / 2.0;
-            TextExtents textExtents = CairoFont.WhiteMediumText().GetTextExtents(rankCell.RankName);
+            TextExtents textExtents = CairoFont.WhiteMediumText().GetTextExtents(this.text);
             var labelTextBounds = ElementBounds.Fixed(0.0, 0.0, textExtents.Width, height).WithParent(Bounds);
-            this.richTextElem = new GuiElementRichtext(capi, VtmlUtil.Richtextify(capi, this.rankCell.RankName, CairoFont.WhiteMediumText()), labelTextBounds);
+            this.richTextElem = new GuiElementRichtext(capi, VtmlUtil.Richtextify(capi, this.text, CairoFont.WhiteMediumText()), labelTextBounds);
             var addRankBounds = labelTextBounds.RightCopy().WithFixedSize(25, 25);
             addRankBounds.fixedY += 5;
-            addRankButton = new GuiElementToggleButton(capi, "plus", "", font, (bool t) =>
+            addRankButton = new GuiElementToggleButton(capi, "wpX", "", font, (bool t) =>
             {
                 if (t)
                 {
-                    claims.CANCityGui.CreateNewCityState = EnumUpperWindowSelectedState.CITY_RANK_ADD;
-                    claims.CANCityGui.firstValueCollected = this.rankCell.RankName;
+                    claims.CANCityGui.CreateNewCityState = EnumUpperWindowSelectedState.CITY_PRISON_REMOVE_CELL_CONFIRM;
+                    claims.CANCityGui.selectedPos = this.prisonCell.SpawnPosition;
                     claims.CANCityGui.BuildUpperWindow();
                 }
             }, addRankBounds);
 
             double offsetY = 35;
             double offsetX = 0;
-            if (rankCell.CitizensRanks.Count > 0)
+            if (prisonCell.Players.Count > 0)
             {
-                foreach (var it in rankCell.CitizensRanks)
+                foreach (var it in prisonCell.Players)
                 {
                     textExtents = Font.GetTextExtents(it);
                     if ((textExtents.Width + 40 + offsetX + 20) > bounds.fixedWidth + this.Bounds.fixedX)
@@ -123,25 +105,15 @@ namespace claims.src.gui.playerGui.GuiElements
                         offsetY += 30;
                     }
                     var bu = ElementBounds.Fixed(offsetX, offsetY, textExtents.Width + 40, 25).WithParent(Bounds);
-                    buttons.Add(new GuiElementButtonWithAdditionalText(capi, it, this.Font, this.Font, new ActionConsumable(() =>
-                    {
-                        claims.CANCityGui.CreateNewCityState = EnumUpperWindowSelectedState.CITY_RANK_REMOVE_CONFIRM;
-                        claims.CANCityGui.firstValueCollected = this.rankCell.RankName;
-                        claims.CANCityGui.secondValueCollected = it;
-                        claims.CANCityGui.BuildUpperWindow();
-                        return true;
-                    }), bu));
+                    texts.Add(new GuiElementStaticText(capi, it, EnumTextOrientation.Left, bu, font));
                     offsetX += textExtents.Width + 45 + 20;
                 }
-
             }
 
             if (offsetY > 30)
             {
                 Bounds.fixedHeight = offsetY + 60;
             }
-
-
         }
         private void Compose()
         {
@@ -154,21 +126,23 @@ namespace claims.src.gui.playerGui.GuiElements
             double num = GuiElement.scaled(unscaledRightBoxWidth);
             Bounds.CalcWorldBounds();
 
-            
-            
-            //textUtil.AutobreakAndDrawMultilineTextAt(context, Font, this.rankCell.RankName, Bounds.absPaddingX, Bounds.absPaddingY + GuiElement.scaled(5), textExtents.Width + 1.0, EnumTextOrientation.Left);
-
             //make border as button
             EmbossRoundRectangleElement(context, 0.0, 0.0, Bounds.OuterWidth, Bounds.OuterHeight, inverse: false, (int)GuiElement.scaled(4.0), 0);
 
             double num5 = GuiElement.scaled(unscaledSwitchSize);
             double num6 = GuiElement.scaled(unscaledSwitchPadding);
 
-           
-            
+
             if (buttons != null)
             {
                 foreach (var it in buttons)
+                {
+                    it.ComposeElements(context, imageSurface);
+                }
+            }
+            if(texts != null)
+            {
+                foreach (var it in texts)
                 {
                     it.ComposeElements(context, imageSurface);
                 }
@@ -295,7 +269,7 @@ namespace claims.src.gui.playerGui.GuiElements
         public override void Dispose()
         {
             base.Dispose();
-            foreach (var it in buttons)
+            foreach(var it in buttons)
             {
                 it.Dispose();
             }
@@ -314,7 +288,7 @@ namespace claims.src.gui.playerGui.GuiElements
             int x = api.Input.MouseX;
             int y = api.Input.MouseY;
 
-            foreach(var it in buttons)
+            foreach (var it in buttons)
             {
                 it.OnMouseUpOnElement(api, args);
             }
@@ -366,6 +340,6 @@ namespace claims.src.gui.playerGui.GuiElements
                 }
             }
             addRankButton.OnMouseDownOnElement(api, args);
-        }      
+        }
     }
 }

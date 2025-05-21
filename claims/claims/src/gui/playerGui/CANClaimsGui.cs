@@ -41,16 +41,18 @@ namespace claims.src.gui.playerGui
             CLAIM_CITY_PLOT_CONFIRM, UNCLAIM_CITY_PLOT_CONFIRM, PLOT_PERMISSIONS, ADD_FRIEND_NEED_NAME, REMOVE_FRIEND,
             PLOT_SET_PRICE_NEED_NUMBER, PLOT_SET_TAX, PLOT_SET_TYPE, PLOT_SET_NAME, PLOT_CLAIM, PLOT_UNCLAIM,
             CITY_TITLE_SELECT_CITIZEN, CITY_TITLE_CITIZEN_SELECTED, LEAVE_CITY_CONFIRM,
-            CITY_RANK_REMOVE_CONFIRM, CITY_RANK_ADD, SELECT_NEW_CITY_NAME
+            CITY_RANK_REMOVE_CONFIRM, CITY_RANK_ADD, SELECT_NEW_CITY_NAME, ADD_CRIMINAL_NEED_NAME, REMOVE_CRIMINAL,
+            CITY_PRISON_REMOVE_CELL_CONFIRM
         }
 
         public EnumUpperWindowSelectedState CreateNewCityState { get; set; } = EnumUpperWindowSelectedState.NONE;
         public string collectedNewCityName { get; set; } = "";
         public string firstValueCollected { get; set; } = "";
         public string secondValueCollected { get; set; } = "";
+        public Vec3i selectedPos { get; set; } = null;
         public enum EnumSelectedTab
         {
-            City, Player, Prices, Plot, Ranks, CityPlotsColorSelector
+            City, Player, Prices, Plot, Prison, CriminalsList, PrisonCells, Ranks, CityPlotsColorSelector,
         }
         public int selectedClaimsPage = 0;
         public int claimsPerPage = 3;
@@ -93,13 +95,29 @@ namespace claims.src.gui.playerGui
                 OnMouseDownOnCellRight = new Action<int>(this.OnClickCellRight)
             };
         }
+        private IGuiElementCell createPrisonCellElem(PrisonCellElement cell, ElementBounds bounds)
+        {
+            return new GuiElementCityPrisonCell(capi, cell, bounds)
+            {
+                //"claims:textures/icons/warning.svg")
+                On = true/*,
+                OnMouseDownOnCellLeft = new Action<int>(this.OnClickCellLeft),
+                OnMouseDownOnCellMiddle = new Action<int>(this.OnClickCellMiddle),
+                OnMouseDownOnCellRight = new Action<int>(this.OnClickCellRight)*/
+            };
+        }
         private void OnNewRanksScrollbarvalue(float value)
         {
             ElementBounds bounds = SingleComposer.GetCellList<RankCellElement>("citizensranks").Bounds;
             bounds.fixedY = (double)(0f - value);
             bounds.CalcWorldBounds();
         }
-
+        private void OnNewPrisonScrollbarvalue(float value)
+        {
+            ElementBounds bounds = SingleComposer.GetCellList<PrisonCellElement>("prisoncellscells").Bounds;
+            bounds.fixedY = (double)(0f - value);
+            bounds.CalcWorldBounds();
+        }
         /*==============================================================================================*/
         /*=====================================INVITATIONS==============================================*/
         /*==============================================================================================*/
@@ -172,10 +190,11 @@ namespace claims.src.gui.playerGui
             ElementBounds playerButtonBounds = cityButtonBounds.RightCopy(25);
             ElementBounds pricesButtonBounds = playerButtonBounds.RightCopy(25);
             ElementBounds plotButtonBounds = pricesButtonBounds.RightCopy(25);
-            SingleComposer.AddIconToggleButtons(new string[] { "claims:qaitbay-citadel", "claims:magnifying-glass", "claims:price-tag", "claims:flat-platform" },
+            ElementBounds prisonButtonBounds = plotButtonBounds.RightCopy(25);
+            SingleComposer.AddIconToggleButtons(new string[] { "claims:qaitbay-citadel", "claims:magnifying-glass", "claims:price-tag", "claims:flat-platform", "claims:prisoner" },
                                                 CairoFont.ButtonText(),
                                                 OnTabToggled,
-                                                new ElementBounds[] { cityButtonBounds, playerButtonBounds, pricesButtonBounds, plotButtonBounds },
+                                                new ElementBounds[] { cityButtonBounds, playerButtonBounds, pricesButtonBounds, plotButtonBounds, prisonButtonBounds },
                                                 "selectedTab");
 
             if (SingleComposer.GetToggleButton("selectedTab-" + (int)SelectedTab) != null)
@@ -289,7 +308,7 @@ namespace claims.src.gui.playerGui
 
                     if (claims.clientDataStorage.clientPlayerInfo.PlayerPermissions.HasPermission(rights.EnumPlayerPermissions.CITY_SEE_BALANCE))
                     {
-                        SingleComposer.AddStaticText(Lang.Get("claims:gui-city-balance", clientInfo.CityInfo.cityBalance),
+                        SingleComposer.AddStaticText(Lang.Get("claims:gui-city-balance", clientInfo.CityInfo.CityBalance),
                             cityTabFont,
                             currentBounds, "cityBalance");
                     }
@@ -608,6 +627,19 @@ namespace claims.src.gui.playerGui
                 SingleComposer.GetToggleButton("setPlotType").Toggleable = true;
                 SingleComposer.AddHoverText("Set plot type", plotTabFont, 180, setPlotTypeButtonBounds);
 
+                ElementBounds addCellButtonBounds = setPlotTypeButtonBounds.RightCopy();
+                addCellButtonBounds.WithFixedSize(25, 25);
+
+                SingleComposer.AddIconButton("wpCircle", (bool t) =>
+                {
+                    if (t)
+                    {
+                        ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
+                        clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/c prison addcell", EnumChatType.Macro, "");
+                        BuildUpperWindow();
+                    }
+                }, addCellButtonBounds, "addPrisonCell");
+                SingleComposer.AddHoverText("Add prison cell", plotTabFont, 180, addCellButtonBounds);
 
                 /*==============================================================================================*/
                 /*=====================================PLOT TAX=================================================*/
@@ -739,7 +771,6 @@ namespace claims.src.gui.playerGui
             {
                 currentBounds = currentBounds.BelowCopy(0, 20);
                 ElementBounds createCityBounds = currentBounds.FlatCopy();
-                int renderedClaimsInfoCounter = 0;
                 int numClaimsToSkip = selectedClaimsPage * claimsPerPage;
                 ElementBounds topTextBounds = ElementBounds.Fixed(GuiStyle.ElementToDialogPadding, 40, createCityBounds.fixedWidth - 30, 30);
 
@@ -758,7 +789,7 @@ namespace claims.src.gui.playerGui
                     invitationTextBounds);
 
                 this.clippingRansksBounds = insetBounds.ForkContainingChild(3.0, 3.0, 3.0, 3.0);
-                //claims.clientDataStorage.clientPlayerInfo.CityInfo.CitizensRanks.Clear();
+
                 foreach (var it in claims.clientDataStorage.clientPlayerInfo.CityInfo.PossibleCityRanks)
                 {
                     if(claims.clientDataStorage.clientPlayerInfo.CityInfo.CitizensRanks.All(cell => cell.RankName != it.ToLower()))
@@ -773,17 +804,11 @@ namespace claims.src.gui.playerGui
                 .AddCellList(this.listRanksBounds = this.clippingRansksBounds.ForkContainingChild(0.0, 0.0, 0.0, -3.0).WithFixedPadding(5.0), new OnRequireCell<RankCellElement>(this.createRankCellElem), claims.clientDataStorage.clientPlayerInfo.CityInfo.CitizensRanks, "citizensranks")
                 .EndClip()
                 .AddVerticalScrollbar(OnNewRanksScrollbarvalue, scrollbarBounds, "scrollbar")
-            //.AddSmallButton("Close", OnButtonClose, closeButtonBounds)
-            .EndChildElements();
+                .EndChildElements();
                 var c = SingleComposer.GetCellList<RankCellElement>("citizensranks");
-                var f = SingleComposer.GetElement("citizensranks");
                 c.BeforeCalcBounds();
-                if (c.elementCells.Count() > 0)
-                {
-                    //c.tm[0].UpdateCellHeight();
-                }
-                SingleComposer
-            .Compose();
+
+                SingleComposer.Compose();
 
                 SingleComposer.GetScrollbar("scrollbar").SetHeights((float)this.clippingRansksBounds.fixedHeight, (float)this.listRanksBounds.fixedHeight);
             }
@@ -829,6 +854,93 @@ namespace claims.src.gui.playerGui
                     return true;
                 }),
                                  colorSelectedButton);
+            }
+            else if(SelectedTab == EnumSelectedTab.Prison)
+            {
+                var criminalsTabFont = CairoFont.ButtonText().WithFontSize(20).WithOrientation(EnumTextOrientation.Left);
+                currentBounds = currentBounds.BelowCopy(0, 30);
+                currentBounds.fixedY += 25;
+                currentBounds.fixedWidth /= 2;
+                currentBounds.WithAlignment(EnumDialogArea.LeftTop);
+
+                var clientInfo = claims.clientDataStorage.clientPlayerInfo;
+                SingleComposer.AddStaticText(Lang.Get("claims:gui-criminals", clientInfo.CityInfo.Criminals.Count),
+                            criminalsTabFont,
+                            currentBounds, "criminals");
+
+                SingleComposer.AddHoverText(StringFunctions.concatStringsWithDelim(clientInfo.CityInfo.Criminals, ','),
+                                            criminalsTabFont.WithOrientation(EnumTextOrientation.Center),
+                                            (int)currentBounds.fixedWidth, currentBounds);
+
+                ElementBounds addCriminalBounds = currentBounds.RightCopy();
+                addCriminalBounds.WithFixedWidth(25).WithFixedHeight(25);
+                ElementBounds removeFriendBounds = addCriminalBounds.RightCopy();
+                SingleComposer.AddIconButton("plus", (bool t) =>
+                {
+                    if (t)
+                    {
+                        CreateNewCityState = EnumUpperWindowSelectedState.ADD_CRIMINAL_NEED_NAME;
+                        BuildUpperWindow();
+                    }
+                }, addCriminalBounds);
+
+                SingleComposer.AddIconButton("line", (bool t) =>
+                {
+                    if (t)
+                    {
+                        CreateNewCityState = EnumUpperWindowSelectedState.REMOVE_CRIMINAL;
+                        BuildUpperWindow();
+                    }
+                }, removeFriendBounds);
+                //////
+                //currentBounds.fixedX = lineBounds.fixedX;
+                currentBounds.fixedWidth = lineBounds.fixedWidth;
+                
+                currentBounds = currentBounds.BelowCopy(0, 0);
+                ElementBounds createCityBounds = currentBounds.FlatCopy();
+                int numClaimsToSkip = selectedClaimsPage * claimsPerPage;
+                ElementBounds topTextBounds = ElementBounds.Fixed(GuiStyle.ElementToDialogPadding, 40, createCityBounds.fixedWidth - 30, 30);
+                
+                ElementBounds logtextBounds = ElementBounds.Fixed(0, 0, createCityBounds.fixedWidth - 30, mainBounds.fixedHeight - 300).FixedUnder(topTextBounds, 5);
+                //logtextBounds.fixedHeight = 150;
+                ElementBounds invitationTextBounds = createCityBounds.BelowCopy();
+
+                invitationTextBounds.fixedHeight -= 50;
+                invitationTextBounds.WithAlignment(EnumDialogArea.CenterTop);
+                ElementBounds clippingBounds = logtextBounds.ForkBoundingParent();
+
+                ElementBounds insetBounds = logtextBounds.FlatCopy().FixedGrow(6).WithFixedOffset(-3, -3);
+
+                ElementBounds scrollbarBounds = insetBounds.CopyOffsetedSibling(logtextBounds.fixedWidth + 7).WithFixedWidth(20);
+
+                SingleComposer.AddStaticText("Prison cells",
+                    CairoFont.WhiteMediumText().WithOrientation(EnumTextOrientation.Center),
+                    invitationTextBounds);
+
+                this.clippingRansksBounds = insetBounds.ForkContainingChild(3.0, 3.0, 3.0, 3.0);
+
+                /*foreach (var it in claims.clientDataStorage.clientPlayerInfo.CityInfo.PrisonCells)
+                {
+                    if (claims.clientDataStorage.clientPlayerInfo.CityInfo.CitizensRanks.All(cell => cell.RankName != it.ToLower()))
+                    {
+                        claims.clientDataStorage.clientPlayerInfo.CityInfo.CitizensRanks.Add(new RankCellElement(it.ToLower(), new List<string> { }));
+                    }
+                }*/
+
+                SingleComposer.BeginChildElements(invitationTextBounds.BelowCopy())
+                .BeginClip(clippingBounds)
+                .AddInset(insetBounds, 3)
+                .AddCellList(this.listRanksBounds = this.clippingRansksBounds.ForkContainingChild(0.0, 0.0, 0.0, -3.0).WithFixedPadding(5.0), new OnRequireCell<PrisonCellElement>(this.createPrisonCellElem), claims.clientDataStorage.clientPlayerInfo.CityInfo.PrisonCells, "prisoncellscells")
+                .EndClip()
+                .AddVerticalScrollbar(OnNewPrisonScrollbarvalue, scrollbarBounds, "scrollbar")
+                .EndChildElements();
+                var c = SingleComposer.GetCellList<PrisonCellElement>("prisoncellscells");
+                c.BeforeCalcBounds();
+
+                SingleComposer.Compose();
+
+                SingleComposer.GetScrollbar("scrollbar").SetHeights((float)this.clippingRansksBounds.fixedHeight, (float)this.listRanksBounds.fixedHeight);
+
             }
             Composers["canclaimsgui"].Compose();
             BuildUpperWindow();
@@ -883,9 +995,9 @@ namespace claims.src.gui.playerGui
 
             if (CreateNewCityState == EnumUpperWindowSelectedState.NEED_NAME)
             {
-                Composers["canclaimsgui-upper"].AddStaticText("Enter new city name:",
-                CairoFont.WhiteDetailText(),
-                el);
+                Composers["canclaimsgui-upper"].AddStaticText(Lang.Get("claims:gui-enter-new-city-name"),
+                                                                        CairoFont.WhiteDetailText(),
+                                                                        el);
                 ElementBounds inputNameBounds = el.BelowCopy(0, 15);
                 bgBounds.WithChildren(inputNameBounds);
                 Composers["canclaimsgui-upper"].AddTextInput(inputNameBounds,
@@ -917,7 +1029,6 @@ namespace claims.src.gui.playerGui
                     ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                     clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/agree", EnumChatType.Macro, "");
                     CreateNewCityState = EnumUpperWindowSelectedState.NONE;
-                    //Composers["canclaimsgui-upper"].GetTextInput("collectedNewCityName").SetValue("");
                     collectedNewCityName = "";
                     BuildUpperWindow();
                     return true;
@@ -976,7 +1087,7 @@ namespace claims.src.gui.playerGui
             }
             else if (CreateNewCityState == EnumUpperWindowSelectedState.UNINVITE_TO_CITY)
             {
-                Composers["canclaimsgui-upper"].AddStaticText("Enter player's name:",
+                Composers["canclaimsgui-upper"].AddStaticText(Lang.Get("claims:gui-enter-player-name"),
                  CairoFont.WhiteDetailText(),
                  el);
                 ElementBounds inputNameBounds = el.BelowCopy(0, 15);
@@ -1340,7 +1451,7 @@ namespace claims.src.gui.playerGui
                 yesButtonBounds.fixedWidth /= 2;
                 bgBounds.WithChildren(yesButtonBounds);
 
-                Composers["canclaimsgui-upper"].AddButton("Yes", new ActionConsumable(() =>
+                Composers["canclaimsgui-upper"].AddButton(Lang.Get("claims:gui-confirm-button"), new ActionConsumable(() =>
                 {
                     ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                     clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/plot claim", EnumChatType.Macro, "");
@@ -1350,7 +1461,7 @@ namespace claims.src.gui.playerGui
                 }), yesButtonBounds, EnumButtonStyle.Normal);
 
                 ElementBounds noButtonBounds = yesButtonBounds.RightCopy(0, 0);
-                Composers["canclaimsgui-upper"].AddButton("No", new ActionConsumable(() =>
+                Composers["canclaimsgui-upper"].AddButton(Lang.Get("claims:gui-decline-button"), new ActionConsumable(() =>
                 {
                     CreateNewCityState = EnumUpperWindowSelectedState.NONE;
                     BuildUpperWindow();
@@ -1366,7 +1477,7 @@ namespace claims.src.gui.playerGui
                 yesButtonBounds.fixedWidth /= 2;
                 bgBounds.WithChildren(yesButtonBounds);
 
-                Composers["canclaimsgui-upper"].AddButton("Yes", new ActionConsumable(() =>
+                Composers["canclaimsgui-upper"].AddButton(Lang.Get("claims:gui-confirm-button"), new ActionConsumable(() =>
                 {
                     ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                     clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/plot unclaim", EnumChatType.Macro, "");
@@ -1376,7 +1487,7 @@ namespace claims.src.gui.playerGui
                 }), yesButtonBounds, EnumButtonStyle.Normal);
 
                 ElementBounds noButtonBounds = yesButtonBounds.RightCopy(0, 0);
-                Composers["canclaimsgui-upper"].AddButton("No", new ActionConsumable(() =>
+                Composers["canclaimsgui-upper"].AddButton(Lang.Get("claims:gui-decline-button"), new ActionConsumable(() =>
                 {
                     CreateNewCityState = EnumUpperWindowSelectedState.NONE;
                     BuildUpperWindow();
@@ -1385,14 +1496,14 @@ namespace claims.src.gui.playerGui
             }
             else if (CreateNewCityState == EnumUpperWindowSelectedState.LEAVE_CITY_CONFIRM)
             {
-                Composers["canclaimsgui-upper"].AddStaticText("Leave city?",
+                Composers["canclaimsgui-upper"].AddStaticText(Lang.Get("claims:gui-leave-city-confirm-button"),
                 CairoFont.WhiteDetailText(),
                 el);
                 ElementBounds yesButtonBounds = el.BelowCopy(0, 15);
                 yesButtonBounds.fixedWidth /= 2;
                 bgBounds.WithChildren(yesButtonBounds);
 
-                Composers["canclaimsgui-upper"].AddButton("Yes", new ActionConsumable(() =>
+                Composers["canclaimsgui-upper"].AddButton(Lang.Get("claims:gui-confirm-button"), new ActionConsumable(() =>
                 {
                     ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                     clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/city leave", EnumChatType.Macro, "");
@@ -1402,7 +1513,7 @@ namespace claims.src.gui.playerGui
                 }), yesButtonBounds, EnumButtonStyle.Normal);
 
                 ElementBounds noButtonBounds = yesButtonBounds.RightCopy(0, 0);
-                Composers["canclaimsgui-upper"].AddButton("No", new ActionConsumable(() =>
+                Composers["canclaimsgui-upper"].AddButton(Lang.Get("claims:gui-decline-button"), new ActionConsumable(() =>
                 {
                     CreateNewCityState = EnumUpperWindowSelectedState.NONE;
                     BuildUpperWindow();
@@ -1412,14 +1523,14 @@ namespace claims.src.gui.playerGui
             else if (CreateNewCityState == EnumUpperWindowSelectedState.CITY_RANK_REMOVE_CONFIRM)
             {
                 el.fixedWidth += 40;
-                Composers["canclaimsgui-upper"].AddStaticText("Strip player " + secondValueCollected + " of " + firstValueCollected  + " rank?",
-                CairoFont.WhiteDetailText(),
-                el);
+                Composers["canclaimsgui-upper"].AddStaticText(Lang.Get("claims:gui-strip-rank-from-player", secondValueCollected, firstValueCollected),
+                                                                            CairoFont.WhiteDetailText(),
+                                                                            el);
                 ElementBounds yesButtonBounds = el.BelowCopy(0, 15);
                 yesButtonBounds.fixedWidth /= 2;
                 bgBounds.WithChildren(yesButtonBounds);
 
-                Composers["canclaimsgui-upper"].AddButton("Yes", new ActionConsumable(() =>
+                Composers["canclaimsgui-upper"].AddButton(Lang.Get("claims:gui-confirm-button"), new ActionConsumable(() =>
                 {
                     ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                     clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/city rank remove " + firstValueCollected + " " +  secondValueCollected, EnumChatType.Macro, "");
@@ -1463,7 +1574,7 @@ namespace claims.src.gui.playerGui
                 yesButtonBounds.fixedWidth /= 2;
                 bgBounds.WithChildren(yesButtonBounds);
 
-                Composers["canclaimsgui-upper"].AddButton("Add", new ActionConsumable(() =>
+                Composers["canclaimsgui-upper"].AddButton(Lang.Get("claims:gui-add-button"), new ActionConsumable(() =>
                 {
                     ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                     clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/city rank add " + firstValueCollected + " " + collectedNewCityName, EnumChatType.Macro, "");
@@ -1473,7 +1584,7 @@ namespace claims.src.gui.playerGui
                 }), yesButtonBounds, EnumButtonStyle.Normal);
 
                 ElementBounds noButtonBounds = yesButtonBounds.RightCopy(0, 0);
-                Composers["canclaimsgui-upper"].AddButton("Close", new ActionConsumable(() =>
+                Composers["canclaimsgui-upper"].AddButton(Lang.Get("claims:gui-close-button"), new ActionConsumable(() =>
                 {
                     CreateNewCityState = EnumUpperWindowSelectedState.NONE;
                     BuildUpperWindow();
@@ -1482,7 +1593,7 @@ namespace claims.src.gui.playerGui
             }
             else if (CreateNewCityState == EnumUpperWindowSelectedState.SELECT_NEW_CITY_NAME)
             {
-                Composers["canclaimsgui-upper"].AddStaticText("Enter new name for the city:",
+                Composers["canclaimsgui-upper"].AddStaticText(Lang.Get("claims:gui-enter-new-city-name"),
                   CairoFont.WhiteDetailText(),
                   el);
                 ElementBounds inputNameBounds = el.BelowCopy(0, 15);
@@ -1493,7 +1604,7 @@ namespace claims.src.gui.playerGui
                 ElementBounds enterNameBounds = inputNameBounds.BelowCopy(0, 15);
                 bgBounds.WithChildren(enterNameBounds);
 
-                Composers["canclaimsgui-upper"].AddButton("Set name", new ActionConsumable(() =>
+                Composers["canclaimsgui-upper"].AddButton(Lang.Get("claims:gui-set-name-button"), new ActionConsumable(() =>
                 {
                     ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                     clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/city set name " + collectedNewCityName, EnumChatType.Macro, "");
@@ -1504,11 +1615,101 @@ namespace claims.src.gui.playerGui
                     return true;
                 }), enterNameBounds, EnumButtonStyle.Normal);
             }
+            else if (CreateNewCityState == EnumUpperWindowSelectedState.ADD_CRIMINAL_NEED_NAME)
+            {
+                Composers["canclaimsgui-upper"].AddStaticText(Lang.Get("claims:gui-enter-player-name"),
+                CairoFont.WhiteDetailText(),
+                el);
+                ElementBounds inputNameBounds = el.BelowCopy(0, 15);
+                bgBounds.WithChildren(inputNameBounds);
+                Composers["canclaimsgui-upper"].AddTextInput(inputNameBounds,
+                    (name) => collectedNewCityName = name, null, "collectedCriminalName");
+
+                ElementBounds enterNameBounds = inputNameBounds.BelowCopy(0, 15);
+                bgBounds.WithChildren(enterNameBounds);
+
+                Composers["canclaimsgui-upper"].AddButton(Lang.Get("claims:gui-add-button"), new ActionConsumable(() =>
+                {
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
+                    clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/city criminal add " + collectedNewCityName, EnumChatType.Macro, "");
+                    Composers["canclaimsgui-upper"].GetTextInput("collectedCriminalName").SetValue("");
+                    collectedNewCityName = "";
+                    CreateNewCityState = EnumUpperWindowSelectedState.NONE;
+                    BuildUpperWindow();
+                    return true;
+                }), enterNameBounds, EnumButtonStyle.Normal);
+            }
+            else if (CreateNewCityState == EnumUpperWindowSelectedState.REMOVE_CRIMINAL)
+            {
+                Composers["canclaimsgui-upper"].AddStaticText(Lang.Get("claims:gui-enter-player-name"),
+                                                               CairoFont.WhiteDetailText(),
+                                                               el);
+                ElementBounds inputNameBounds = el.BelowCopy(0, 15);
+                bgBounds.WithChildren(inputNameBounds);
+
+                Composers["canclaimsgui-upper"].AddDropDown(claims.clientDataStorage.clientPlayerInfo.CityInfo.Criminals.ToArray(),
+                                                            claims.clientDataStorage.clientPlayerInfo.CityInfo.Criminals.ToArray(),
+                                                            -1,
+                                                            OnSelectedNameFromDropDown,
+                                                            inputNameBounds);
+
+                ElementBounds enterNameBounds = inputNameBounds.BelowCopy(0, 15);
+                bgBounds.WithChildren(enterNameBounds);
+
+                Composers["canclaimsgui-upper"].AddButton(Lang.Get("claims:gui-remove-button"), new ActionConsumable(() =>
+                {
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
+                    clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/city criminal remove " + collectedNewCityName, EnumChatType.Macro, "");
+                    collectedNewCityName = "";
+                    CreateNewCityState = EnumUpperWindowSelectedState.NONE;
+                    BuildUpperWindow();
+                    return true;
+                }), enterNameBounds, EnumButtonStyle.Normal);
+            }
+            else if (CreateNewCityState == EnumUpperWindowSelectedState.CITY_PRISON_REMOVE_CELL_CONFIRM)
+            {
+                el.fixedWidth += 40;
+                Composers["canclaimsgui-upper"].AddStaticText(Lang.Get("claims:gui-prison-cell-remove-confirm", firstValueCollected),
+                                                                    CairoFont.WhiteDetailText(),
+                                                                    el);
+                ElementBounds yesButtonBounds = el.BelowCopy(0, 15);
+                yesButtonBounds.fixedWidth /= 2;
+                bgBounds.WithChildren(yesButtonBounds);
+
+                Composers["canclaimsgui-upper"].AddButton(Lang.Get("claims:gui-confirm-button"), new ActionConsumable(() =>
+                {
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
+                    clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup,
+                        string.Format("/c prison cremovecell {0} {1} {2}", this.selectedPos.X, this.selectedPos.Y, this.selectedPos.Z),
+                        EnumChatType.Macro, "");
+                    CreateNewCityState = EnumUpperWindowSelectedState.NONE;
+                    var cell = claims.clientDataStorage.clientPlayerInfo.CityInfo.PrisonCells.FirstOrDefault(c => c.SpawnPosition == this.selectedPos);
+                    if (cell != null)
+                    {
+                        claims.clientDataStorage.clientPlayerInfo.CityInfo.PrisonCells.Remove(cell);
+                        BuildMainWindow();
+                    }
+                    BuildUpperWindow();
+                    return true;
+                }), yesButtonBounds, EnumButtonStyle.Normal);
+
+                ElementBounds noButtonBounds = yesButtonBounds.RightCopy(0, 0);
+                Composers["canclaimsgui-upper"].AddButton(Lang.Get("claims:gui-decline-button"), new ActionConsumable(() =>
+                {
+                    CreateNewCityState = EnumUpperWindowSelectedState.NONE;
+                    BuildUpperWindow();
+                    return true;
+                }), noButtonBounds, EnumButtonStyle.Normal);
+            }
             Composers["canclaimsgui-upper"].Compose();
         }
 
         public void OnTabToggled(int tabIndex)
         {
+            /*if(tabIndex == 6 || tabIndex == 7 || tabIndex == 8)
+            {
+                tabIndex -= 2;
+            }*/
             SelectedTab = (EnumSelectedTab)tabIndex;
             BuildMainWindow();
         }

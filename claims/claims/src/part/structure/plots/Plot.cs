@@ -261,9 +261,9 @@ namespace claims.src.part.structure
                     prison.getCity().saveToDatabase();
                 }
                 prison.getPlot().setType(PlotType.DEFAULT);
-                prison.getPlot().setPrison(null);
-                prison.getPlot().saveToDatabase();
                 claims.getModInstance().getDatabaseHandler().deleteFromDatabasePrison(prison);
+                prison.getPlot().setPrison(null);
+                this.saveToDatabase();                
             }
             else if (currentPlotType == PlotType.EMBASSY)
             {
