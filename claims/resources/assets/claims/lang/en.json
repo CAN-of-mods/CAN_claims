@@ -233,6 +233,7 @@
     "summon_canceled": "Summon was canceled.",
     "summon_point_set_to": "Summon point set to {0}.",
     "you_will_be_summoned": "You will be summoned in {0} seconds.",
+    "summon_point_name_set_to": "Summon point name set to {0}",
     //INNERCLAIM
     "flag_now_has_value": "Flag {0} now is {1}.",
     "need_claim_number_flag_value": "For flag change you need number of inner claim, permission type, value[on/off].",
@@ -326,6 +327,8 @@
     "gui-agree-city-creation": "Create city {0}?",
     "gui-city-balance": "Balance: {0}",
     "gui-criminals": "Criminals: {0}",
+    "gui-enter-summon-point-name": "Enter summon point name: ",
+    "gui-set-button": "Set",
     "game:tabname-Claims": "Claims",
 
     //blocks

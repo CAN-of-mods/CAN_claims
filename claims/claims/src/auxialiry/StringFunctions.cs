@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Vintagestory.API.MathTools;
 
 namespace claims.src.auxialiry
 {
@@ -160,7 +161,10 @@ namespace claims.src.auxialiry
             int i = 0;
             foreach(var it in city.summonPlots)
             {
-                sb.Append(i.ToString()).Append(". ").Append((it.getPlotDesc() as PlotDescSummon).getSummonPoint()).Append("\n");
+                Vec3i summonPoint = (it.getPlotDesc() as PlotDescSummon).SummonPoint.AsVec3i;
+                sb.AppendLine(string.Format("{0}: {1}/{2}/{3}", i, summonPoint.X - claims.capi.World.DefaultSpawnPosition.AsBlockPos.X,
+                                     summonPoint.Y - claims.capi.World.DefaultSpawnPosition.AsBlockPos.Y,
+                                     summonPoint.Z - claims.capi.World.DefaultSpawnPosition.AsBlockPos.Z));
             }
             return sb.ToString();
         }

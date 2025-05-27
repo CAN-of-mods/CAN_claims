@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace claims.src.part.structure.plots
 {
@@ -70,7 +71,9 @@ namespace claims.src.part.structure.plots
 
                 case PlotType.SUMMON:
                     if((plot.getPlotDesc() is PlotDescSummon) && (plot.getPlotDesc() as PlotDescSummon) != null)
-                        sb.Append((plot.getPlotDesc() as PlotDescSummon).getSummonPoint());
+                    {
+                        sb.Append(JsonConvert.SerializeObject(plot.getPlotDesc() as PlotDescSummon));
+                    }
                     return sb.ToString();
                 case PlotType.CAMP:
                     return sb.ToString();

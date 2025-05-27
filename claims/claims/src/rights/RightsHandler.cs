@@ -60,7 +60,8 @@ namespace claims.src
                         EnumPlayerPermissions.CITY_SEE_BALANCE,
                         EnumPlayerPermissions.CITY_BUY_EXTRA_PLOT,
                         EnumPlayerPermissions.CITY_REMOVE_CRIMINAL,
-                        EnumPlayerPermissions.CITY_ADD_CRIMINAL
+                        EnumPlayerPermissions.CITY_ADD_CRIMINAL,
+                        EnumPlayerPermissions.CITY_SET_SUMMON
                     }
                 },
 

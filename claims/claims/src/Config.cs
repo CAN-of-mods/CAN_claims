@@ -111,7 +111,7 @@ namespace claims.src
         public int MAX_CELLS_PER_PRISON = 4;
 
         //SUMMON
-        public int SUMMON_MIN_PLAYERS = 1;
+        public int SUMMON_MIN_PLAYERS = 0;
         public int SUMMON_HOR_RANGE = 10;
         public int SUMMON_VER_RANGE = 10;
         public bool SUMMON_ALLOWED = true;

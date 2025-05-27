@@ -291,6 +291,54 @@ namespace claims.src.gui.playerGui.structures
                     }
                 }
             }
+
+            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_SUMMON_POINT_ALL, out string summonCellsAll))
+            {
+                HashSet<SummonCellElement> pc = JsonConvert.DeserializeObject<HashSet<SummonCellElement>>(summonCellsAll);
+                CityInfo.SummonCells = pc.ToList();
+            }
+
+            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_SUMMON_POINT_ADD, out string summonPlotAdd))
+            {
+                HashSet<SummonCellElement> pc = JsonConvert.DeserializeObject<HashSet<SummonCellElement>>(summonPlotAdd);
+                foreach (var it in pc)
+                {
+                    CityInfo.SummonCells.Add(it);
+                }
+            }
+
+            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_SUMMON_POINT_REMOVE, out string summonPlotRemove))
+            {
+                HashSet<SummonCellElement> pc = JsonConvert.DeserializeObject<HashSet<SummonCellElement>>(summonPlotRemove);
+                foreach (var it in pc)
+                {
+                    foreach (var it_current in CityInfo.SummonCells.ToArray())
+                    {
+                        if (it_current.SpawnPosition.Equals(it.SpawnPosition))
+                        {
+                            CityInfo.SummonCells.Remove(it_current);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_SUMMON_POINT_UPDATE, out string summonPlotUpdate))
+            {
+                HashSet<SummonCellElement> pc = JsonConvert.DeserializeObject<HashSet<SummonCellElement>>(summonPlotUpdate);
+                foreach (var it in pc)
+                {
+                    foreach (var it_current in CityInfo.SummonCells.ToArray())
+                    {
+                        if (it_current.SpawnPosition.Equals(it.SpawnPosition))
+                        {
+                            CityInfo.SummonCells.Remove(it_current);
+                            CityInfo.SummonCells.Add(it);
+                            break;
+                        }
+                    }
+                }
+            }
         }
     }
 }

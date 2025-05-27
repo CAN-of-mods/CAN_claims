@@ -11,6 +11,7 @@ using Vintagestory.API.Util;
 using Vintagestory.API.Client;
 using claims.src.part.structure;
 using ProtoBuf;
+using claims.src.part.structure.plots;
 
 namespace claims.src.auxialiry
 {
@@ -104,6 +105,16 @@ namespace claims.src.auxialiry
                         }
                     }
                     collector.Add(EnumPlayerRelatedInfo.CITY_PRISON_CELL_ALL, JsonConvert.SerializeObject(prisonCellElements));
+                }
+
+                if(city.summonPlots.Count() > 0)
+                {
+                    HashSet<SummonCellElement> summonCellElements = new HashSet<SummonCellElement>();
+                    foreach (var it in city.summonPlots)
+                    {
+                        summonCellElements.Add(new SummonCellElement((it.getPlotDesc() as PlotDescSummon).SummonPoint.AsVec3i.Clone(), (it.getPlotDesc() as PlotDescSummon).Name));
+                    }
+                    collector.Add(EnumPlayerRelatedInfo.CITY_SUMMON_POINT_ALL, JsonConvert.SerializeObject(summonCellElements));
                 }
             }
 
@@ -349,6 +360,24 @@ namespace claims.src.auxialiry
                                 if (relatedInfo.Value.TryGetValue("value", out var prisons_cells_updated))
                                 {
                                     collector.Add(EnumPlayerRelatedInfo.CITY_CELL_PRISON_UPDATE, JsonConvert.SerializeObject(prisons_cells_updated));
+                                }
+                                break;
+                            case EnumPlayerRelatedInfo.CITY_SUMMON_POINT_ADD:
+                                if (relatedInfo.Value.TryGetValue("value", out var summonPointAdd))
+                                {
+                                    collector.Add(EnumPlayerRelatedInfo.CITY_SUMMON_POINT_ADD, JsonConvert.SerializeObject(summonPointAdd));
+                                }
+                                break;
+                            case EnumPlayerRelatedInfo.CITY_SUMMON_POINT_REMOVE:
+                                if (relatedInfo.Value.TryGetValue("value", out var summonPointRemove))
+                                {
+                                    collector.Add(EnumPlayerRelatedInfo.CITY_SUMMON_POINT_REMOVE, JsonConvert.SerializeObject(summonPointRemove));
+                                }
+                                break;
+                            case EnumPlayerRelatedInfo.CITY_SUMMON_POINT_UPDATE:
+                                if (relatedInfo.Value.TryGetValue("value", out var summonPointUpdate))
+                                {
+                                    collector.Add(EnumPlayerRelatedInfo.CITY_SUMMON_POINT_UPDATE, JsonConvert.SerializeObject(summonPointUpdate));
                                 }
                                 break;
 

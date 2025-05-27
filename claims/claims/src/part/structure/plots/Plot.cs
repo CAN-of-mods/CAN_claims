@@ -1,5 +1,6 @@
 ﻿using claims.src.auxialiry;
 using claims.src.auxialiry.innerclaims;
+using claims.src.gui.playerGui.structures;
 using claims.src.part.interfaces;
 using claims.src.part.structure.plots;
 using claims.src.perms;
@@ -182,9 +183,14 @@ namespace claims.src.part.structure
                 setType(PlotType.SUMMON);
                 getCity().summonPlots.Add(this);
                 PlotDescSummon pds = new PlotDescSummon(player.Entity.ServerPos.XYZ);
+                pds.Name = "Point" + ((int)pds.SummonPoint.X % 10).ToString() + ((int)pds.SummonPoint.Z % 10).ToString();
                 setPlotDesc(pds);
                 saveToDatabase();
                 getCity().saveToDatabase();
+                UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid,
+                new Dictionary<string, object> { { "value", new SummonCellElement((this.getPlotDesc() as PlotDescSummon).SummonPoint.AsVec3i.Clone(),
+                    (this.getPlotDesc() as PlotDescSummon).Name) } },
+                EnumPlayerRelatedInfo.CITY_SUMMON_POINT_ADD);
                 tcr.StatusMessage = "claims:plot_set_type";
                 tcr.MessageParams = new object[] { newPlotType };
                 return true;
@@ -195,6 +201,8 @@ namespace claims.src.part.structure
                 setType(plotType);
                 tcr.StatusMessage = "claims:plot_set_type";
                 tcr.MessageParams = new object[] { newPlotType };
+                UsefullPacketsSend.AddToQueueCityInfoUpdate(this.getCity().Guid,
+                    new Dictionary<string, object> { { "value", new PrisonCellElement(player.Entity.ServerPos.AsBlockPos.AsVec3i.Clone(), new HashSet<string>()) } }, EnumPlayerRelatedInfo.CITY_ADD_PRISON_CELL);
                 return true;
             }
             else if (plotType == PlotType.TAVERN)
@@ -238,6 +246,10 @@ namespace claims.src.part.structure
             PlotType currentPlotType = getType();
             if (currentPlotType == PlotType.SUMMON)
             {
+                UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid,
+                new Dictionary<string, object> { { "value", new SummonCellElement((this.getPlotDesc() as PlotDescSummon).SummonPoint.AsVec3i.Clone(),
+                    (this.getPlotDesc() as PlotDescSummon).Name) } },
+                EnumPlayerRelatedInfo.CITY_SUMMON_POINT_REMOVE);
                 setPlotDesc(null);
                 getCity().summonPlots.Remove(this);
             }

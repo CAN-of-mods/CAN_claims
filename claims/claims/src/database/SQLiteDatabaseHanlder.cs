@@ -632,10 +632,16 @@ namespace claims.src.database
             switch (plot.getType())
             {
                 case PlotType.SUMMON:
-                    PlotDescSummon tmp = new PlotDescSummon();
-                    tmp.fromStringPoint(it["plotdesc"].ToString());
-                    plot.setPlotDesc(tmp);
-                    plot.getCity().summonPlots.Add(plot);
+                    try
+                    {
+                        PlotDescSummon tmp = JsonConvert.DeserializeObject<PlotDescSummon>(it["plotdesc"].ToString());
+                        plot.setPlotDesc(tmp);
+                        plot.getCity().summonPlots.Add(plot);
+                    }
+                    catch
+                    {
+                        return false;
+                    }                  
                     break;
                 case PlotType.PRISON:
                     PlotDescPrison tmpPri = new PlotDescPrison(it["plotdesc"].ToString());

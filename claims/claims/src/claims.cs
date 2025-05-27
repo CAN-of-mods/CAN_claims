@@ -89,7 +89,7 @@ namespace claims.src
         {
             List<string> iconList = new List<string> { "queen-crown", "exit-door", "achievement",
                                                        "flat-platform", "magnifying-glass", "price-tag",
-                                                       "qaitbay-citadel", "large-paint-brush", "prisoner" };
+                                                       "qaitbay-citadel", "large-paint-brush", "prisoner", "magic-portal", "dodging", "highlighter" };
             foreach (var icon in iconList)
             {
                 capi.Gui.Icons.CustomIcons["claims:" + icon] = delegate (Context ctx, int x, int y, float w, float h, double[] rgba)
