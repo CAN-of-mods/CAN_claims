@@ -360,8 +360,7 @@ namespace claims.src.commands
                 }
                 claims.dataStorage.setNowEpochZoneTimestampFromPlotPosition(plotHere.getPos());
                 claims.serverPlayerMovementListener.markPlotToWasReUpdated(plotHere.getPos());
-                UsefullPacketsSend.SendCurrentPlotUpdate(player, plotHere);
-                UsefullPacketsSend.AddToQueueCityInfoUpdate(plotHere.getCity().Guid, new Dictionary<string, object> { { "value", new PrisonCellElement(player.Entity.ServerPos.AsBlockPos.AsVec3i.Clone(), new HashSet<string>()) } }, EnumPlayerRelatedInfo.CITY_ADD_PRISON_CELL);
+                UsefullPacketsSend.SendCurrentPlotUpdate(player, plotHere);                
                 return tcr;
             }
             else

@@ -66,7 +66,7 @@ namespace claims.src.delayed.teleportation
                     IServerPlayer player = claims.sapi.World.PlayerByUid(it.getTargetPlayer().Guid) as IServerPlayer;
                     if (player != null)
                     {
-                        player.Entity.TeleportToDouble(it.getTargetPoint().X, it.getTargetPoint().Y, it.getTargetPoint().Z);
+                        player.Entity.TeleportToDouble(it.getTargetPoint().X + 0.5f, it.getTargetPoint().Y, it.getTargetPoint().Z + 0.5f);
                     }
                     CooldownHandler.addCooldown(it.getTargetPlayer(), new CooldownInfo(TimeFunctions.getEpochSeconds() + claims.config.SECONDS_SUMMON_COOLDOWN, CooldownType.SUMMON));
 

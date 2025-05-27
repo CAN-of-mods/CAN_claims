@@ -611,14 +611,15 @@ namespace claims.src.commands.register
                               .WithPreCondition((TextCommandCallingArgs args) => {
                                   if (args.Caller.Player is IServerPlayer player)
                                   {
-                                      if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { }))
+                                      return TextCommandResult.Success();
+                                      /*if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { }))
                                       {
                                           return TextCommandResult.Success();
                                       }
                                       else
                                       {
                                           return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
-                                      }
+                                      }*/
                                   }
                                   return TextCommandResult.Error("");
                               })
@@ -665,52 +666,111 @@ namespace claims.src.commands.register
                              .WithArgs(parsers.Word("playerName"))
                          .EndSub()
                      .EndSub()
+                     .BeginSub("summon")
+                         .BeginSub("list")
+                             .WithDesc("List all summon points.")
+                              .WithPreCondition((TextCommandCallingArgs args) => {
+                                  if (args.Caller.Player is IServerPlayer player)
+                                  {
+                                      return TextCommandResult.Success();
+                                     /* if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] {  }))
+                                      {
+                                          return TextCommandResult.Success();
+                                      }
+                                      else
+                                      {
+                                          return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                      }*/
+                                  }
+                                  return TextCommandResult.Error("");
+                              })
+                             .HandleWith(commands.CityCommand.CitySummonList)
+                         .EndSub()
+                         .BeginSub("set")
+                             .BeginSub("point")
+                                 .WithDesc("Set summon point.")
+                                 .WithPreCondition((TextCommandCallingArgs args) => {
+                                     if (args.Caller.Player is IServerPlayer player)
+                                     {
+                                         if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.CITY_SET_SUMMON }))
+                                         {
+                                             return TextCommandResult.Success();
+                                         }
+                                         else
+                                         {
+                                             return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                         }
+                                     }
+                                     return TextCommandResult.Error("");
+                                 })
+                                 .HandleWith(commands.CityCommand.CitySummonSet)
+                             .EndSub()
+                             .BeginSub("name")
+                                 .WithDesc("Set plot's summon point name.")
+                                 .WithPreCondition((TextCommandCallingArgs args) => {
+                                     if (args.Caller.Player is IServerPlayer player)
+                                     {
+                                         if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.CITY_SET_SUMMON }))
+                                         {
+                                             return TextCommandResult.Success();
+                                         }
+                                         else
+                                         {
+                                             return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                         }
+                                     }
+                                     return TextCommandResult.Error("");
+                                 })
+                                 .HandleWith(commands.CityCommand.CitySummonSetName)
+                                 .WithArgs(parsers.Word("summonPointName"))
+                                .EndSub()
+                                .BeginSub("cname")
+                                     .WithDesc("Set plot's summon point name by coords.")
+                                     .WithPreCondition((TextCommandCallingArgs args) => {
+                                         if (args.Caller.Player is IServerPlayer player)
+                                         {
+                                             if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.CITY_SET_SUMMON }))
+                                             {
+                                                 return TextCommandResult.Success();
+                                             }
+                                             else
+                                             {
+                                                 return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                             }
+                                         }
+                                         return TextCommandResult.Error("");
+                                     })
+                                     .HandleWith(commands.CityCommand.CitySummonSetNameByCoords)
+                                     .WithArgs(parsers.OptionalVec3i("pointPos"), parsers.Word("summonPointName"))
+                                .EndSub()
+                         .EndSub()
+                         .BeginSub("use")
+                             .WithDesc("Try to teleport on summon point.")
+                             .WithPreCondition((TextCommandCallingArgs args) => {
+                                 if (args.Caller.Player is IServerPlayer player)
+                                 {
+                                     return TextCommandResult.Success();
+                                     /*if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] {  }))
+                                     {
+                                         return TextCommandResult.Success();
+                                     }
+                                     else
+                                     {
+                                         return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                     }*/
+                                 }
+                                 return TextCommandResult.Error("");
+                             })
+                             .WithArgs(parsers.Word("summonPointName"))
+                             .HandleWith(commands.CityCommand.CitySummonTeleport)
+                         .EndSub()
+                     .EndSub()
                 /////////
                 ;
 
 
             /*                 
                                                
-                     /////////
-                     .BeginSub("summonlist")
-                         .WithDesc("Get summon points of the city.")
-                         .HandleWith(commands.CityCommand.processSummonList)
-                     .EndSub()
-                     /////////
-                     .BeginSub("criminal")
-                         .BeginSub("list")
-                             .WithDesc("List all criminals.")
-                             .HandleWith(commands.CityCommand.processCityCriminalList)
-                         .EndSub()
-                         .BeginSub("add")
-                             .WithDesc("Add new criminal.")
-                             .HandleWith(commands.CityCommand.processCityCriminalAdd)
-                             .WithArgs(parsers.Word("playerName"))
-                         .EndSub()
-                         .BeginSub("remove")
-                             .WithDesc("Remove criminal from the list.")
-                             .HandleWith(commands.CityCommand.processCityCriminalRemove)
-                             .WithArgs(parsers.Word("playerName"))
-                         .EndSub()
-                     .EndSub()
-                     /////////    
-                     
-                     /////////
-                     .BeginSub("summon")
-                         .BeginSub("set")
-                             .WithDesc("Set a new summon point.")
-                             .HandleWith(commands.CityCommand.processSummonSet)
-                         .EndSub()
-                         .BeginSub("list")
-                             .WithDesc("List of all summon points.")
-                             .HandleWith(commands.CityCommand.processSummonList)
-                         .EndSub()
-                         .BeginSub("use")
-                             .WithDesc("Teleport on selected point.")
-                             .HandleWith(commands.CityCommand.processSummonTeleport)
-                             .WithArgs(parsers.OptionalInt("summonPointNumber"))
-                         .EndSub()
-                     .EndSub()
                      /////////
                      .BeginSub("plotsgroup")
                          .BeginSub("create")

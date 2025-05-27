@@ -8,7 +8,7 @@ namespace claims.src.part.structure.plots
 {
     public class PlotDescPrison : PlotDesc
     {
-        string prisonGuid;
+        public string prisonGuid { get; set; }
         public PlotDescPrison(string prisonguid)
         {
             this.prisonGuid = prisonguid;

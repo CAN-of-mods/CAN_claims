@@ -23,6 +23,7 @@ namespace claims.src.gui.playerGui.structures
         public double CityBalance { get; set; }
         public HashSet<string> Criminals = new HashSet<string>();
         public List<PrisonCellElement> PrisonCells { get; set; } = new List<PrisonCellElement>();
+        public List<SummonCellElement> SummonCells { get; set; } = new List<SummonCellElement>();
         public CityInfo()
         {
             Name = "";

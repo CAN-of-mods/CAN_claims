@@ -114,36 +114,6 @@ namespace claims.src.part.structure
                 prisonCells.Add(newCell);
             }
         }
-
-        public class PrisonCellConverter : JsonConverter
-        {
-            public override bool CanConvert(Type objectType)
-            {
-                return objectType.IsEnum;
-            }
-
-            public override void WriteJson(JsonWriter writer, object value, Newtonsoft.Json.JsonSerializer serializer)
-            {
-                writer.WriteValue(value.ToString());
-            }
-
-            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, Newtonsoft.Json.JsonSerializer serializer)
-            {
-                if (reader.TokenType == JsonToken.String)
-                {
-                    string enumString = reader.Value.ToString();
-                    if (Enum.IsDefined(objectType, enumString))
-                    {
-                        return Enum.Parse(objectType, enumString);
-                    }
-                    else
-                    {
-                        throw new JsonSerializationException($"Unknown enum value: {enumString}");
-                    }
-                }
-                throw new JsonSerializationException("Expected string token");
-            }
-        }
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();

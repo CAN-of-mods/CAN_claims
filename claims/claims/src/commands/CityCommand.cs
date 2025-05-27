@@ -28,6 +28,7 @@ using Newtonsoft.Json;
 using HarmonyLib;
 using Vintagestory.Server;
 using System.Reflection;
+using Vintagestory.GameContent;
 
 namespace claims.src.commands
 {
@@ -1383,8 +1384,9 @@ namespace claims.src.commands
             }
             return true;
         }
-        /////CRIMINAL
-        
+        /*==============================================================================================*/
+        /*=====================================CRIMINAL=================================================*/
+        /*==============================================================================================*/
         public static TextCommandResult CityCriminalList(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
@@ -1532,12 +1534,10 @@ namespace claims.src.commands
             }
             return true;
         }
-
-        /*
-       
-       
-        
-        public static TextCommandResult processSummonSet(TextCommandCallingArgs args)
+        /*==============================================================================================*/
+        /*=====================================SUMMON===================================================*/
+        /*==============================================================================================*/
+        public static TextCommandResult CitySummonSet(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
             TextCommandResult tcr = new TextCommandResult();
@@ -1545,7 +1545,7 @@ namespace claims.src.commands
 
             City city;
             PlayerInfo playerInfo;
-            if(!helperFunctionSummon(player, tcr, out city, out playerInfo))
+            if (!helperFunctionSummon(player, tcr, out city, out playerInfo))
             {
                 return tcr;
             }
@@ -1571,19 +1571,23 @@ namespace claims.src.commands
                 tcr.StatusMessage = "claims:need_summon_plot";
                 return tcr;
             }
-            if (!RightsHandler.hasRight(player, PermConstants.CITY_SET_SUMMON))
-            {
-                tcr.StatusMessage = "claims:you_dont_have_right_for_that_command";
-                return tcr;
-            }
-                (plotHere.getPlotDesc() as PlotDescSummon).setSummonCoords(player.Entity.ServerPos.XYZ.Clone());
+            var oldPoint = (plotHere.getPlotDesc() as PlotDescSummon).SummonPoint.Clone();
+            UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid,
+                new Dictionary<string, object> { { "value", new SummonCellElement(oldPoint.AsVec3i.Clone(),
+                    (plotHere.getPlotDesc() as PlotDescSummon).Name) } },
+                EnumPlayerRelatedInfo.CITY_SUMMON_POINT_REMOVE);
+            (plotHere.getPlotDesc() as PlotDescSummon).SummonPoint = player.Entity.ServerPos.XYZ.Clone();
+            UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid,
+                new Dictionary<string, object> { { "value", new SummonCellElement((plotHere.getPlotDesc() as PlotDescSummon).SummonPoint.AsVec3i.Clone(),
+                    (plotHere.getPlotDesc() as PlotDescSummon).Name) } },
+                EnumPlayerRelatedInfo.CITY_SUMMON_POINT_ADD);
             tcr.StatusMessage = "claims:summon_point_set_to";
             tcr.MessageParams = new object[] { player.Entity.ServerPos.XYZ.ToString() };
+
             tcr.Status = EnumCommandStatus.Success;
             return tcr;
-
         }
-        public static TextCommandResult processSummonTeleport(TextCommandCallingArgs args)
+        public static TextCommandResult CitySummonSetName(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
             TextCommandResult tcr = new TextCommandResult();
@@ -1595,66 +1599,106 @@ namespace claims.src.commands
             {
                 return tcr;
             }
-            int index = 0;
-            if (args.LastArg != null)
+            PlotPosition currentPlotPosition = PlotPosition.fromXZ((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Z);
+            claims.dataStorage.getPlot(currentPlotPosition, out Plot plotHere);
+            if (plotHere == null)
             {
-                index = (int)args.LastArg;
-            }
-            if (index < 0)
-            {
-                tcr.StatusMessage = "claims:not_negative";
+                tcr.StatusMessage = "claims:plot_not_claimed";
                 return tcr;
             }
-            if (index >= city.summonPlots.Count)
+            if (!plotHere.hasCity())
             {
-                tcr.StatusMessage = "claims:need_number";
+                tcr.StatusMessage = "claims:no_city_here";
                 return tcr;
             }
-            long stamp = CooldownHandler.hasCooldown(playerInfo, CooldownType.SUMMON);
-            if (stamp != 0)
+            if (!plotHere.getCity().Equals(city))
             {
-                MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:wait_before") + TimeFunctions.getHourFromEpochSeconds(stamp));
+                tcr.StatusMessage = "claims:not_same_city";
                 return tcr;
             }
-            Plot chosenPlot = null;
-            int counter = 0;
+            if (plotHere.getType() != PlotType.SUMMON)
+            {
+                tcr.StatusMessage = "claims:need_summon_plot";
+                return tcr;
+            }
+            string filteredName = Filter.filterName((string)args.LastArg);
+            if(filteredName == "")
+            {
+                tcr.StatusMessage = "claims:name_cannot_be_empty";
+                return tcr;
+            }
+            foreach(var it in city.summonPlots)
+            {
+                if((it.getPlotDesc() as PlotDescSummon).Name.Equals(filteredName))
+                {
+                    tcr.StatusMessage = "claims:need_unique_name";
+                    return tcr;
+                }
+            }
+            (plotHere.getPlotDesc() as PlotDescSummon).Name = filteredName;
+            tcr.StatusMessage = "claims:summon_point_name_set_to";
+            tcr.MessageParams = new object[] { filteredName };
+            tcr.Status = EnumCommandStatus.Success;
+            UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid,
+                new Dictionary<string, object> { { "value", new SummonCellElement((plotHere.getPlotDesc() as PlotDescSummon).SummonPoint.AsVec3i.Clone(),
+                    (plotHere.getPlotDesc() as PlotDescSummon).Name) } },
+                EnumPlayerRelatedInfo.CITY_SUMMON_POINT_UPDATE);
+            return tcr;
+        }
+        public static TextCommandResult CitySummonSetNameByCoords(TextCommandCallingArgs args)
+        {
+            IServerPlayer player = args.Caller.Player as IServerPlayer;
+            TextCommandResult tcr = new TextCommandResult();
+            tcr.Status = EnumCommandStatus.Error;
+
+            City city;
+            PlayerInfo playerInfo;
+            if (!helperFunctionSummon(player, tcr, out city, out playerInfo))
+            {
+                return tcr;
+            }
+            PlotPosition currentPlotPosition = PlotPosition.fromXZ((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Z);
+            claims.dataStorage.getPlot(currentPlotPosition, out Plot plotHere);
+            
+            
+            string filteredName = Filter.filterName((string)args.LastArg);
+            if (filteredName == "")
+            {
+                tcr.StatusMessage = "claims:name_cannot_be_empty";
+                return tcr;
+            }
+            var summonPoint = args.Parsers[0].GetValue() as Vec3i;
+            /*summonPoint.Add(player.Entity.Api.World.DefaultSpawnPosition.AsBlockPos.X, 0,
+                player.Entity.Api.World.DefaultSpawnPosition.AsBlockPos.Z);*/
+            bool found = false;
             foreach (var it in city.summonPlots)
             {
-                if (counter == index)
+                Vec3i tmpPos = (it.getPlotDesc() as PlotDescSummon).SummonPoint.AsVec3i;
+                if (tmpPos.Equals(summonPoint))
                 {
-                    chosenPlot = it;
-                    break;
+                    plotHere = it;
+                    found = true;
                 }
-                counter++;
             }
-            if (chosenPlot == null)
+            if(!found)
             {
-                return tcr;
-            }
-            if (claims.config.SUMMON_MIN_PLAYERS != 0 &&
-                claims.sapi.World.GetPlayersAround((chosenPlot.getPlotDesc() as PlotDescSummon).getSummonCoords(),
-                claims.config.SUMMON_HOR_RANGE,
-                claims.config.SUMMON_VER_RANGE).Count() < claims.config.SUMMON_MIN_PLAYERS)
-            {
-                tcr.StatusMessage = "claims:need_more_players_for_summon";
-                tcr.Status = EnumCommandStatus.Success;
+                tcr.StatusMessage = "claims:summon_point_not_found";
                 return tcr;
             }
 
-            if (playerInfo.Account.getBalance() < claims.config.SUMMON_PAYMENT)
+            if (!plotHere.getCity().Equals(city))
             {
-                tcr.StatusMessage = "claims:not_enough_money";
-                tcr.Status = EnumCommandStatus.Success;
+                tcr.StatusMessage = "claims:not_same_city";
                 return tcr;
             }
-            playerInfo.Account.withdraw(claims.config.SUMMON_PAYMENT, true);
-            if (TeleportationHandler.addTeleportation(new TeleportationInfo(playerInfo,
-                (chosenPlot.getPlotDesc() as PlotDescSummon).getSummonCoords(), true, TimeFunctions.getEpochSeconds() + claims.config.SECONDS_SUMMON_TIME)))
-            {
-                tcr.StatusMessage = "claims:you_will_be_summoned";
-                tcr.MessageParams = new object[] { claims.config.SECONDS_SUMMON_TIME };
-                tcr.Status = EnumCommandStatus.Success;
-            }
+            (plotHere.getPlotDesc() as PlotDescSummon).Name = filteredName;
+            tcr.StatusMessage = "claims:summon_point_name_set_to";
+            tcr.MessageParams = new object[] { filteredName };
+            tcr.Status = EnumCommandStatus.Success;
+            UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid,
+                new Dictionary<string, object> { { "value", new SummonCellElement((plotHere.getPlotDesc() as PlotDescSummon).SummonPoint.AsVec3i.Clone(),
+                    (plotHere.getPlotDesc() as PlotDescSummon).Name) } },
+                EnumPlayerRelatedInfo.CITY_SUMMON_POINT_UPDATE);
             return tcr;
         }
         public static bool helperFunctionSummon(IServerPlayer player, TextCommandResult tcr, out City city, out PlayerInfo playerInfo)
@@ -1679,8 +1723,8 @@ namespace claims.src.commands
             }
             city = playerInfo.City;
             return true;
-        }       
-        public static TextCommandResult processSummonList(TextCommandCallingArgs args)
+        }
+        public static TextCommandResult CitySummonList(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
             TextCommandResult tcr = new TextCommandResult();
@@ -1690,7 +1734,7 @@ namespace claims.src.commands
                 tcr.StatusMessage = "claims:no_such_player_info";
                 return tcr;
             }
-            if(!playerInfo.hasCity())
+            if (!playerInfo.hasCity())
             {
                 tcr.StatusMessage = "claims:you_dont_have_city";
                 return tcr;
@@ -1698,8 +1742,79 @@ namespace claims.src.commands
             City city = playerInfo.City;
             tcr.StatusMessage = StringFunctions.getSummonPoints(city);
             tcr.Status = EnumCommandStatus.Success;
-            return tcr; 
+            return tcr;
         }
+        public static TextCommandResult CitySummonTeleport(TextCommandCallingArgs args)
+        {
+            IServerPlayer player = args.Caller.Player as IServerPlayer;
+            TextCommandResult tcr = new TextCommandResult();
+            tcr.Status = EnumCommandStatus.Error;
+
+            City city;
+            PlayerInfo playerInfo;
+            if (!helperFunctionSummon(player, tcr, out city, out playerInfo))
+            {
+                return tcr;
+            }
+
+            long stamp = CooldownHandler.hasCooldown(playerInfo, CooldownType.SUMMON);
+            if (stamp != 0)
+            {
+                MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:wait_before") + TimeFunctions.getHourFromEpochSeconds(stamp));
+                return tcr;
+            }
+            Plot chosenPlot = null;
+            string searchStr = (string)args.LastArg;
+            foreach (var it in city.summonPlots)
+            {
+                if((it.getPlotDesc() as PlotDescSummon).Name.Equals(searchStr))
+                {
+                    chosenPlot = it;
+                }
+            }
+            if (chosenPlot == null)
+            {
+                return tcr;
+            }
+            if (claims.config.SUMMON_MIN_PLAYERS != 0 &&
+                claims.sapi.World.GetPlayersAround((chosenPlot.getPlotDesc() as PlotDescSummon).SummonPoint,
+                claims.config.SUMMON_HOR_RANGE,
+                claims.config.SUMMON_VER_RANGE).Count() < claims.config.SUMMON_MIN_PLAYERS)
+            {
+                tcr.StatusMessage = "claims:need_more_players_for_summon";
+                tcr.Status = EnumCommandStatus.Success;
+                return tcr;
+            }
+
+            if(claims.economyHandler.getBalance(playerInfo.Guid) < (decimal)claims.config.SUMMON_PAYMENT)
+            {
+                tcr.StatusMessage = "claims:not_enough_money";
+                tcr.Status = EnumCommandStatus.Success;
+                return tcr;
+            }
+
+            if (claims.economyHandler.withdraw(playerInfo.Guid, (decimal)claims.config.SUMMON_PAYMENT).ResultState != caneconomy.src.implementations.OperationResult.EnumOperationResultState.SUCCCESS)
+            {
+                return TextCommandResult.Error("claims:economy_money_transaction_error");
+            }
+
+            if (TeleportationHandler.addTeleportation(new TeleportationInfo(playerInfo,
+                (chosenPlot.getPlotDesc() as PlotDescSummon).SummonPoint, true, TimeFunctions.getEpochSeconds() + claims.config.SECONDS_SUMMON_TIME)))
+            {
+                tcr.StatusMessage = "claims:you_will_be_summoned";
+                tcr.MessageParams = new object[] { claims.config.SECONDS_SUMMON_TIME };
+                tcr.Status = EnumCommandStatus.Success;
+            }
+            return tcr;
+        }
+        /*
+       
+       
+        
+        
+        
+       
+        
         public static TextCommandResult processCityRankList(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;

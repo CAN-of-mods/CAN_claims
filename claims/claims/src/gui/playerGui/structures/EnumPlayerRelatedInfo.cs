@@ -22,7 +22,12 @@ namespace claims.src.gui.playerGui.structures
         CITY_ADD_PRISON_CELL,
         CITY_REMOVE_PRISON_CELL,
         CITY_PRISON_CELL_ALL,
-        CITY_CELL_PRISON_UPDATE
+        CITY_CELL_PRISON_UPDATE,
+
+        CITY_SUMMON_POINT_ALL,
+        CITY_SUMMON_POINT_REMOVE,
+        CITY_SUMMON_POINT_ADD,
+        CITY_SUMMON_POINT_UPDATE
 
     }
 }
