@@ -16,7 +16,7 @@ namespace claims.src.events
 
             if (/*attackerPlot != null && */defendPlot != null && defendPlot.hasCity())
             {
-                if (defendPlot.getType() == PlotType.TOURNAMENT || defendPlot.getPermsHandler().pvpFlag
+                if (defendPlot.Type == PlotType.TOURNAMENT || defendPlot.getPermsHandler().pvpFlag
                     || (defendPlot.getCity().criminals.Contains(defendPlayerInfo) && defendPlot.getCity().isCitizen(attackerPlayerInfo)
                     || (defendPlot.getCity().criminals.Contains(attackerPlayerInfo) && defendPlot.getCity().isCitizen(defendPlayerInfo))))
                 {

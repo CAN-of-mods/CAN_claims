@@ -22,8 +22,8 @@ namespace claims.src.auxialiry
         {
 
             Vec2i zone = plot.plotPosition.getPos().Copy();
-            zone.X = zone.X / claims.config.ZONE_PLOTS_LENGTH;
-            zone.Y = zone.Y / claims.config.ZONE_PLOTS_LENGTH;
+            zone.X /= claims.config.ZONE_PLOTS_LENGTH;
+            zone.Y /= claims.config.ZONE_PLOTS_LENGTH;
             
             foreach (var player in claims.sapi.World.AllOnlinePlayers)
             {
@@ -37,7 +37,7 @@ namespace claims.src.auxialiry
                 {
                     return;
                 }
-                var tmpPlot = new SavedPlotInfo((int)plot.getPrice(), plot.getPermsHandler().pvpFlag,
+                var tmpPlot = new SavedPlotInfo((int)plot.Price, plot.getPermsHandler().pvpFlag,
                         player.WorldData.CurrentGameMode == EnumGameMode.Creative || OnBlockAction.canBlockDestroyWithOutCacheUpdate(playerInfo, plot),
                         player.WorldData.CurrentGameMode == EnumGameMode.Creative || OnBlockAction.canBlockUseWithOutCacheUpdate(playerInfo, plot),
                         player.WorldData.CurrentGameMode == EnumGameMode.Creative || OnBlockAction.canAttackAnimalsWithOutCacheUpdate(playerInfo, plot),
@@ -45,7 +45,7 @@ namespace claims.src.auxialiry
                            plot.hasCityPlotsGroup()
                                ? plot.getPlotGroup().GetPartName()
                                : "",
-                           plot.getType() == PlotType.TAVERN 
+                           plot.Type == PlotType.TAVERN 
                                ? plot.GetClientInnerClaimFromDefault(playerInfo)
                                : null);
                 string serializedPlots = JsonConvert.SerializeObject(new Tuple<Vec2i, SavedPlotInfo>(plot.getPos(), tmpPlot));
@@ -62,7 +62,7 @@ namespace claims.src.auxialiry
         //Send all players in plot's zone info about the unclaimed plot
         public static void broadcastPlotUnclaimedInZone(int x, int z)
         {
-            Vec2i zone = new Vec2i(x / claims.config.ZONE_PLOTS_LENGTH, z / claims.config.ZONE_PLOTS_LENGTH);
+            Vec2i zone = new(x / claims.config.ZONE_PLOTS_LENGTH, z / claims.config.ZONE_PLOTS_LENGTH);
             foreach (var player in claims.sapi.World.AllOnlinePlayers)
             {
                 if (zone.X != (int)(player.Entity.ServerPos.X / claims.config.ZONE_BLOCKS_LENGTH) 

@@ -25,10 +25,10 @@ namespace claims.src
             }
             return null;
         }
-        static Dictionary<string, HashSet<EnumPlayerPermissions>> PlayerPermissionsByGroups = new Dictionary<string, HashSet<EnumPlayerPermissions>>();        
+        static Dictionary<string, HashSet<EnumPlayerPermissions>> PlayerPermissionsByGroups = new();        
         private static Dictionary<string, HashSet<EnumPlayerPermissions>> getDefaultRankPermsDict()
         {
-            Dictionary<string, HashSet<EnumPlayerPermissions>> outDict = new Dictionary<string, HashSet<EnumPlayerPermissions>>
+            Dictionary<string, HashSet<EnumPlayerPermissions>> outDict = new()
             {
                  { "DEFAULT", new HashSet<EnumPlayerPermissions> 
                     { 
@@ -61,7 +61,15 @@ namespace claims.src
                         EnumPlayerPermissions.CITY_BUY_EXTRA_PLOT,
                         EnumPlayerPermissions.CITY_REMOVE_CRIMINAL,
                         EnumPlayerPermissions.CITY_ADD_CRIMINAL,
-                        EnumPlayerPermissions.CITY_SET_SUMMON
+                        EnumPlayerPermissions.CITY_SET_SUMMON,
+                        EnumPlayerPermissions.CITY_PLOTSGROUP_CREATE,
+                        EnumPlayerPermissions.CITY_PLOTSGROUP_REMOVE,
+                        EnumPlayerPermissions.CITY_PLOTSGROUP_ADD_PLAYER,
+                        EnumPlayerPermissions.CITY_PLOTSGROUP_KICK_PLAYER,
+                        EnumPlayerPermissions.CITY_PLOTSGROUP_ADD_PLOT,
+                        EnumPlayerPermissions.CITY_PLOTSGROUP_REMOVE_PLOT, 
+                        EnumPlayerPermissions.CITY_PLOTSGROUP_LIST, 
+                        EnumPlayerPermissions.CITY_PLOTSGROUP_SET,
                     }
                 },
 
@@ -108,8 +116,7 @@ namespace claims.src
         }
         public static void reapplyRights(PlayerInfo playerInfo)
         {
-            IServerPlayer player = claims.sapi.World.PlayerByUid(playerInfo.Guid) as IServerPlayer;
-            if(player == null)
+            if (claims.sapi.World.PlayerByUid(playerInfo.Guid) is not IServerPlayer player)
             {
                 return;
             }
@@ -188,10 +195,10 @@ namespace claims.src
             string json;
             if (File.Exists(filePath))
             {
-                using (StreamReader r = new StreamReader(filePath))
+                using (StreamReader r = new(filePath))
                 {
                     json = r.ReadToEnd();
-                    JsonSerializerSettings settings = new JsonSerializerSettings();
+                    JsonSerializerSettings settings = new();
                     settings.Converters.Add(new StringEnumConverter());
                     PlayerPermissionsByGroups = JsonConvert.DeserializeObject<Dictionary<string, HashSet<EnumPlayerPermissions>>>(json, settings);
                 }
@@ -199,9 +206,9 @@ namespace claims.src
             else
             {
                 Dictionary<string, HashSet<EnumPlayerPermissions>> ranksPerms = getDefaultRankPermsDict();
-                using (StreamWriter r = new StreamWriter(filePath))
+                using (StreamWriter r = new(filePath))
                 {
-                    JsonSerializerSettings settings = new JsonSerializerSettings();
+                    JsonSerializerSettings settings = new();
                     settings.Converters.Add(new StringEnumConverter());
                     settings.Formatting = Formatting.Indented;
                     string b = JsonConvert.SerializeObject(ranksPerms, settings);

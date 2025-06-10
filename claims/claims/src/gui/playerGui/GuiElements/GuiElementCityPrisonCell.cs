@@ -16,7 +16,6 @@ namespace claims.src.gui.playerGui.GuiElements
 {
     public class GuiElementCityPrisonCell: GuiElementTextBase, IGuiElementCell, IDisposable
     {
-        public static int counter = 0;
         private List<GuiElementButtonWithAdditionalText> buttons = new List<GuiElementButtonWithAdditionalText>();
         private List<GuiElementStaticText> texts = new List<GuiElementStaticText>();
         private GuiElementToggleButton addRankButton;

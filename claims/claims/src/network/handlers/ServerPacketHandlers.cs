@@ -74,7 +74,7 @@ namespace claims.src.network.handlers
                             foreach (Plot plot in serverZoneInfo.zonePlots)
                             {
                                 preparedSavedPlots.Add(new KeyValuePair<Vec2i, SavedPlotInfo>(plot.getPos(),
-                                    new SavedPlotInfo((int)plot.getPrice(), plot.getPermsHandler().pvpFlag,
+                                    new SavedPlotInfo((int)plot.Price, plot.getPermsHandler().pvpFlag,
                                         player.WorldData.CurrentGameMode == EnumGameMode.Creative || OnBlockAction.canBlockDestroyWithOutCacheUpdate(playerInfo, plot),
                                         player.WorldData.CurrentGameMode == EnumGameMode.Creative || OnBlockAction.canBlockUseWithOutCacheUpdate(playerInfo, plot),
                                         player.WorldData.CurrentGameMode == EnumGameMode.Creative || OnBlockAction.canAttackAnimalsWithOutCacheUpdate(playerInfo, plot),
@@ -82,7 +82,7 @@ namespace claims.src.network.handlers
                                         plot.hasCityPlotsGroup()
                                             ? plot.getPlotGroup().GetPartName()
                                             : "",
-                                        plot.getType() == PlotType.TAVERN
+                                        plot.Type == PlotType.TAVERN
                                             ? plot.GetClientInnerClaimFromDefault(playerInfo)
                                             : null)));
                             }
@@ -108,7 +108,7 @@ namespace claims.src.network.handlers
                     if(claims.dataStorage.getPlot(PlotPosition.fromEntityyPos(currentPos), out Plot plot))
                     {
                         CurrentPlotInfo cpi = new CurrentPlotInfo(plot.GetPartName(), plot.getPlotOwner()?.GetPartName() ?? "",
-                            plot.getType(), plot.getCustomTax(), plot.getPrice(), plot.getPermsHandler(), plot.extraBought, plot.getPos());
+                            plot.Type, plot.getCustomTax(), plot.Price, plot.getPermsHandler(), plot.extraBought, plot.getPos());
                         string serializedZones = JsonConvert.SerializeObject(cpi);
 
                         claims.serverChannel.SendPacket(new SavedPlotsPacket()
@@ -131,7 +131,7 @@ namespace claims.src.network.handlers
                     if (claims.dataStorage.getPlot(PlotPosition.fromEntityyPos(currentPos), out Plot plot))
                     {
                         CurrentPlotInfo cpi = new CurrentPlotInfo(plot.GetPartName(), plot.getPlotOwner()?.GetPartName() ?? "",
-                            plot.getType(), plot.getCustomTax(), plot.getPrice(), plot.getPermsHandler(), plot.extraBought, plot.getPos());
+                            plot.Type, plot.getCustomTax(), plot.Price, plot.getPermsHandler(), plot.extraBought, plot.getPos());
                         string serializedZones = JsonConvert.SerializeObject(cpi);
 
                         claims.serverChannel.SendPacket(new SavedPlotsPacket()

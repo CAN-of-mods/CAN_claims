@@ -115,11 +115,11 @@ namespace claims.src.part
             City.getPlayerInfos().Remove(this);
             foreach(Plot plot in PlayerPlots.ToArray())
             {
-                if(clearAlsoEmbassies || plot.getType() != PlotType.EMBASSY)
+                if(clearAlsoEmbassies || plot.Type != PlotType.EMBASSY)
                 {
                     plot.resetOwner();
-                    plot.setPrice(-1);
-                    plot.setType(PlotType.DEFAULT);
+                    plot.Price = -1;
+                    plot.Type = PlotType.DEFAULT;
                     plot.saveToDatabase();
                     PlayerPlots.Remove(plot);
                 }

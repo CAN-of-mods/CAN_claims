@@ -4,12 +4,7 @@ using claims.src.gui.playerGui.structures;
 using claims.src.part.interfaces;
 using claims.src.part.structure.plots;
 using claims.src.perms;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Config;
@@ -22,15 +17,15 @@ namespace claims.src.part.structure
     {
         City city;
         PlayerInfo ownerOfPlot;
-        PlotType type;
+        public PlotType Type { get; set; }
         public PlotPosition plotPosition;
         double customTax = 0;
-        Prison prison;
-        int price = -1;
+        public Prison Prison { get; set; }
+        public int Price { get; set; } = -1;
         CityPlotsGroup plotGroup;
         PermsHandler permsHandler = new PermsHandler();
-        bool markedNoPvp = false;
-        PlotDesc plotDesc;
+        public bool MarkedNoPvp { get; set; } = false;
+        public PlotDesc PlotDesc { get; set; }
         public bool extraBought { get; set; }
         public Plot(Vec2i chunkPos) : base("", "")
         {
@@ -41,26 +36,6 @@ namespace claims.src.part.structure
             this.plotPosition = plp;
         }
         /*****************************************************************/
-        public void setPrison(Prison prison)
-        {
-            this.prison = prison;
-        }
-        public PlotDesc getPlotDesc()
-        {
-            return plotDesc;
-        }
-        public void setPlotDesc(PlotDesc plotDesc)
-        {
-            this.plotDesc = plotDesc;
-        }
-        public bool isMarkedNoPVP()
-        {
-            return markedNoPvp;
-        }
-        public void setMarkedNoPVP(bool val)
-        {
-            markedNoPvp = val;
-        }
         public bool hasCutomTax()
         {
             return customTax > 0;
@@ -102,22 +77,9 @@ namespace claims.src.part.structure
         {
             return ownerOfPlot;
         }
-
-        public double getPrice()
-        {
-            return price;
-        }
-        public void setPrice(int val)
-        {
-            price = val;
-        }
         public void resetOwner()
         {
             ownerOfPlot = null;
-        }
-        public Prison getPrison()
-        {
-            return prison;
         }
         public City getCity()
         {
@@ -135,14 +97,6 @@ namespace claims.src.part.structure
         {
             return plotPosition.getPos();
         }
-        public PlotType getType()
-        {
-            return type;
-        }
-        public void setType(PlotType val)
-        {
-            this.type = val;
-        }
         /// <summary>
         /// Set new type of the plot, there is some co-routines for some types of plots which should be run after we change some of them.
         /// Jail should be removed for example, or summon points removed, etc.
@@ -155,7 +109,7 @@ namespace claims.src.part.structure
         {
             PlotType plotType = PlotInfo.nameToPlotType[newPlotType];
 
-            if(plotType == this.type)
+            if(plotType == this.Type)
             {
                 tcr.StatusMessage = "claims:plot_the_same_type_set";
                 return false; 
@@ -180,16 +134,16 @@ namespace claims.src.part.structure
                     tcr.StatusMessage = "claims:limit_summon_plots";
                     return false;
                 }
-                setType(PlotType.SUMMON);
+                Type = PlotType.SUMMON;
                 getCity().summonPlots.Add(this);
                 PlotDescSummon pds = new PlotDescSummon(player.Entity.ServerPos.XYZ);
                 pds.Name = "Point" + ((int)pds.SummonPoint.X % 10).ToString() + ((int)pds.SummonPoint.Z % 10).ToString();
-                setPlotDesc(pds);
+                this.PlotDesc = pds;
                 saveToDatabase();
                 getCity().saveToDatabase();
                 UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid,
-                new Dictionary<string, object> { { "value", new SummonCellElement((this.getPlotDesc() as PlotDescSummon).SummonPoint.AsVec3i.Clone(),
-                    (this.getPlotDesc() as PlotDescSummon).Name) } },
+                new Dictionary<string, object> { { "value", new SummonCellElement((this.PlotDesc as PlotDescSummon).SummonPoint.AsVec3i.Clone(),
+                    (this.PlotDesc as PlotDescSummon).Name) } },
                 EnumPlayerRelatedInfo.CITY_SUMMON_POINT_ADD);
                 tcr.StatusMessage = "claims:plot_set_type";
                 tcr.MessageParams = new object[] { newPlotType };
@@ -198,7 +152,7 @@ namespace claims.src.part.structure
             else if (plotType == PlotType.PRISON)
             {
                 PartInits.initPrison(this, getCity(), player);
-                setType(plotType);
+                Type = plotType;
                 tcr.StatusMessage = "claims:plot_set_type";
                 tcr.MessageParams = new object[] { newPlotType };
                 UsefullPacketsSend.AddToQueueCityInfoUpdate(this.getCity().Guid,
@@ -210,7 +164,7 @@ namespace claims.src.part.structure
                 int tavernCount = 0;
                 foreach (var it in getCity().getCityPlots())
                 {
-                    if (it.getType() == PlotType.TAVERN)
+                    if (it.Type == PlotType.TAVERN)
                         tavernCount++;
                 }
                 if (tavernCount >= claims.config.MAX_NUMBER_TAVERN_PER_CITY)
@@ -219,9 +173,9 @@ namespace claims.src.part.structure
                     tcr.MessageParams = new object[] { claims.config.MAX_NUMBER_TAVERN_PER_CITY };
                     return false;
                 }
-                setType(plotType);
+                Type = plotType;
                 PlotDescTavern pdt = new PlotDescTavern();
-                setPlotDesc(pdt);
+                PlotDesc = pdt;
                 saveToDatabase();
                 tcr.StatusMessage = "claims:plot_set_type";
                 tcr.MessageParams = new object[] { newPlotType };
@@ -229,12 +183,12 @@ namespace claims.src.part.structure
             }
             else if( plotType == PlotType.TEMPLE)
             {
-                setType(plotType);
+                Type = plotType;
 
             }
 
 
-            setType(plotType);
+            Type = plotType;
             saveToDatabase();
             tcr.StatusMessage = "claims:plot_set_type";
             tcr.MessageParams = new object[] { newPlotType };
@@ -243,19 +197,19 @@ namespace claims.src.part.structure
 
         public void CleanUpCurrentPlotTypeData()
         {
-            PlotType currentPlotType = getType();
+            PlotType currentPlotType = this.Type;
             if (currentPlotType == PlotType.SUMMON)
             {
                 UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid,
-                new Dictionary<string, object> { { "value", new SummonCellElement((this.getPlotDesc() as PlotDescSummon).SummonPoint.AsVec3i.Clone(),
-                    (this.getPlotDesc() as PlotDescSummon).Name) } },
+                new Dictionary<string, object> { { "value", new SummonCellElement((this.PlotDesc as PlotDescSummon).SummonPoint.AsVec3i.Clone(),
+                    (this.PlotDesc as PlotDescSummon).Name) } },
                 EnumPlayerRelatedInfo.CITY_SUMMON_POINT_REMOVE);
-                setPlotDesc(null);
+                this.PlotDesc = null;
                 getCity().summonPlots.Remove(this);
             }
             else if (currentPlotType == PlotType.PRISON)
             {
-                foreach (PrisonCellInfo cell in prison.getPrisonCells())
+                foreach (PrisonCellInfo cell in Prison.getPrisonCells())
                 {
                     foreach (PlayerInfo player in cell.getPlayerInfos())
                     {
@@ -266,15 +220,15 @@ namespace claims.src.part.structure
                     }
                 }
 
-                claims.dataStorage.removePrison(prison.Guid);
-                if (prison.getCity() != null)
+                claims.dataStorage.removePrison(Prison.Guid);
+                if (Prison.getCity() != null)
                 {
-                    prison.getCity().getPrisons().Remove(prison);
-                    prison.getCity().saveToDatabase();
+                    Prison.getCity().getPrisons().Remove(Prison);
+                    Prison.getCity().saveToDatabase();
                 }
-                prison.getPlot().setType(PlotType.DEFAULT);
-                claims.getModInstance().getDatabaseHandler().deleteFromDatabasePrison(prison);
-                prison.getPlot().setPrison(null);
+                Prison.getPlot().Type = PlotType.DEFAULT;
+                claims.getModInstance().getDatabaseHandler().deleteFromDatabasePrison(Prison);
+                Prison = null;
                 this.saveToDatabase();                
             }
             else if (currentPlotType == PlotType.EMBASSY)
@@ -322,7 +276,7 @@ namespace claims.src.part.structure
         public List<ClientInnerClaim> GetClientInnerClaimFromDefault(PlayerInfo playerInfo)
         {
             List<ClientInnerClaim> tmpCIC = new List<ClientInnerClaim>();
-            foreach (var it in (plotDesc as PlotDescTavern).innerClaims)
+            foreach (var it in (this.PlotDesc as PlotDescTavern).innerClaims)
             {
                 if(it.membersUids.Contains(playerInfo.Guid))
                 {
@@ -352,7 +306,7 @@ namespace claims.src.part.structure
             {
                 outStrings.Add(Lang.Get("claims:plot_owner", getPlotOwner().GetPartName()) + "\n");
             }
-            PlotInfo.dictPlotTypes.TryGetValue(getType(), out PlotInfo plotInfo);
+            PlotInfo.dictPlotTypes.TryGetValue(this.Type, out PlotInfo plotInfo);
             outStrings.Add(Lang.Get("claims:" + plotInfo.getFullName()) + "\n");
             if(customTax > 0)
             {

@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Vintagestory.API.Common;
+using Vintagestory.Client.NoObf;
+using Vintagestory.Common;
 
 namespace claims.src.perms
 {
@@ -16,11 +18,13 @@ namespace claims.src.perms
         /// If fireFlag is true - fire can spread
         /// If blastFlag is true - blast are prevented
         /// </summary>
-        public bool pvpFlag, fireFlag, blastFlag;
-        public bool[] CitizenPerms;
-        public bool[] StrangerPerms;
-        public bool[] AlliancePerms;
-        public bool[] ComradePerms;
+        public bool pvpFlag { get; set; }
+        public bool fireFlag { get; set; }
+        public bool blastFlag { get; set; }
+        public bool[] CitizenPerms { get; set; }
+        public bool[] StrangerPerms { get; set; }
+        public bool[] AlliancePerms { get; set; }
+        public bool[] ComradePerms { get; set; }
         public static Dictionary<PermGroup, string> permGroupToString;
 
         public static Dictionary<int, string> permTypeToString;
@@ -132,7 +136,29 @@ namespace claims.src.perms
                     break;
             }
         }
-
+        public void ApplyFromHandler(PermsHandler anotherHandler, PermGroup group)
+        {
+            var tmp = new bool[3];
+            switch (group)
+            {               
+                case PermGroup.STRANGER:
+                    Array.Copy(anotherHandler.StrangerPerms, tmp, 3);
+                    this.StrangerPerms = tmp;
+                    break;
+                case PermGroup.CITIZEN:
+                    Array.Copy(anotherHandler.CitizenPerms, tmp, 3);
+                    this.CitizenPerms = tmp;
+                    break;
+                case PermGroup.ALLY:
+                    Array.Copy(anotherHandler.AlliancePerms, tmp, 3);
+                    this.AlliancePerms = tmp;
+                    break;
+                case PermGroup.COMRADE:
+                    Array.Copy(anotherHandler.ComradePerms, tmp, 3);
+                    this.ComradePerms = tmp;
+                    break;
+            }
+        }
         /// <summary>
         /// Set permission for group, get args and expect 3 arguments group, type and new value.
         /// </summary>

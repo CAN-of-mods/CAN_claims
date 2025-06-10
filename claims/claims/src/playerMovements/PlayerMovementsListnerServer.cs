@@ -331,7 +331,7 @@ namespace claims.src
                     {                        
                         foreach (Plot plot in zone.zonePlots)
                         {
-                            savedPlots.Add(new KeyValuePair<Vec2i, SavedPlotInfo>(plot.getPos(), new SavedPlotInfo((int)plot.getPrice(), plot.getPermsHandler().pvpFlag,
+                            savedPlots.Add(new KeyValuePair<Vec2i, SavedPlotInfo>(plot.getPos(), new SavedPlotInfo((int)plot.Price, plot.getPermsHandler().pvpFlag,
                                 player.WorldData.CurrentGameMode == EnumGameMode.Creative || OnBlockAction.canBlockDestroyWithOutCacheUpdate(playerInfo, plot),
                                 player.WorldData.CurrentGameMode == EnumGameMode.Creative || OnBlockAction.canBlockUseWithOutCacheUpdate(playerInfo, plot),
                                 player.WorldData.CurrentGameMode == EnumGameMode.Creative || OnBlockAction.canAttackAnimalsWithOutCacheUpdate(playerInfo, plot),
@@ -339,7 +339,7 @@ namespace claims.src
                                 plot.hasCityPlotsGroup()
                                     ? plot.getPlotGroup().GetPartName()
                                     : "",
-                               plot.getType() == PlotType.TAVERN
+                               plot.Type == PlotType.TAVERN
                                    ? plot.GetClientInnerClaimFromDefault(playerInfo)
                                    : null)));
                         }
@@ -404,7 +404,7 @@ namespace claims.src
                             }                           
                         }                          
                     }
-                    if(removeForPlyaer.Count() == 0)
+                    if(removeForPlyaer.Count == 0)
                     {
                         continue;
                     }
@@ -445,7 +445,7 @@ namespace claims.src
                                 tmpPlotPosition.setXY(it);
                                 if (claims.dataStorage.getPlot(tmpPlotPosition, out Plot plot))
                                 {
-                                    updatePlotsForPlayer.Add(new Tuple<Vec2i, SavedPlotInfo>(plot.getPos(), new SavedPlotInfo((int)plot.getPrice(), plot.getPermsHandler().pvpFlag,
+                                    updatePlotsForPlayer.Add(new Tuple<Vec2i, SavedPlotInfo>(plot.getPos(), new SavedPlotInfo((int)plot.Price, plot.getPermsHandler().pvpFlag,
                                     pl.WorldData.CurrentGameMode == EnumGameMode.Creative || OnBlockAction.canBlockDestroyWithOutCacheUpdate(playerInfo, plot),
                                     pl.WorldData.CurrentGameMode == EnumGameMode.Creative || OnBlockAction.canBlockUseWithOutCacheUpdate(playerInfo, plot),
                                     pl.WorldData.CurrentGameMode == EnumGameMode.Creative || OnBlockAction.canAttackAnimalsWithOutCacheUpdate(playerInfo, plot),
@@ -453,7 +453,7 @@ namespace claims.src
                                     plot.hasCityPlotsGroup()
                                         ? plot.getPlotGroup().GetPartName()
                                         : "",
-                                   plot.getType() == PlotType.TAVERN
+                                   plot.Type == PlotType.TAVERN
                                        ? plot.GetClientInnerClaimFromDefault(playerInfo)
                                        : null)));
                                 }

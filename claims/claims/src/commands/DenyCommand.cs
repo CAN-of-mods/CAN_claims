@@ -40,7 +40,7 @@ namespace claims.src.commands
                 if ((invitation.getSender() as City).GetPartName().Equals(args[0]))
                 {
                     invitation.deny();
-                    Dictionary<EnumPlayerRelatedInfo, string> collector = new Dictionary<EnumPlayerRelatedInfo, string>
+                    Dictionary<EnumPlayerRelatedInfo, string> collector = new()
                     {
                         { EnumPlayerRelatedInfo.CITY_INVITE_REMOVE, invitation.getSender().getNameSender() }
                     };

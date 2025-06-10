@@ -38,7 +38,6 @@ namespace claims.src.harmony
         {
             claimant = "";
             ServerMain serverMain = __instance.World as ServerMain;
-            var c = 3;
         }
         public static void Postfix_tryAccess(Vintagestory.Common.WorldMap __instance, IPlayer player, BlockPos pos, EnumBlockAccessFlags accessFlag, ref bool __result)
         {
@@ -290,13 +289,12 @@ namespace claims.src.harmony
                 __result = true;
                 return false; 
             }*/
-            string claimant;
             EnumWorldAccessResponse enumWorldAccessResponse = __instance.TestBlockAccess(player, new BlockSelection
             {
                 Position = pos
-            }, accessFlag, out claimant);
+            }, accessFlag, out string claimant);
 
-            if(claimant == null)
+            if (claimant == null)
             {
                 claimant = "";
             }
@@ -416,7 +414,6 @@ namespace claims.src.harmony
         public static bool Prefix_nearToClaimedLand(Vintagestory.GameContent.BlockEntityBomb __instance, ref bool __result)
         {
 
-            Plot tb;
             int tmpX = __instance.Pos.X;
             int tmpZ = __instance.Pos.Z;
             bool blastEV = claims.dataStorage.getWorldInfo().blastEverywhere;
@@ -431,7 +428,7 @@ namespace claims.src.harmony
                 {
 
                      claims.dataStorage.getPlot(PlotPosition.fromXZ((int)(tmpX + (i * __instance.BlastRadius)),
-                                                                           (int)(tmpZ + (j * __instance.BlastRadius))), out tb);
+                                                                           (int)(tmpZ + (j * __instance.BlastRadius))), out Plot tb);
                     if (tb == null)
                     { 
                         continue;
@@ -481,15 +478,14 @@ namespace claims.src.harmony
         public static bool Prefix_TrySpreadHorizontal(Vintagestory.GameContent.BlockBehaviorFiniteSpreadingLiquid __instance, Block ourblock, Block ourSolid, IWorldAccessor world, BlockPos pos)
         {
             claims.dataStorage.getPlot(PlotPosition.fromBlockPos(pos), out Plot source);
-            Plot dest;
             foreach (BlockFacing facing in BlockFacing.HORIZONTALS)
             {
-                claims.dataStorage.getPlot(PlotPosition.fromBlockPos(pos.AddCopy(facing)), out dest);
+                claims.dataStorage.getPlot(PlotPosition.fromBlockPos(pos.AddCopy(facing)), out Plot dest);
                 if (dest == null || (dest == null && source == null) || (source != null && dest.hasCity() && source.hasCity() && dest.getCity().Equals(source.getCity())))
                 {
                     MethodInfo dynMethod = __instance.GetType().GetMethod("TrySpreadIntoBlock",
                     BindingFlags.NonPublic | BindingFlags.Instance);
-                    dynMethod.Invoke(__instance, new object[] { ourblock, ourSolid, pos,  pos.AddCopy(facing), facing,  world });
+                    dynMethod.Invoke(__instance, new object[] { ourblock, ourSolid, pos, pos.AddCopy(facing), facing, world });
                 }
             }
             return false;
@@ -500,21 +496,20 @@ namespace claims.src.harmony
             List<PosAndDist> __result)
         {
             claims.dataStorage.getPlot(PlotPosition.fromBlockPos(pos), out Plot source);
-            Plot dest;
             foreach (var it in new List<PosAndDist>(__result))
             {
-                claims.dataStorage.getPlot(PlotPosition.fromBlockPos(it.pos), out dest);
+                claims.dataStorage.getPlot(PlotPosition.fromBlockPos(it.pos), out Plot dest);
                 if (dest == null)
                 {
                     continue;
                 }
                 else if (source != null)
                 {
-                    if((source.hasCity() && source.getCity().Equals(dest.getCity())))
+                    if ((source.hasCity() && source.getCity().Equals(dest.getCity())))
                     {
                         continue;
                     }
-                }              
+                }
                 else
                 {
                     __result.Remove(it);
@@ -546,7 +541,6 @@ namespace claims.src.harmony
             if (___canFallSideways)
             {
                 claims.dataStorage.getPlot(PlotPosition.fromEntityyPos(__instance.ServerPos), out Plot source);
-                Plot dest;
                 for (int i = 0; i < 4; i++)
                 {
                     BlockFacing facing = BlockFacing.HORIZONTALS[i];
@@ -556,7 +550,7 @@ namespace claims.src.harmony
                     {
 
                         //Only def from wild chunk to city's chunk. Two cities back to back is problem of config.
-                        claims.dataStorage.getPlot(PlotPosition.fromXZ(pos.X + facing.Normali.X, pos.Z + facing.Normali.Z), out dest);
+                        claims.dataStorage.getPlot(PlotPosition.fromXZ(pos.X + facing.Normali.X, pos.Z + facing.Normali.Z), out Plot dest);
                         if (source == null && dest != null)
                         {
                             continue;

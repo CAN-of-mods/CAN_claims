@@ -11,10 +11,10 @@ namespace claims.src.part.structure.plots
 {
     public class PlotDescTavern: PlotDesc
     {
-        public List<InnerClaim> innerClaims = new List<InnerClaim>();
+        public List<InnerClaim> innerClaims = new();
         public string innerClaimsToString()
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             for(int i = 0; i < innerClaims.Count; i++)
             {
                 sb.Append(i.ToString()).Append(". ").Append("Use: ").Append(innerClaims[i].permissionsFlags[0] ? "on " : "off ")
@@ -62,30 +62,30 @@ namespace claims.src.part.structure.plots
 
                 string[] pos1 = innerClaimParts[0].Split(',');
 
-                Vec3i tmp_pos_1 = new Vec3i();
+                Vec3i tmp_pos_1 = new();
                 try
                 {
                     tmp_pos_1.X = int.Parse(pos1[0]);
                     tmp_pos_1.Y = int.Parse(pos1[1]);
                     tmp_pos_1.Z = int.Parse(pos1[2]);
-                }catch(FormatException e)
+                }catch
                 {
                     continue;
                 }
                 string[] pos2 = innerClaimParts[1].Split(',');
-                Vec3i tmp_pos_2 = new Vec3i();
+                Vec3i tmp_pos_2 = new();
                 try
                 {
                     tmp_pos_2.X = int.Parse(pos2[0]);
                     tmp_pos_2.Y = int.Parse(pos2[1]);
                     tmp_pos_2.Z = int.Parse(pos2[2]);
                 }
-                catch (FormatException e)
+                catch
                 {
                     continue;
                 }
 
-                InnerClaim innerClaim = new InnerClaim(tmp_pos_1, tmp_pos_2);
+                InnerClaim innerClaim = new(tmp_pos_1, tmp_pos_2);
 
                 string[] flags = innerClaimParts[2].Split(',');
                 for(int i = 0; i < 3; i++)
@@ -107,7 +107,7 @@ namespace claims.src.part.structure.plots
         }
         public string toSaveStringInnerClaims()
         {
-            StringBuilder stringBuilder = new StringBuilder();
+            StringBuilder stringBuilder = new();
             foreach (var it in innerClaims)
             {
                 stringBuilder.Append(it.ToString());

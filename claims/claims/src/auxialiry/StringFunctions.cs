@@ -38,7 +38,7 @@ namespace claims.src.auxialiry
         }
         public static List<string> getNamesOfFriends(PlayerInfo playerInfo)
         {
-            List<string> names = new List<string>();
+            List<string> names = new();
             foreach (var it in playerInfo.Friends)
             {
                 names.Add(it.GetPartName());
@@ -56,7 +56,7 @@ namespace claims.src.auxialiry
         }
         public static List<string> getNamesOfCitiesFromInvitations(string prefix, List<CityPlotsGroupInvitation> li)
         {
-            List<string> outList = new List<string>();
+            List<string> outList = new();
             outList.Add(prefix);
             foreach(var invite in li)
             {
@@ -88,7 +88,7 @@ namespace claims.src.auxialiry
         }
         public static string makeFeasibleStringFromNames(List<string> li, char delim)
         {
-            StringBuilder stringBuilder = new StringBuilder();
+            StringBuilder stringBuilder = new();
             using (var paint = new SKPaint())
             {
                 paint.Typeface = SKTypeface.FromFamilyName("Times New Roman");
@@ -133,7 +133,7 @@ namespace claims.src.auxialiry
         }
         public static string concatStringsWithPrefixAndDelim(string prefix, ICollection<string> li, string delim)
         {
-            StringBuilder resultString = new StringBuilder();
+            StringBuilder resultString = new();
             resultString.Append(prefix);
             foreach (var it in li)
             {
@@ -157,11 +157,11 @@ namespace claims.src.auxialiry
         }
         public static string getSummonPoints(City city)
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             int i = 0;
             foreach(var it in city.summonPlots)
             {
-                Vec3i summonPoint = (it.getPlotDesc() as PlotDescSummon).SummonPoint.AsVec3i;
+                Vec3i summonPoint = (it.PlotDesc as PlotDescSummon).SummonPoint.AsVec3i;
                 sb.AppendLine(string.Format("{0}: {1}/{2}/{3}", i, summonPoint.X - claims.capi.World.DefaultSpawnPosition.AsBlockPos.X,
                                      summonPoint.Y - claims.capi.World.DefaultSpawnPosition.AsBlockPos.Y,
                                      summonPoint.Z - claims.capi.World.DefaultSpawnPosition.AsBlockPos.Z));
@@ -170,7 +170,7 @@ namespace claims.src.auxialiry
         }
         public static string concatStringsWithDelim(ICollection<string> li, char delim)
         {
-            StringBuilder resultString = new StringBuilder();
+            StringBuilder resultString = new();
             foreach(var it in li)
             {
                 resultString.Append(it);
@@ -209,7 +209,7 @@ namespace claims.src.auxialiry
         }
         public static string concatStringsWithDelim(ICollection<Prison> li, char delim)
         {
-            StringBuilder resultString = new StringBuilder();
+            StringBuilder resultString = new();
             foreach (var it in li)
             {
                 /*if(it == null)
@@ -239,7 +239,7 @@ namespace claims.src.auxialiry
         }
         public static string makeStringPlayersName(ICollection<PlayerInfo> li, char delim)
         {
-            StringBuilder resultString = new StringBuilder();
+            StringBuilder resultString = new();
             foreach (var it in li)
             {
                 resultString.Append(it.getPartNameReplaceUnder());
@@ -293,7 +293,7 @@ namespace claims.src.auxialiry
         }
         public static List<string> getNamesOfCities(string prefix, ICollection<City> li)
         {
-            List<string> result = new List<string>();
+            List<string> result = new();
             result.Add(prefix);
             foreach (var it in li)
             {
@@ -303,8 +303,10 @@ namespace claims.src.auxialiry
         }
         public static List<string> getNamesOfPartReplaceUnder(string prefix, ICollection<Part> li)
         {
-            List<string> result = new List<string>();
-            result.Add(prefix);
+            List<string> result = new List<string>
+            {
+                prefix
+            };
             foreach (var it in li)
             {
                 result.Add(it.getPartNameReplaceUnder());

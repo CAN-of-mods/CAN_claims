@@ -343,8 +343,7 @@ namespace claims.src.claimsext.map
             Vec2i baseCord = new Vec2i(mcord.X * CANMultiChunkMapComponent.ChunkLen, mcord.Y * CANMultiChunkMapComponent.ChunkLen);
             api.Event.EnqueueMainThreadTask(() =>
             {
-                CANMultiChunkMapComponent mccomp;
-                if (!loadedMapData.TryGetValue(mcord, out mccomp))
+                if (!loadedMapData.TryGetValue(mcord, out CANMultiChunkMapComponent mccomp))
                 {
                     loadedMapData[mcord] = mccomp = new CANMultiChunkMapComponent(api as ICoreClientAPI, baseCord);
                     mccomp.setChunk(cord.X / 2 - baseCord.X, cord.Y / 2 - baseCord.Y, pixels);

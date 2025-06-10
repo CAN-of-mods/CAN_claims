@@ -29,6 +29,7 @@ using HarmonyLib;
 using Vintagestory.Server;
 using System.Reflection;
 using Vintagestory.GameContent;
+using Vintagestory.Common;
 
 namespace claims.src.commands
 {
@@ -239,7 +240,7 @@ namespace claims.src.commands
             UsefullPacketsSend.AddToQueueCityInfoUpdate(playerInfo.City.Guid, gui.playerGui.structures.EnumPlayerRelatedInfo.CITY_BALANCE);
             plotHere.setCity(playerInfo.City);
             plotHere.getPermsHandler().setPerm(city.getPermsHandler());
-            plotHere.setPrice(-1);
+            plotHere.Price = -1;
             claims.dataStorage.addClaimedPlot(currentPlotPosition, plotHere);
             city.getCityPlots().Add(plotHere);
             city.saveToDatabase();
@@ -286,7 +287,7 @@ namespace claims.src.commands
             {
                 return TextCommandResult.Error("claims:player_should_be_in_same_city");
             }
-            if (plotHere.getCity().getCityPlots().Count() == 1)
+            if (plotHere.getCity().getCityPlots().Count == 1)
             {
                 return TextCommandResult.Error("claims:last_city_plot");
             }
@@ -341,7 +342,7 @@ namespace claims.src.commands
             }
             plotHere.setCity(playerInfo.City);
             plotHere.getPermsHandler().setPerm(city.getPermsHandler());
-            plotHere.setPrice(-1);
+            plotHere.Price = -1;
             claims.dataStorage.addClaimedPlot(currentPlotPosition, plotHere);
             city.getCityPlots().Add(plotHere);
             city.saveToDatabase();
@@ -398,7 +399,7 @@ namespace claims.src.commands
                 return TextCommandResult.Error("claims:economy_money_transaction_error");
             }
             plotHere.getPermsHandler().setPerm(city.getPermsHandler());
-            plotHere.setPrice(-1);
+            plotHere.Price = -1;
             plotHere.extraBought = true;
             city.Extrachunksbought++;
             claims.dataStorage.addClaimedPlot(currentPlotPosition, plotHere);
@@ -535,7 +536,7 @@ namespace claims.src.commands
             MessageHandler.sendMsgInCity(city, Lang.Get("claims:player_was_kicked", targetPlayer.GetPartName()));
             MessageHandler.sendMsgToPlayerInfo(targetPlayer, Lang.Get("claims:you_were_kicked_from_city"));
             targetPlayer.clearCity();
-            TreeAttribute tree = new TreeAttribute();
+            TreeAttribute tree = new();
             tree.SetString("cityname", city.GetPartName());
             claims.sapi.World.Api.Event.PushEvent("updatecityinfo", tree);
             UsefullPacketsSend.SendPlayerRelatedInfoOnKickFromCity(targetPlayer);
@@ -561,7 +562,7 @@ namespace claims.src.commands
                 return TextCommandResult.Success("claims:you_are_mayor");
             }
             playerInfo.clearCity();
-            TreeAttribute tree = new TreeAttribute();
+            TreeAttribute tree = new();
             tree.SetString("cityname", city.GetPartName());
             claims.sapi.World.Api.Event.PushEvent("updatecityinfo", tree);
             UsefullPacketsSend.SendPlayerRelatedInfoOnKickFromCity(playerInfo);
@@ -628,7 +629,7 @@ namespace claims.src.commands
             int page = (int)args.LastArg;
 
             var sentInvites = playerInfo.City.getSentInvitations();
-            if (sentInvites.Count() < 1)
+            if (sentInvites.Count < 1)
             {
                 return TextCommandResult.Success("claims:no_invitations");
             }
@@ -748,7 +749,7 @@ namespace claims.src.commands
                 city.saveToDatabase();
                 return TextCommandResult.Success("claims:city_inv_msg_reset");
             }
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             int lenCounter = 0;
 
             string filteredName = Filter.filterNameWithSpaces((string)args.LastArg);
@@ -904,7 +905,7 @@ namespace claims.src.commands
         public static TextCommandResult CitySetMayor(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            TextCommandResult tcr = new TextCommandResult();
+            TextCommandResult tcr = new();
             tcr.Status = EnumCommandStatus.Success;
 
             claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
@@ -997,7 +998,7 @@ namespace claims.src.commands
                 {
                     colorValue = int.Parse((string)args.LastArg);
                 }
-                catch(Exception e)
+                catch
                 {
                     return TextCommandResult.Success("claims:wrong_value");
                 }
@@ -1065,9 +1066,7 @@ namespace claims.src.commands
             {
                 return tcr;
             }
-            City city = null;
-            PlayerInfo targetPlayer = null;
-            if (!HelperFunctionRank(player, rank_and_player_name[0], rank_and_player_name[1], out city, out targetPlayer, tcr))
+            if (!HelperFunctionRank(player, rank_and_player_name[0], rank_and_player_name[1], out City city, out PlayerInfo targetPlayer, tcr))
             {
                 return tcr;
             }
@@ -1104,9 +1103,7 @@ namespace claims.src.commands
                 return tcr;
             }
 
-            City city = null;
-            PlayerInfo targetPlayer = null;
-            if (!HelperFunctionRank(player, rank_and_player_name[0], rank_and_player_name[1], out city, out targetPlayer, tcr))
+            if (!HelperFunctionRank(player, rank_and_player_name[0], rank_and_player_name[1], out _, out PlayerInfo targetPlayer, tcr))
             {
                 return tcr;
             }
@@ -1130,15 +1127,13 @@ namespace claims.src.commands
         public static TextCommandResult PrisonList(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            TextCommandResult tcr = new TextCommandResult();
+            TextCommandResult tcr = new();
             tcr.Status = EnumCommandStatus.Error;
-            City city = null;
-            Plot plotHere = null;
-            if (!HelperFunctionPrison(player, out city, out plotHere, tcr))
+            if (!HelperFunctionPrison(player, out City city, out Plot plotHere, tcr))
             {
                 return tcr;
             }
-            Prison prison = plotHere.getPrison();
+            Prison prison = plotHere.Prison;
             StringBuilder sb = new StringBuilder();
 
             int i = 0;
@@ -1156,25 +1151,23 @@ namespace claims.src.commands
             IServerPlayer player = args.Caller.Player as IServerPlayer;
             TextCommandResult tcr = new TextCommandResult();
             tcr.Status = EnumCommandStatus.Error;
-            City city = null;
-            Plot plotHere = null;
-            if (!HelperFunctionPrison(player, out city, out plotHere, tcr))
+            if (!HelperFunctionPrison(player, out City city, out Plot plotHere, tcr))
             {
                 return tcr;
             }
 
-            if (plotHere.getPrison().getPrisonCells().Count == 1)
+            if (plotHere.Prison.getPrisonCells().Count == 1)
             {
                 return TextCommandResult.Success("claims:last_cell");
             }
             int index = (int)args.LastArg;
-            if (index < 0 || plotHere.getPrison().getPrisonCells().Count < index)
+            if (index < 0 || plotHere.Prison.getPrisonCells().Count < index)
             {
                 return TextCommandResult.Error("claims:need_number");
             }
-            plotHere.getPrison().removePrisonCell(index);
+            plotHere.Prison.removePrisonCell(index);
             plotHere.saveToDatabase();
-            plotHere.getPrison().saveToDatabase();
+            plotHere.Prison.saveToDatabase();
             tcr.Status = EnumCommandStatus.Success;
             tcr.StatusMessage = "claims:prison_cell_removed";
             UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid, EnumPlayerRelatedInfo.CITY_REMOVE_PRISON_CELL);
@@ -1183,7 +1176,7 @@ namespace claims.src.commands
         public static TextCommandResult CRemovePrisonCell(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            TextCommandResult tcr = new TextCommandResult();
+            TextCommandResult tcr = new();
             tcr.Status = EnumCommandStatus.Error;
             City city = null;
 
@@ -1198,7 +1191,7 @@ namespace claims.src.commands
                 return tcr;
             }
             city = playerInfo.City;
-            Vec3i searchPoint = new Vec3i((int)args.Parsers[0].GetValue(), (int)args.Parsers[1].GetValue(), (int)args.Parsers[2].GetValue());
+            Vec3i searchPoint = new((int)args.Parsers[0].GetValue(), (int)args.Parsers[1].GetValue(), (int)args.Parsers[2].GetValue());
             Plot savedPlot = null;
             bool found = false;
             foreach(var it in city.getPrisons())
@@ -1224,7 +1217,7 @@ namespace claims.src.commands
                 return tcr;
             }
             savedPlot.saveToDatabase();
-            savedPlot.getPrison().saveToDatabase();
+            savedPlot.Prison.saveToDatabase();
             tcr.Status = EnumCommandStatus.Success;
             tcr.StatusMessage = "claims:prison_cell_removed";
             UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid, new Dictionary<string, object> { { "value", searchPoint } }, EnumPlayerRelatedInfo.CITY_REMOVE_PRISON_CELL);
@@ -1233,24 +1226,22 @@ namespace claims.src.commands
         public static TextCommandResult AddPrisonCell(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            TextCommandResult tcr = new TextCommandResult();
+            TextCommandResult tcr = new();
             tcr.Status = EnumCommandStatus.Error;
-            City city = null;
-            Plot plotHere = null;
-            if (!HelperFunctionPrison(player, out city, out plotHere, tcr))
+            if (!HelperFunctionPrison(player, out City city, out Plot plotHere, tcr))
             {
                 return tcr;
             }
-            if (plotHere.getPrison().getPrisonCells().Count > claims.config.MAX_CELLS_PER_PRISON)
+            if (plotHere.Prison.getPrisonCells().Count > claims.config.MAX_CELLS_PER_PRISON)
             {
                 tcr.StatusMessage = "claims:too_much_cells";
                 tcr.Status = EnumCommandStatus.Success;
                 return tcr;
             }
             var newPoint = player.Entity.ServerPos.AsBlockPos.AsVec3i.Clone();
-            plotHere.getPrison().addPrisonCell(new PrisonCellInfo(newPoint));
+            plotHere.Prison.addPrisonCell(new PrisonCellInfo(newPoint));
             plotHere.saveToDatabase();
-            plotHere.getPrison().saveToDatabase();
+            plotHere.Prison.saveToDatabase();
             tcr.StatusMessage = "claims:prison_cell_created";
             tcr.Status = EnumCommandStatus.Success;
             UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid, new Dictionary<string, object> { { "value", new PrisonCellElement(newPoint, new HashSet<string>()) } },  EnumPlayerRelatedInfo.CITY_ADD_PRISON_CELL);
@@ -1263,8 +1254,7 @@ namespace claims.src.commands
         {
             PlotPosition cl = plot.plotPosition.Clone();
             cl.getPos().Add(-1, 0);
-            Plot foundPlot;
-            if (claims.dataStorage.getPlot(cl, out foundPlot))
+            if (claims.dataStorage.getPlot(cl, out Plot foundPlot))
             {
                 if (foundPlot.hasCity() && foundPlot.getCity().Equals(plot.getCity()))
                 {
@@ -1377,7 +1367,7 @@ namespace claims.src.commands
                 tcr.StatusMessage = "claims:not_same_city";
                 return false;
             }
-            if (!(plotHere.getType() == PlotType.PRISON))
+            if (!(plotHere.Type == PlotType.PRISON))
             {
                 tcr.StatusMessage = "claims:not_prison_here";
                 return false;
@@ -1390,7 +1380,7 @@ namespace claims.src.commands
         public static TextCommandResult CityCriminalList(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            TextCommandResult tcr = new TextCommandResult();
+            TextCommandResult tcr = new();
             tcr.Status = EnumCommandStatus.Error;
 
             claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
@@ -1414,7 +1404,7 @@ namespace claims.src.commands
         public static TextCommandResult CityCriminalAdd(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            TextCommandResult tcr = new TextCommandResult();
+            TextCommandResult tcr = new();
             tcr.Status = EnumCommandStatus.Error;
 
             claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
@@ -1430,14 +1420,12 @@ namespace claims.src.commands
                 tcr.Status = EnumCommandStatus.Success;
                 return tcr;
             }
-            City targetCity = null;
-            PlayerInfo targetPlayer = null;
             if (args.LastArg == null)
             {
                 tcr.StatusMessage = "claims:need_player_name";
                 return tcr;
             }
-            if (!helperFunctionCriminal(player, (string)args.LastArg, out targetCity, out targetPlayer, tcr))
+            if (!helperFunctionCriminal(player, (string)args.LastArg, out City targetCity, out PlayerInfo targetPlayer, tcr))
             {
                 return tcr;
             }
@@ -1457,7 +1445,7 @@ namespace claims.src.commands
         public static TextCommandResult CityCriminalRemove(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            TextCommandResult tcr = new TextCommandResult();
+            TextCommandResult tcr = new();
             tcr.Status = EnumCommandStatus.Error;
 
             claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
@@ -1473,14 +1461,12 @@ namespace claims.src.commands
                 tcr.Status = EnumCommandStatus.Success;
                 return tcr;
             }
-            City targetCity = null;
-            PlayerInfo targetPlayer = null;
             if (args.LastArg == null)
             {
                 tcr.StatusMessage = "claims:need_player_name";
                 return tcr;
             }
-            if (!helperFunctionCriminal(player, (string)args.LastArg, out targetCity, out targetPlayer, tcr))
+            if (!helperFunctionCriminal(player, (string)args.LastArg, out City targetCity, out PlayerInfo targetPlayer, tcr))
             {
                 return tcr;
             }
@@ -1540,12 +1526,10 @@ namespace claims.src.commands
         public static TextCommandResult CitySummonSet(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            TextCommandResult tcr = new TextCommandResult();
+            TextCommandResult tcr = new();
             tcr.Status = EnumCommandStatus.Error;
 
-            City city;
-            PlayerInfo playerInfo;
-            if (!helperFunctionSummon(player, tcr, out city, out playerInfo))
+            if (!helperFunctionSummon(player, tcr, out City city, out PlayerInfo playerInfo))
             {
                 return tcr;
             }
@@ -1566,20 +1550,20 @@ namespace claims.src.commands
                 tcr.StatusMessage = "claims:not_same_city";
                 return tcr;
             }
-            if (plotHere.getType() != PlotType.SUMMON)
+            if (plotHere.Type != PlotType.SUMMON)
             {
                 tcr.StatusMessage = "claims:need_summon_plot";
                 return tcr;
             }
-            var oldPoint = (plotHere.getPlotDesc() as PlotDescSummon).SummonPoint.Clone();
+            var oldPoint = (plotHere.PlotDesc as PlotDescSummon).SummonPoint.Clone();
             UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid,
                 new Dictionary<string, object> { { "value", new SummonCellElement(oldPoint.AsVec3i.Clone(),
-                    (plotHere.getPlotDesc() as PlotDescSummon).Name) } },
+                    (plotHere.PlotDesc as PlotDescSummon).Name) } },
                 EnumPlayerRelatedInfo.CITY_SUMMON_POINT_REMOVE);
-            (plotHere.getPlotDesc() as PlotDescSummon).SummonPoint = player.Entity.ServerPos.XYZ.Clone();
+            (plotHere.PlotDesc as PlotDescSummon).SummonPoint = player.Entity.ServerPos.XYZ.Clone();
             UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid,
-                new Dictionary<string, object> { { "value", new SummonCellElement((plotHere.getPlotDesc() as PlotDescSummon).SummonPoint.AsVec3i.Clone(),
-                    (plotHere.getPlotDesc() as PlotDescSummon).Name) } },
+                new Dictionary<string, object> { { "value", new SummonCellElement((plotHere.PlotDesc as PlotDescSummon).SummonPoint.AsVec3i.Clone(),
+                    (plotHere.PlotDesc as PlotDescSummon).Name) } },
                 EnumPlayerRelatedInfo.CITY_SUMMON_POINT_ADD);
             tcr.StatusMessage = "claims:summon_point_set_to";
             tcr.MessageParams = new object[] { player.Entity.ServerPos.XYZ.ToString() };
@@ -1590,12 +1574,10 @@ namespace claims.src.commands
         public static TextCommandResult CitySummonSetName(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            TextCommandResult tcr = new TextCommandResult();
+            TextCommandResult tcr = new();
             tcr.Status = EnumCommandStatus.Error;
 
-            City city;
-            PlayerInfo playerInfo;
-            if (!helperFunctionSummon(player, tcr, out city, out playerInfo))
+            if (!helperFunctionSummon(player, tcr, out City city, out PlayerInfo playerInfo))
             {
                 return tcr;
             }
@@ -1616,7 +1598,7 @@ namespace claims.src.commands
                 tcr.StatusMessage = "claims:not_same_city";
                 return tcr;
             }
-            if (plotHere.getType() != PlotType.SUMMON)
+            if (plotHere.Type != PlotType.SUMMON)
             {
                 tcr.StatusMessage = "claims:need_summon_plot";
                 return tcr;
@@ -1629,31 +1611,29 @@ namespace claims.src.commands
             }
             foreach(var it in city.summonPlots)
             {
-                if((it.getPlotDesc() as PlotDescSummon).Name.Equals(filteredName))
+                if((it.PlotDesc as PlotDescSummon).Name.Equals(filteredName))
                 {
                     tcr.StatusMessage = "claims:need_unique_name";
                     return tcr;
                 }
             }
-            (plotHere.getPlotDesc() as PlotDescSummon).Name = filteredName;
+            (plotHere.PlotDesc as PlotDescSummon).Name = filteredName;
             tcr.StatusMessage = "claims:summon_point_name_set_to";
             tcr.MessageParams = new object[] { filteredName };
             tcr.Status = EnumCommandStatus.Success;
             UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid,
-                new Dictionary<string, object> { { "value", new SummonCellElement((plotHere.getPlotDesc() as PlotDescSummon).SummonPoint.AsVec3i.Clone(),
-                    (plotHere.getPlotDesc() as PlotDescSummon).Name) } },
+                new Dictionary<string, object> { { "value", new SummonCellElement((plotHere.PlotDesc as PlotDescSummon).SummonPoint.AsVec3i.Clone(),
+                    (plotHere.PlotDesc as PlotDescSummon).Name) } },
                 EnumPlayerRelatedInfo.CITY_SUMMON_POINT_UPDATE);
             return tcr;
         }
         public static TextCommandResult CitySummonSetNameByCoords(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            TextCommandResult tcr = new TextCommandResult();
+            TextCommandResult tcr = new();
             tcr.Status = EnumCommandStatus.Error;
 
-            City city;
-            PlayerInfo playerInfo;
-            if (!helperFunctionSummon(player, tcr, out city, out playerInfo))
+            if (!helperFunctionSummon(player, tcr, out City city, out PlayerInfo playerInfo))
             {
                 return tcr;
             }
@@ -1673,7 +1653,7 @@ namespace claims.src.commands
             bool found = false;
             foreach (var it in city.summonPlots)
             {
-                Vec3i tmpPos = (it.getPlotDesc() as PlotDescSummon).SummonPoint.AsVec3i;
+                Vec3i tmpPos = (it.PlotDesc as PlotDescSummon).SummonPoint.AsVec3i;
                 if (tmpPos.Equals(summonPoint))
                 {
                     plotHere = it;
@@ -1691,13 +1671,13 @@ namespace claims.src.commands
                 tcr.StatusMessage = "claims:not_same_city";
                 return tcr;
             }
-            (plotHere.getPlotDesc() as PlotDescSummon).Name = filteredName;
+            (plotHere.PlotDesc as PlotDescSummon).Name = filteredName;
             tcr.StatusMessage = "claims:summon_point_name_set_to";
             tcr.MessageParams = new object[] { filteredName };
             tcr.Status = EnumCommandStatus.Success;
             UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid,
-                new Dictionary<string, object> { { "value", new SummonCellElement((plotHere.getPlotDesc() as PlotDescSummon).SummonPoint.AsVec3i.Clone(),
-                    (plotHere.getPlotDesc() as PlotDescSummon).Name) } },
+                new Dictionary<string, object> { { "value", new SummonCellElement((plotHere.PlotDesc as PlotDescSummon).SummonPoint.AsVec3i.Clone(),
+                    (plotHere.PlotDesc as PlotDescSummon).Name) } },
                 EnumPlayerRelatedInfo.CITY_SUMMON_POINT_UPDATE);
             return tcr;
         }
@@ -1727,7 +1707,7 @@ namespace claims.src.commands
         public static TextCommandResult CitySummonList(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            TextCommandResult tcr = new TextCommandResult();
+            TextCommandResult tcr = new();
             tcr.Status = EnumCommandStatus.Error;
             if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
@@ -1747,12 +1727,10 @@ namespace claims.src.commands
         public static TextCommandResult CitySummonTeleport(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            TextCommandResult tcr = new TextCommandResult();
+            TextCommandResult tcr = new();
             tcr.Status = EnumCommandStatus.Error;
 
-            City city;
-            PlayerInfo playerInfo;
-            if (!helperFunctionSummon(player, tcr, out city, out playerInfo))
+            if (!helperFunctionSummon(player, tcr, out City city, out PlayerInfo playerInfo))
             {
                 return tcr;
             }
@@ -1767,7 +1745,7 @@ namespace claims.src.commands
             string searchStr = (string)args.LastArg;
             foreach (var it in city.summonPlots)
             {
-                if((it.getPlotDesc() as PlotDescSummon).Name.Equals(searchStr))
+                if((it.PlotDesc as PlotDescSummon).Name.Equals(searchStr))
                 {
                     chosenPlot = it;
                 }
@@ -1777,9 +1755,9 @@ namespace claims.src.commands
                 return tcr;
             }
             if (claims.config.SUMMON_MIN_PLAYERS != 0 &&
-                claims.sapi.World.GetPlayersAround((chosenPlot.getPlotDesc() as PlotDescSummon).SummonPoint,
+                claims.sapi.World.GetPlayersAround((chosenPlot.PlotDesc as PlotDescSummon).SummonPoint,
                 claims.config.SUMMON_HOR_RANGE,
-                claims.config.SUMMON_VER_RANGE).Count() < claims.config.SUMMON_MIN_PLAYERS)
+                claims.config.SUMMON_VER_RANGE).Length < claims.config.SUMMON_MIN_PLAYERS)
             {
                 tcr.StatusMessage = "claims:need_more_players_for_summon";
                 tcr.Status = EnumCommandStatus.Success;
@@ -1799,13 +1777,769 @@ namespace claims.src.commands
             }
 
             if (TeleportationHandler.addTeleportation(new TeleportationInfo(playerInfo,
-                (chosenPlot.getPlotDesc() as PlotDescSummon).SummonPoint, true, TimeFunctions.getEpochSeconds() + claims.config.SECONDS_SUMMON_TIME)))
+                (chosenPlot.PlotDesc as PlotDescSummon).SummonPoint, true, TimeFunctions.getEpochSeconds() + claims.config.SECONDS_SUMMON_TIME)))
             {
                 tcr.StatusMessage = "claims:you_will_be_summoned";
                 tcr.MessageParams = new object[] { claims.config.SECONDS_SUMMON_TIME };
                 tcr.Status = EnumCommandStatus.Success;
             }
             return tcr;
+        }
+        public static TextCommandResult PlotsGroupCreate(TextCommandCallingArgs args)
+        {
+            IServerPlayer player = args.Caller.Player as IServerPlayer;
+            TextCommandResult tcr = new();
+            tcr.Status = EnumCommandStatus.Error;
+
+            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            if (playerInfo == null)
+            {
+                tcr.StatusMessage = "claims:no_such_player_info";
+                return tcr;
+            }
+            City city = playerInfo.City;
+            if (city == null)
+            {
+                tcr.StatusMessage = "claims:you_dont_have_city";
+                return tcr;
+            }
+            if (city.getCityPlotsGroups().Count > claims.config.MAX_PLOTS_GROUP_PER_CITY)
+            {
+                tcr.StatusMessage = "claims:too_much_plot_groups";
+                return tcr;
+            }
+
+            string name = Filter.filterName((string)args.LastArg);
+            if (name.Length == 0 || !Filter.checkForBlockedNames(name))
+            {
+                tcr.StatusMessage = "claims:invalid_group_name";
+                return tcr;
+            }
+            CityPlotsGroup searchedGroup = null;
+            foreach (CityPlotsGroup group in city.getCityPlotsGroups())
+            {
+                if (group.GetPartName().Equals(name))
+                {
+                    searchedGroup = group;
+                    break;
+                }
+            }
+            if (searchedGroup != null)
+            {
+                tcr.StatusMessage = "claims:group_already_exists";
+                return tcr;
+            }
+            string newGuid = "";
+            while (true)
+            {
+                Guid guid = Guid.NewGuid();
+                if (claims.dataStorage.PlotsGroupExistsByGUID(guid.ToString()))
+                {
+                    continue;
+                }
+                else
+                {
+                    newGuid = guid.ToString();
+                    break;
+                }
+            }
+
+            searchedGroup = new CityPlotsGroup(name, newGuid);
+            tcr.StatusMessage = "claims:plotsgroup_was_created";
+            tcr.MessageParams = new object[] { searchedGroup.GetPartName() };
+            city.getCityPlotsGroups().Add(searchedGroup);
+            claims.dataStorage.addPlotsGroup(searchedGroup);
+            searchedGroup.City = city;
+            city.saveToDatabase();
+            searchedGroup.saveToDatabase(false);
+            tcr.Status = EnumCommandStatus.Success;
+            UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid,
+                new Dictionary<string, object> { { "value", new PlotsGroupCellElement(searchedGroup.Guid,
+                                                                                      searchedGroup.GetPartName(),
+                                                                                      searchedGroup.City.GetPartName(),
+                                                                                      new List<string>(),
+                                                                                      searchedGroup.PermsHandler,
+                                                                                      searchedGroup.PlotsGroupFee)} },
+                EnumPlayerRelatedInfo.CITY_PLOTS_GROUPS_ADD);
+            return tcr;
+        }
+        public static TextCommandResult PlotsGroupDelete(TextCommandCallingArgs args)
+        {
+            IServerPlayer player = args.Caller.Player as IServerPlayer;
+            TextCommandResult tcr = new();
+            tcr.Status = EnumCommandStatus.Error;
+
+            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            if (playerInfo == null)
+            {
+                tcr.StatusMessage = "claims:no_such_player_info";
+                return tcr;
+            }
+            City city = playerInfo.City;
+            if (city == null)
+            {
+                tcr.StatusMessage = "claims:you_dont_have_city";
+                return tcr;
+            }
+
+            string name = Filter.filterName((string)args.LastArg);
+            if (name.Length == 0 || !Filter.checkForBlockedNames(name))
+            {
+                tcr.StatusMessage = "claims:invalid_group_name";
+                return tcr;
+            }
+            CityPlotsGroup searchedGroup = null;
+            foreach (CityPlotsGroup group in city.getCityPlotsGroups())
+            {
+                if (group.GetPartName().Equals(name))
+                {
+                    searchedGroup = group;
+                    break;
+                }
+            }
+            if (searchedGroup == null)
+            {
+                tcr.StatusMessage = "claims:no_such_group_found";
+                return tcr;
+            }
+            tcr.StatusMessage = "claims:plotsgroup_was_deleted";
+            tcr.MessageParams = new object[] { searchedGroup.GetPartName() };
+            city.getCityPlotsGroups().Remove(searchedGroup);
+            claims.dataStorage.removePlotsGroup(searchedGroup.Guid);
+            city.saveToDatabase();
+            claims.getModInstance().getDatabaseHandler().deleteFromDatabaseCityPlotGroup(searchedGroup);
+            tcr.Status = EnumCommandStatus.Success;
+            UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid,
+                new Dictionary<string, object> { { "value", new PlotsGroupCellElement(searchedGroup.Guid,
+                                                                                      null,
+                                                                                      null,
+                                                                                      null,
+                                                                                      null,
+                                                                                      0)} },
+                EnumPlayerRelatedInfo.CITY_PLOTS_GROUPS_REMOVE);
+            return tcr;
+        }
+        public static TextCommandResult PlotsGroupList(TextCommandCallingArgs args)
+        {
+            IServerPlayer player = args.Caller.Player as IServerPlayer;
+            TextCommandResult tcr = new();
+            tcr.Status = EnumCommandStatus.Error;
+
+            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            {
+                tcr.StatusMessage = "claims:no_such_player_info";
+                return tcr;
+            }
+            City city = playerInfo.City;
+            if (city == null)
+            {
+                tcr.StatusMessage = "claims:you_dont_have_city";
+                return tcr;
+            }
+            if (!city.Equals(playerInfo.City))
+            {
+                tcr.StatusMessage = "claims:player_should_be_in_same_city";
+                return tcr;
+            }
+            MessageHandler.sendMsgToPlayer(player,
+                StringFunctions.makeFeasibleStringFromNames(
+                    StringFunctions.getNamesOfPartsForChat(Lang.Get("claims:city_groups"),
+                   new List<Part>(city.getCityPlotsGroups())), ','));
+            tcr.Status = EnumCommandStatus.Success;
+            return tcr;
+        }
+        public static TextCommandResult PlotsGroupListPlayers(TextCommandCallingArgs args)
+        {
+            IServerPlayer player = args.Caller.Player as IServerPlayer;
+            TextCommandResult tcr = new();
+            tcr.Status = EnumCommandStatus.Error;
+
+            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            if (playerInfo == null)
+            {
+                tcr.StatusMessage = "claims:no_such_player_info";
+                return tcr;
+            }
+            City city = playerInfo.City;
+            if (city == null)
+            {
+                tcr.StatusMessage = "claims:you_dont_have_city";
+                return tcr;
+            }
+            if (!city.Equals(playerInfo.City))
+            {
+                tcr.StatusMessage = "claims:player_should_be_in_same_city";
+                return tcr;
+            }
+            string name = Filter.filterName((string)args.LastArg);
+            if (name.Length == 0 || !Filter.checkForBlockedNames(name))
+            {
+                tcr.StatusMessage = "claims:invalid_group_name";
+                return tcr;
+            }
+            CityPlotsGroup searchedGroup = null;
+            foreach (CityPlotsGroup group in city.getCityPlotsGroups())
+            {
+                if (group.GetPartName().Equals(name))
+                {
+                    searchedGroup = group;
+                    break;
+                }
+            }
+            if (searchedGroup == null)
+            {
+                tcr.StatusMessage = "claims:no_such_group_found";
+                return tcr;
+            }
+            MessageHandler.sendMsgToPlayer(player, StringFunctions.makeFeasibleStringFromNames(
+                StringFunctions.getNamesOfPartsForChat(
+                    Lang.Get("claims:plots_group_members", searchedGroup.GetPartName()),
+                    new List<Part>(searchedGroup.PlayersList)), ','));
+            tcr.Status = EnumCommandStatus.Success;
+            return tcr;
+        }
+        public static TextCommandResult PlotsGroupAddPlayerToGroup(TextCommandCallingArgs args)
+        {
+            IServerPlayer player = args.Caller.Player as IServerPlayer;
+            TextCommandResult tcr = new();
+            tcr.Status = EnumCommandStatus.Error;
+
+            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            if (playerInfo == null)
+            {
+                tcr.StatusMessage = "claims:no_such_player_info";
+                return tcr;
+            }
+            City city = playerInfo.City;
+            if (city == null)
+            {
+                tcr.StatusMessage = "claims:you_dont_have_city";
+                return tcr;
+            }
+
+            string groupName = Filter.filterName((string)args.Parsers[0].GetValue());
+            if (groupName.Length == 0 || !Filter.checkForBlockedNames(groupName))
+            {
+                tcr.StatusMessage = "claims:invalid_group_name";
+                return tcr;
+            }
+            CityPlotsGroup searchedGroup = null;
+            foreach (CityPlotsGroup group in city.getCityPlotsGroups())
+            {
+                if (group.GetPartName().Equals(groupName))
+                {
+                    searchedGroup = group;
+                    break;
+                }
+            }
+            if (searchedGroup == null)
+            {
+                tcr.StatusMessage = "claims:no_such_group_found";
+                return tcr;
+            }
+            string playerName = Filter.filterName((string)args.Parsers[1].GetValue());
+            if (playerName.Length == 0 || !Filter.checkForBlockedNames(playerName))
+            {
+                tcr.StatusMessage = "claims:invalid_player_name";
+                return tcr;
+            }
+            claims.dataStorage.getPlayerByName(playerName, out PlayerInfo targetPlayer);
+            if (targetPlayer == null)
+            {
+                MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:no_such_player"));
+                return tcr;
+            }
+            if (searchedGroup.PlayersList.Contains(targetPlayer))
+            {
+                tcr.StatusMessage = "claims:already_in_the_group";
+                return tcr;
+            }
+            var timeoutStamp = TimeFunctions.getEpochSeconds() + claims.config.PLOT_GROUP_INVITATION_TIMEOUT * TimeFunctions.secondsInAnHour;
+            if (CityPlotsGroupInvitationsHandler.addNewCityPlotGroupInvitation(new CityPlotsGroupInvitation(
+                playerInfo.City, targetPlayer, timeoutStamp,
+               new Thread(new ThreadStart(() =>
+               {
+                   if (searchedGroup == null)
+                   {
+                       return;
+                   }
+                   searchedGroup.PlayersList.Add(targetPlayer);
+                   searchedGroup.saveToDatabase();
+                   UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid,
+                    new Dictionary<string, object> { { "value", new PlotsGroupCellElement(searchedGroup.Guid,
+                                                                                          searchedGroup.GetPartName(),
+                                                                                          searchedGroup.City.GetPartName(),
+                                                                                          searchedGroup.PlayersList.Select(ele => ele.GetPartName()).ToList(),
+                                                                                          searchedGroup.PermsHandler,
+                                                                                          searchedGroup.PlotsGroupFee)} },
+                    EnumPlayerRelatedInfo.CITY_PLOTS_GROUPS_UPDATE);
+               })),
+               new Thread(new ThreadStart(() =>
+               {
+                   //TODO
+               })),
+               searchedGroup.GetPartName())))
+            {
+                MessageHandler.sendMsgToPlayerInfo(targetPlayer, Lang.Get("claims:you_were_invited_to_group", city.getPartNameReplaceUnder(), playerInfo.getPartNameReplaceUnder()));
+                UsefullPacketsSend.AddToQueuePlayerInfoUpdate(targetPlayer.Guid, 
+                    new Dictionary<string, object> { { "value", new ClientToPlotsGroupInvitation(city.GetPartName(), searchedGroup.GetPartName(), timeoutStamp) } },
+                    EnumPlayerRelatedInfo.TO_PLOTS_GROUP_INVITE_ADD);
+                tcr.StatusMessage = "claims:you_invited_player_to_group";
+                tcr.MessageParams = new object[] { targetPlayer.GetPartName(), searchedGroup.GetPartName() };
+                tcr.Status = EnumCommandStatus.Success;
+                return tcr;
+            }
+            else
+            {
+                tcr.StatusMessage = "claims:you_already_invited_player_in_one_of_city_group";
+                tcr.MessageParams = new object[] { targetPlayer.GetPartName() };
+                tcr.Status = EnumCommandStatus.Success;
+                return tcr;
+            }
+        }
+        public static TextCommandResult PlotsGroupUnaddTo(TextCommandCallingArgs args)
+        {
+            //TODO
+            IServerPlayer player = args.Caller.Player as IServerPlayer;
+            TextCommandResult tcr = new TextCommandResult();
+            tcr.Status = EnumCommandStatus.Error;
+
+
+            tcr.StatusMessage = "todo";
+            /*UsefullPacketsSend.AddToQueuePlayerInfoUpdate(targetPlayer.Guid,
+                    new Dictionary<string, object> { { "value", new ClientToPlotsGroupInvitation(city.GetPartName(), searchedGroup.GetPartName(), timeoutStamp) } },
+                    EnumPlayerRelatedInfo.TO_PLOTS_GROUP_INVITE_ADD);*/
+            return tcr;
+        }
+        public static TextCommandResult PlotsGroupKickPlayerFromGroup(TextCommandCallingArgs args)
+        {
+            IServerPlayer player = args.Caller.Player as IServerPlayer;
+            TextCommandResult tcr = new();
+            tcr.Status = EnumCommandStatus.Error;
+
+            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            if (playerInfo == null)
+            {
+                MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:no_such_player_info"));
+                return tcr;
+            }
+            City city = playerInfo.City;
+            if (city == null)
+            {
+                MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:you_dont_have_city"));
+                return tcr;
+            }
+
+            string groupName = Filter.filterName((string)args.Parsers[0].GetValue());
+            if (groupName.Length == 0 || !Filter.checkForBlockedNames(groupName))
+            {
+                MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:invalid_group_name"));
+                return tcr;
+            }
+            CityPlotsGroup searchedGroup = null;
+            foreach (CityPlotsGroup group in city.getCityPlotsGroups())
+            {
+                if (group.GetPartName().Equals(groupName))
+                {
+                    searchedGroup = group;
+                    break;
+                }
+            }
+            if (searchedGroup == null)
+            {
+                MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:no_such_group_found"));
+                return tcr;
+            }
+            string playerName = Filter.filterName((string)args.Parsers[1].GetValue());
+            if (playerName.Length == 0 || !Filter.checkForBlockedNames(playerName))
+            {
+                MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:invalid_player_name"));
+                return tcr;
+            }
+            claims.dataStorage.getPlayerByName(playerName, out PlayerInfo targetPlayer);
+            if (targetPlayer == null)
+            {
+                MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:no_such_player"));
+                return tcr;
+            }
+            if (!searchedGroup.PlayersList.Contains(targetPlayer))
+            {
+                MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:not_in_the_group"));
+                return tcr;
+            }
+            searchedGroup.PlayersList.Remove(targetPlayer);
+            searchedGroup.saveToDatabase();
+            UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid,
+                new Dictionary<string, object> { { "value", new PlotsGroupCellElement(searchedGroup.Guid,
+                                                                                      searchedGroup.GetPartName(),
+                                                                                      searchedGroup.City.GetPartName(),
+                                                                                      new List<string>(),
+                                                                                      searchedGroup.PermsHandler,
+                                                                                      searchedGroup.PlotsGroupFee)} },
+                EnumPlayerRelatedInfo.CITY_PLOTS_GROUPS_UPDATE);
+            tcr.Status = EnumCommandStatus.Success;
+            return tcr;
+        }
+        public static TextCommandResult PlotsGroupPlotAdd(TextCommandCallingArgs args)
+        {
+            IServerPlayer player = args.Caller.Player as IServerPlayer;
+            TextCommandResult tcr = new();
+            tcr.Status = EnumCommandStatus.Error;
+
+            //ADD PLOTGROUPNAME
+            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            if (playerInfo == null)
+            {
+                tcr.StatusMessage = "claims:no_such_player_info";
+                return tcr;
+            }
+            City city = playerInfo.City;
+            if (city == null)
+            {
+                tcr.StatusMessage = "claims:you_dont_have_city";
+                return tcr;
+            }
+
+            claims.dataStorage.getPlot(PlotPosition.fromEntityyPos(player.Entity.ServerPos), out Plot plot);
+            //NO CLAIMED PLOT HERE || VILLAGE HERE || PLOT NOT OURS
+            if (plot == null || !plot.getCity().Equals(playerInfo.City))
+            {
+                tcr.StatusMessage = "claims:cannot_add_to_group";
+                return tcr;
+            }
+            string groupName = Filter.filterName((string)args.LastArg);
+            if (groupName.Length == 0 || !Filter.checkForBlockedNames(groupName))
+            {
+                tcr.StatusMessage = "claims:invalid_group_name";
+                return tcr;
+            }
+            CityPlotsGroup searchedGroup = null;
+            foreach (CityPlotsGroup group in city.getCityPlotsGroups())
+            {
+                if (group.GetPartName().Equals(groupName))
+                {
+                    searchedGroup = group;
+                    break;
+                }
+            }
+            if (searchedGroup == null)
+            {
+                tcr.StatusMessage = "claims:no_such_group_found";
+                return tcr;
+            }
+
+            //DELETE OWNER, RECALCULATE HIS RIGHTS AND HIS COMRADES
+            if (plot.hasPlotOwner())
+            {
+                PlayerInfo tmp = plot.getPlotOwner();
+                plot.setPlotOwner(null);
+                RightsHandler.reapplyRights(tmp);
+                foreach (var it in tmp.Friends)
+                {
+                    RightsHandler.reapplyRights(it);
+                }
+            }
+            plot.getPermsHandler().ApplyFromHandler(searchedGroup.PermsHandler, PermGroup.CITIZEN);
+
+            claims.dataStorage.setNowEpochZoneTimestampFromPlotPosition(plot.getPos());
+            claims.serverPlayerMovementListener.markPlotToWasReUpdated(plot.getPos());
+            claims.dataStorage.clearCacheForPlayersInPlot(plot);
+            UsefullPacketsSend.SendCurrentPlotUpdate(player, plot);
+
+            plot.setPlotGroup(searchedGroup);
+            plot.saveToDatabase();
+            tcr.Status = EnumCommandStatus.Success;
+            return tcr;
+        }
+        public static TextCommandResult PlotsGroupPlotRemove(TextCommandCallingArgs args)
+        {
+            IServerPlayer player = args.Caller.Player as IServerPlayer;
+            TextCommandResult tcr = new();
+            tcr.Status = EnumCommandStatus.Error;
+            //ADD PLOTGROUPNAME
+
+            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            if (playerInfo == null)
+            {
+                tcr.StatusMessage = "claims:no_such_player_info";
+                return tcr;
+            }
+            City city = playerInfo.City;
+            if (city == null)
+            {
+                tcr.StatusMessage = "claims:you_dont_have_city";
+                return tcr;
+            }
+
+            claims.dataStorage.getPlot(PlotPosition.fromEntityyPos(player.Entity.ServerPos), out Plot plot);
+            //NO CLAIMED PLOT HERE || VILLAGE HERE || PLOT NOT OURS
+            if (plot == null || !plot.getCity().Equals(playerInfo.City) || !plot.hasCityPlotsGroup())
+            {
+                tcr.StatusMessage = "claims:cannot_remove_from_group";
+                return tcr;
+            }
+            string groupName = Filter.filterName((string)args.LastArg);
+            if (groupName.Length == 0 || !Filter.checkForBlockedNames(groupName))
+            {
+                tcr.StatusMessage = "claims:invalid_group_name";
+                return tcr;
+            }
+            CityPlotsGroup searchedGroup = null;
+            foreach (CityPlotsGroup group in city.getCityPlotsGroups())
+            {
+                if (group.GetPartName().Equals(groupName))
+                {
+                    searchedGroup = group;
+                    break;
+                }
+            }
+            if (searchedGroup == null)
+            {
+                tcr.StatusMessage = "claims:no_such_group_found";
+                return tcr;
+            }
+            if (!plot.getPlotGroup().Equals(searchedGroup))
+            {
+                tcr.StatusMessage = "claims:different_groups";
+                return tcr;
+            }
+            plot.setPlotGroup(null);
+            plot.saveToDatabase();
+
+            tcr.Status = EnumCommandStatus.Success;
+            return tcr;
+        }
+        public static TextCommandResult PlotsGroupSet(TextCommandCallingArgs args)
+        {
+            IServerPlayer player = args.Caller.Player as IServerPlayer;
+            TextCommandResult tcr = new();
+            tcr.Status = EnumCommandStatus.Success;
+
+            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            {
+                MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:no_such_player_info"));
+                return tcr;
+            }
+            City city = playerInfo.City;
+            if (city == null)
+            {
+                MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:you_dont_have_city"));
+                return tcr;
+            }
+            string name = Filter.filterName((args.Parsers[0].GetValue() as string));
+            if (name.Length == 0 || !Filter.checkForBlockedNames(name))
+            {
+                MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:invalid_group_name"));
+                return tcr;
+            }
+            CityPlotsGroup searchedGroup = null;
+            foreach (CityPlotsGroup group in city.getCityPlotsGroups())
+            {
+                if (group.GetPartName().Equals(name))
+                {
+                    searchedGroup = group;
+                    break;
+                }
+            }
+            if (searchedGroup == null)
+            {
+                MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:no_such_group_found"));
+                return tcr;
+            }
+
+            CmdArgs tmpArgs = new CmdArgs();
+            tmpArgs.AppendSingle((string)args.Parsers[1].GetValue());
+            tmpArgs.AppendSingle((string)args.Parsers[2].GetValue());
+            tmpArgs.AppendSingle((string)args.Parsers[3].GetValue());
+
+            args.RawArgs.PopWord();
+            if(!searchedGroup.PermsHandler.setAccessPerm(tmpArgs))
+            {
+                MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:error_occured"));
+            }
+
+            foreach(var plot in city.getCityPlots())
+            {
+                if (plot.hasPlotGroup() && plot.getPlotGroup().Equals(searchedGroup))
+                {
+                    plot.getPermsHandler().setAccessPerm(tmpArgs);
+                    plot.saveToDatabase();
+                    claims.dataStorage.setNowEpochZoneTimestampFromPlotPosition(plot.getPos());
+                    claims.serverPlayerMovementListener.markPlotToWasReUpdated(plot.getPos());
+                    claims.dataStorage.clearCacheForPlayersInPlot(plot);
+                    UsefullPacketsSend.SendCurrentPlotUpdate(player, plot);
+                }
+            }
+            UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid,
+                new Dictionary<string, object> { { "value", new PlotsGroupCellElement(searchedGroup.Guid,
+                                                                                      searchedGroup.GetPartName(),
+                                                                                      searchedGroup.City.GetPartName(),
+                                                                                      new List<string>(),
+                                                                                      searchedGroup.PermsHandler,
+                                                                                      searchedGroup.PlotsGroupFee)} },
+                EnumPlayerRelatedInfo.CITY_PLOTS_GROUPS_UPDATE);
+            MessageHandler.sendMsgToPlayer(player,
+                Lang.Get("claims:for_plotsgroup_group_perm_set_what", name, args.Parsers[1].GetValue(), (args.Parsers[2].GetValue() as string), (args.Parsers[3].GetValue() as string)));
+            return TextCommandResult.Success();
+        }
+        public static TextCommandResult PlotsGroupSetPvp(TextCommandCallingArgs args)
+        {
+            IServerPlayer player = args.Caller.Player as IServerPlayer;
+            TextCommandResult tcr = new();
+            tcr.Status = EnumCommandStatus.Success;
+
+            if (!HelperFunctionSetFlag(player, out var searchedGroup, out var city, (args.Parsers[0].GetValue() as string), tcr))
+            {
+                return tcr;
+            }
+
+            if (!searchedGroup.PermsHandler.setPvp((string)args.LastArg))
+            {
+                return tcr;
+            }
+
+            foreach (var plot in city.getCityPlots())
+            {
+                if (plot.hasPlotGroup() && plot.getPlotGroup().Equals(searchedGroup))
+                {
+                    plot.getPermsHandler().setPvp((string)args.LastArg);
+                    plot.saveToDatabase();
+                    claims.dataStorage.setNowEpochZoneTimestampFromPlotPosition(plot.getPos());
+                    claims.serverPlayerMovementListener.markPlotToWasReUpdated(plot.getPos());
+                    claims.dataStorage.clearCacheForPlayersInPlot(plot);
+                    UsefullPacketsSend.SendCurrentPlotUpdate(player, plot);
+                }
+            }
+            searchedGroup.saveToDatabase();
+            UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid,
+                new Dictionary<string, object> { { "value", new PlotsGroupCellElement(searchedGroup.Guid,
+                                                                                      searchedGroup.GetPartName(),
+                                                                                      searchedGroup.City.GetPartName(),
+                                                                                      new List<string>(),
+                                                                                      searchedGroup.PermsHandler,
+                                                                                      searchedGroup.PlotsGroupFee)} },
+                EnumPlayerRelatedInfo.CITY_PLOTS_GROUPS_UPDATE);
+            return tcr;
+        }
+        public static TextCommandResult PlotsGroupSetFire(TextCommandCallingArgs args)
+        {
+            IServerPlayer player = args.Caller.Player as IServerPlayer;
+            TextCommandResult tcr = new();
+            tcr.Status = EnumCommandStatus.Success;
+
+            if (!HelperFunctionSetFlag(player, out var searchedGroup, out var city, (args.Parsers[0].GetValue() as string), tcr))
+            {
+                return tcr;
+            }
+
+            if (!searchedGroup.PermsHandler.setFire((string)args.LastArg))
+            {
+                return tcr;
+            }
+
+            foreach (var plot in city.getCityPlots())
+            {
+                if (plot.hasPlotGroup() && plot.getPlotGroup().Equals(searchedGroup))
+                {
+                    plot.getPermsHandler().setFire((string)args.LastArg);
+                    plot.saveToDatabase();
+                    claims.dataStorage.setNowEpochZoneTimestampFromPlotPosition(plot.getPos());
+                    claims.serverPlayerMovementListener.markPlotToWasReUpdated(plot.getPos());
+                    claims.dataStorage.clearCacheForPlayersInPlot(plot);
+                    UsefullPacketsSend.SendCurrentPlotUpdate(player, plot);
+                }
+            }
+            searchedGroup.saveToDatabase();
+            UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid,
+                new Dictionary<string, object> { { "value", new PlotsGroupCellElement(searchedGroup.Guid,
+                                                                                      searchedGroup.GetPartName(),
+                                                                                      searchedGroup.City.GetPartName(),
+                                                                                      new List<string>(),
+                                                                                      searchedGroup.PermsHandler,
+                                                                                      searchedGroup.PlotsGroupFee)} },
+                EnumPlayerRelatedInfo.CITY_PLOTS_GROUPS_UPDATE);
+            return tcr;
+        }
+        public static TextCommandResult PlotsGroupSetBlast(TextCommandCallingArgs args)
+        {
+            IServerPlayer player = args.Caller.Player as IServerPlayer;
+            TextCommandResult tcr = new();
+            tcr.Status = EnumCommandStatus.Success;
+
+            if(!HelperFunctionSetFlag(player, out var searchedGroup, out var city, (args.Parsers[0].GetValue() as string), tcr))
+            {
+                return tcr;
+            }
+
+            if (!searchedGroup.PermsHandler.setBlast((string)args.LastArg))
+            {
+                return tcr;
+            }
+
+            foreach (var plot in city.getCityPlots())
+            {
+                if (plot.hasPlotGroup() && plot.getPlotGroup().Equals(searchedGroup))
+                {
+                    plot.getPermsHandler().setBlast((string)args.LastArg);
+                    plot.saveToDatabase();
+                    claims.dataStorage.setNowEpochZoneTimestampFromPlotPosition(plot.getPos());
+                    claims.serverPlayerMovementListener.markPlotToWasReUpdated(plot.getPos());
+                    claims.dataStorage.clearCacheForPlayersInPlot(plot);
+                    UsefullPacketsSend.SendCurrentPlotUpdate(player, plot);
+                }
+            }
+            searchedGroup.saveToDatabase();
+            UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid,
+                new Dictionary<string, object> { { "value", new PlotsGroupCellElement(searchedGroup.Guid,
+                                                                                      searchedGroup.GetPartName(),
+                                                                                      searchedGroup.City.GetPartName(),
+                                                                                      new List<string>(),
+                                                                                      searchedGroup.PermsHandler,
+                                                                                      searchedGroup.PlotsGroupFee)} },
+                EnumPlayerRelatedInfo.CITY_PLOTS_GROUPS_UPDATE);
+            return tcr;
+        }
+        public static bool HelperFunctionSetFlag(IServerPlayer player, out CityPlotsGroup searchedGroup, out City city, string groupName, TextCommandResult tcr)
+        {
+            searchedGroup = null;
+            city = null;
+            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            {
+                MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:no_such_player_info"));
+                return false;
+            }
+            city = playerInfo.City;
+            if (city == null)
+            {
+                MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:you_dont_have_city"));
+                return false;
+            }
+            string name = Filter.filterName(groupName);
+            if (name.Length == 0 || !Filter.checkForBlockedNames(name))
+            {
+                MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:invalid_group_name"));
+                return false;
+            }
+            foreach (CityPlotsGroup group in city.getCityPlotsGroups())
+            {
+                if (group.GetPartName().Equals(name))
+                {
+                    searchedGroup = group;
+                    break;
+                }
+            }
+            if (searchedGroup == null)
+            {
+                MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:no_such_group_found"));
+                return false;
+            }
+        
+            if (!city.isCitizen(playerInfo))
+            {
+                tcr.StatusMessage = "claims:need_to_be_citizen";
+                return false;
+            }
+            return true;
         }
         /*
        
@@ -1914,308 +2648,11 @@ namespace claims.src.commands
             //RECEIVED
             //SENT
         }
-        public static TextCommandResult PlotsGroupSet(TextCommandCallingArgs args)
-        {
-            IServerPlayer player = args.Caller.Player as IServerPlayer;
-            TextCommandResult tcr = new TextCommandResult();
-            tcr.Status = EnumCommandStatus.Error;
-
-            if (!(args.Parsers[0].GetValue() as string).Equals("p", StringComparison.OrdinalIgnoreCase)
-                && !(args.Parsers[0].GetValue() as string).Equals("permissions", StringComparison.OrdinalIgnoreCase))
-            {
-                MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:wrong_param"));
-                return tcr;
-            }
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
-            if (playerInfo == null)
-            {
-                MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:no_such_player_info"));
-                return tcr;
-            }
-            City city = playerInfo.City;
-            if (city == null)
-            {
-                MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:you_dont_have_city"));
-                return tcr;
-            }
-            if (!RightsHandler.hasRight(player, PermConstants.CITY_PLOTGROUP_SET))
-            {
-                MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:you_dont_have_right_for_that_command"));
-                return tcr;
-            }
-
-            string name = Filter.filterName((args.Parsers[1].GetValue() as string));
-            if (name.Length == 0 || !Filter.checkForBlockedNames(name))
-            {
-                MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:invalid_group_name"));
-                return tcr;
-            }
-            CityPlotsGroup searchedGroup = null;
-            foreach (CityPlotsGroup group in city.getCityPlotsGroups())
-            {
-                if (group.GetPartName().Equals(name))
-                {
-                    searchedGroup = group;
-                    break;
-                }
-            }
-            if (searchedGroup == null)
-            {
-                MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:no_such_group_found"));
-                return tcr;
-            }
-            PermGroup permGroup;
-            switch ((args.Parsers[2].GetValue() as string))
-            {
-                case "citizen":
-                    permGroup = PermGroup.CITIZEN;
-                    break;
-                case "stranger":
-                    permGroup = PermGroup.STRANGER;
-                    break;
-                case "ally":
-                    permGroup = PermGroup.ALLY;
-                    break;
-                default:
-                    return tcr;
-            }
-            PermType permType;
-            switch ((args.Parsers[3].GetValue() as string))
-            {
-                case "use":
-                    permType = PermType.USE_PERM;
-                    break;
-                case "build":
-                    permType = PermType.BUILD_AND_DESTROY_PERM;
-                    break;
-                case "attack":
-                    permType = PermType.ATTACK_ANIMALS_PERM;
-                    break;
-                default:
-                    return tcr;
-            }
-            searchedGroup.getPermsHandler().setPerm(permGroup, permType, getBoolFromString((args.Parsers[4].GetValue() as string)));
-            MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:for_plotsgroup_group_perm_set_what", name, permGroup, (args.Parsers[3].GetValue() as string), (args.Parsers[4].GetValue() as string)));
-            searchedGroup.saveToDatabase();
-            tcr.Status = EnumCommandStatus.Success;
-            return tcr;
-        }
-        public static TextCommandResult PlotsGroupListPlayers(TextCommandCallingArgs args)
-        {
-            IServerPlayer player = args.Caller.Player as IServerPlayer;
-            TextCommandResult tcr = new TextCommandResult();
-            tcr.Status = EnumCommandStatus.Error;
-
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
-            if (playerInfo == null)
-            {
-                tcr.StatusMessage = "claims:no_such_player_info";
-                return tcr;
-            }
-            City city = playerInfo.City;
-            if (city == null)
-            {
-                tcr.StatusMessage = "claims:you_dont_have_city";
-                return tcr;
-            }
-            if (!RightsHandler.hasRight(player, PermConstants.CITY_PLOTGROUP_LIST))
-            {
-                tcr.StatusMessage = "claims:you_dont_have_right_for_that_command";
-                return tcr;
-            }
-            if (!city.Equals(playerInfo.City))
-            {
-                tcr.StatusMessage = "claims:player_should_be_in_same_city";
-                return tcr;
-            }
-            string name = Filter.filterName((string)args.LastArg);
-            if (name.Length == 0 || !Filter.checkForBlockedNames(name))
-            {
-                tcr.StatusMessage = "claims:invalid_group_name";
-                return tcr;
-            }
-            CityPlotsGroup searchedGroup = null;
-            foreach (CityPlotsGroup group in city.getCityPlotsGroups())
-            {
-                if (group.GetPartName().Equals(name))
-                {
-                    searchedGroup = group;
-                    break;
-                }
-            }
-            if (searchedGroup == null)
-            {
-                tcr.StatusMessage = "claims:no_such_group_found";
-                return tcr;
-            }
-            MessageHandler.sendMsgToPlayer(player, StringFunctions.makeFeasibleStringFromNames(
-                StringFunctions.getNamesOfPartsForChat(
-                    Lang.Get("claims:plots_group_members", searchedGroup.GetPartName()),
-                    new List<Part>(searchedGroup.getPlayerInfos())), ','));
-            tcr.Status = EnumCommandStatus.Success;
-            return  tcr;
-        }
-        public static TextCommandResult PlotsGroupList(TextCommandCallingArgs args)
-        {
-            IServerPlayer player = args.Caller.Player as IServerPlayer;
-            TextCommandResult tcr = new TextCommandResult();
-            tcr.Status = EnumCommandStatus.Error;
-
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
-            {
-                tcr.StatusMessage = "claims:no_such_player_info";
-                return tcr;
-            }
-            City city = playerInfo.City;
-            if (city == null)
-            {
-                tcr.StatusMessage = "claims:you_dont_have_city";
-                return tcr;
-            }
-            if (!RightsHandler.hasRight(player, PermConstants.CITY_PLOTGROUP_LIST))
-            {
-                tcr.StatusMessage = "claims:you_dont_have_right_for_that_command";
-                return tcr;
-            }
-            if(!city.Equals(playerInfo.City))
-            {
-                tcr.StatusMessage = "claims:player_should_be_in_same_city";
-                return tcr;
-            }
-            MessageHandler.sendMsgToPlayer(player,
-                StringFunctions.makeFeasibleStringFromNames(
-                    StringFunctions.getNamesOfPartsForChat(Lang.Get("claims:city_groups"),
-                   new List<Part>(city.getCityPlotsGroups())), ','));
-            tcr.Status = EnumCommandStatus.Success;
-            return tcr;
-        }
-        //CREATE NEW GROUP BY NAME
-        public static TextCommandResult PlotsGroupCreate(TextCommandCallingArgs args)
-        {
-            IServerPlayer player = args.Caller.Player as IServerPlayer;
-            TextCommandResult tcr = new TextCommandResult();
-            tcr.Status = EnumCommandStatus.Error;
-
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
-            if (playerInfo == null)
-            {
-                tcr.StatusMessage = "claims:no_such_player_info";
-                return tcr;
-            }
-            City city = playerInfo.City;
-            if (city == null)
-            {
-                tcr.StatusMessage = "claims:you_dont_have_city";
-                return tcr;
-            }
-            if(city.getCityPlotsGroups().Count() > 10)
-            {
-                tcr.StatusMessage = "claims:too_much_plot_groups";
-                return tcr;
-            }
-            if (!RightsHandler.hasRight(player, PermConstants.CITY_PLOTGROUP_CREATE))
-            {
-                tcr.StatusMessage = "claims:you_dont_have_right_for_that_command";
-                return tcr;
-            }
-            string name = Filter.filterName((string)args.LastArg);
-            if (name.Length == 0 || !Filter.checkForBlockedNames(name))
-            {
-                tcr.StatusMessage = "claims:invalid_group_name";
-                return tcr;
-            }
-            CityPlotsGroup searchedGroup = null;
-            foreach (CityPlotsGroup group in city.getCityPlotsGroups())
-            {
-                if(group.GetPartName().Equals(name))
-                {
-                    searchedGroup = group;
-                    break;
-                }
-            }
-            if(searchedGroup != null)
-            {
-                tcr.StatusMessage = "claims:group_already_exists";
-                return tcr;
-            }
-            string newGuid = "";
-            while(true)
-            {
-                Guid guid = Guid.NewGuid();
-                if(claims.dataStorage.PlotsGroupExistsByGUID(guid.ToString()))
-                {
-                    continue;
-                }
-                else 
-                {
-                    newGuid = guid.ToString();
-                    break;
-                }
-            }
-            
-            searchedGroup = new CityPlotsGroup(name, newGuid);
-            tcr.StatusMessage = "claims:plotsgroup_was_created";
-            tcr.MessageParams = new object [] { searchedGroup.GetPartName() };
-            city.getCityPlotsGroups().Add(searchedGroup);
-            claims.dataStorage.addPlotsGroup(searchedGroup);
-            searchedGroup.setCity(city);
-            city.saveToDatabase();
-            searchedGroup.saveToDatabase(false);
-            tcr.Status = EnumCommandStatus.Success;
-            return tcr;
-        }
-        public static TextCommandResult PlotsGroupDelete(TextCommandCallingArgs args)
-        {
-            IServerPlayer player = args.Caller.Player as IServerPlayer;
-            TextCommandResult tcr = new TextCommandResult();
-            tcr.Status = EnumCommandStatus.Error;
-
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
-            if (playerInfo == null)
-            {
-                tcr.StatusMessage = "claims:no_such_player_info";
-                return tcr;
-            }
-            City city = playerInfo.City;
-            if (city == null)
-            {
-                tcr.StatusMessage = "claims:you_dont_have_city";
-                return tcr;
-            }
-            if (!RightsHandler.hasRight(player, PermConstants.CITY_PLOTGROUP_DELETE))
-            {
-                tcr.StatusMessage = "claims:you_dont_have_right_for_that_command";
-                return tcr;
-            }
-            string name = Filter.filterName((string)args.LastArg);
-            if (name.Length == 0 || !Filter.checkForBlockedNames(name))
-            {
-                tcr.StatusMessage = "claims:invalid_group_name";
-                return tcr;
-            }
-            CityPlotsGroup searchedGroup = null;
-            foreach (CityPlotsGroup group in city.getCityPlotsGroups())
-            {
-                if (group.GetPartName().Equals(name))
-                {
-                    searchedGroup = group;
-                    break;
-                }
-            }
-            if (searchedGroup == null)
-            {
-                tcr.StatusMessage = "claims:no_such_group_found";
-                return tcr;
-            }
-            tcr.StatusMessage = "claims:plotsgroup_was_deleted";
-            tcr.MessageParams = new object[] { searchedGroup.GetPartName() };
-            city.getCityPlotsGroups().Remove(searchedGroup);
-            claims.dataStorage.removePlotsGroup(searchedGroup.Guid);
-            city.saveToDatabase();
-            claims.getModInstance().getDatabaseHandler().deleteFromDatabaseCityPlotGroup(searchedGroup);
-            tcr.Status = EnumCommandStatus.Success;
-            return tcr;
-        }
+        
+       
+        
+        
+        
         //ADD PLAYER TO GROUP
         public static TextCommandResult PlotsGroupAddTo(TextCommandCallingArgs args)
         {
@@ -2322,208 +2759,9 @@ namespace claims.src.commands
             tcr.StatusMessage = "todo";
             return tcr;
         }
-        public static TextCommandResult PlotsGroupKickFrom(TextCommandCallingArgs args)
-        {
-            IServerPlayer player = args.Caller.Player as IServerPlayer;
-            TextCommandResult tcr = new TextCommandResult();
-            tcr.Status = EnumCommandStatus.Error;
-
-            if (args.RawArgs.Length < 2)
-            {
-                MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:need_name_for_group_and_player"));
-                return tcr;
-            }
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
-            if (playerInfo == null)
-            {
-                MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:no_such_player_info"));
-                return tcr;
-            }
-            City city = playerInfo.City;
-            if (city == null)
-            {
-                MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:you_dont_have_city"));
-                return tcr;
-            }
-            if (!RightsHandler.hasRight(player, PermConstants.CITY_PLOTGROUP_KICK))
-            {
-                MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:you_dont_have_right_for_that_command"));
-                return tcr;
-            }
-            string groupName = Filter.filterName(args.RawArgs[0]);
-            if (groupName.Length == 0 || !Filter.checkForBlockedNames(groupName))
-            {
-                MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:invalid_group_name"));
-                return tcr;
-            }
-            CityPlotsGroup searchedGroup = null;
-            foreach (CityPlotsGroup group in city.getCityPlotsGroups())
-            {
-                if (group.GetPartName().Equals(groupName))
-                {
-                    searchedGroup = group;
-                    break;
-                }
-            }
-            if (searchedGroup == null)
-            {
-                MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:no_such_group_found"));
-                return tcr;
-            }
-            string playerName = Filter.filterName(args.RawArgs[1]);
-            if (playerName.Length == 0 || !Filter.checkForBlockedNames(playerName))
-            {
-                MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:invalid_player_name"));
-                return tcr;
-            }
-            claims.dataStorage.getPlayerByName(playerName, out PlayerInfo targetPlayer);
-            if (targetPlayer == null)
-            {
-                MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:no_such_player"));
-                return tcr;
-            }
-            if (!searchedGroup.getPlayerInfos().Contains(targetPlayer))
-            {
-                MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:not_in_the_group"));
-                return tcr;
-            }
-            searchedGroup.getPlayerInfos().Remove(targetPlayer);
-            searchedGroup.saveToDatabase();
-
-            tcr.Status = EnumCommandStatus.Success;
-            return tcr;
-
-        }
-        public static TextCommandResult processPlotRemove(TextCommandCallingArgs args)
-        {
-            IServerPlayer player = args.Caller.Player as IServerPlayer;
-            TextCommandResult tcr = new TextCommandResult();
-            tcr.Status = EnumCommandStatus.Error;
-            //ADD PLOTGROUPNAME
-
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
-            if (playerInfo == null)
-            {
-                tcr.StatusMessage = "claims:no_such_player_info";
-                return tcr;
-            }
-            City city = playerInfo.City;
-            if (city == null)
-            {
-                tcr.StatusMessage = "claims:you_dont_have_city";
-                return tcr;
-            }
-            if (!RightsHandler.hasRight(player, PermConstants.CITY_PLOTGROUP_REMOVEPLOTS))
-            {
-                tcr.StatusMessage = "claims:you_dont_have_right_for_that_command";
-                return tcr;
-            }
-            claims.dataStorage.getPlot(PlotPosition.fromEntityyPos(player.Entity.ServerPos), out Plot plot);
-            //NO CLAIMED PLOT HERE || VILLAGE HERE || PLOT NOT OURS
-            if (plot == null || !plot.getCity().Equals(playerInfo.City) || !plot.hasCityPlotsGroup())
-            {
-                tcr.StatusMessage = "claims:cannot_remove_from_group";
-                return tcr;
-            }
-            string groupName = Filter.filterName((string)args.LastArg);
-            if (groupName.Length == 0 || !Filter.checkForBlockedNames(groupName))
-            {
-                tcr.StatusMessage = "claims:invalid_group_name";
-                return tcr;
-            }
-            CityPlotsGroup searchedGroup = null;
-            foreach (CityPlotsGroup group in city.getCityPlotsGroups())
-            {
-                if (group.GetPartName().Equals(groupName))
-                {
-                    searchedGroup = group;
-                    break;
-                }
-            }
-            if (searchedGroup == null)
-            {
-                tcr.StatusMessage = "claims:no_such_group_found";
-                return tcr;
-            }
-            if(!plot.getPlotGroup().Equals(searchedGroup))
-            {
-                tcr.StatusMessage = "claims:different_groups";
-                return tcr;
-            }
-            plot.setPlotGroup(null);
-            plot.saveToDatabase();
-
-            tcr.Status = EnumCommandStatus.Success;
-            return tcr;
-        }
-        public static TextCommandResult processPlotAdd(TextCommandCallingArgs args)
-        {
-            IServerPlayer player = args.Caller.Player as IServerPlayer;
-            TextCommandResult tcr = new TextCommandResult();
-            tcr.Status = EnumCommandStatus.Error;
-
-            //ADD PLOTGROUPNAME
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
-            if (playerInfo == null)
-            {
-                tcr.StatusMessage = "claims:no_such_player_info";
-                return tcr;
-            }
-            City city = playerInfo.City;
-            if (city == null)
-            {
-                tcr.StatusMessage = "claims:you_dont_have_city";
-                return tcr;
-            }
-            if (!RightsHandler.hasRight(player, PermConstants.CITY_PLOTGROUP_ADDPLOTS))
-            {
-                tcr.StatusMessage = "claims:you_dont_have_right_for_that_command";
-                return tcr;
-            }
-            claims.dataStorage.getPlot(PlotPosition.fromEntityyPos(player.Entity.ServerPos), out Plot plot);
-            //NO CLAIMED PLOT HERE || VILLAGE HERE || PLOT NOT OURS
-            if(plot == null || !plot.getCity().Equals(playerInfo.City))
-            {
-                tcr.StatusMessage = "claims:cannot_add_to_group";
-                return tcr;
-            }
-            string groupName = Filter.filterName((string)args.LastArg);
-            if (groupName.Length == 0 || !Filter.checkForBlockedNames(groupName))
-            {
-                tcr.StatusMessage = "claims:invalid_group_name";
-                return tcr;
-            }
-            CityPlotsGroup searchedGroup = null;
-            foreach (CityPlotsGroup group in city.getCityPlotsGroups())
-            {
-                if (group.GetPartName().Equals(groupName))
-                {
-                    searchedGroup = group;
-                    break;
-                }
-            }
-            if (searchedGroup == null)
-            {
-                tcr.StatusMessage = "claims:no_such_group_found";
-                return tcr;
-            }
-
-            //DELETE OWNER, RECALCULATE HIS RIGHTS AND HIS COMRADES
-            if(plot.hasPlotOwner())
-            {
-                PlayerInfo tmp = plot.getPlotOwner();
-                plot.setPlotOwner(null);
-                RightsHandler.reapplyRights(tmp);
-                foreach(var it in tmp.Friends)
-                {
-                    RightsHandler.reapplyRights(it);
-                }
-            }
-            plot.setPlotGroup(searchedGroup);
-            plot.saveToDatabase();
-            tcr.Status = EnumCommandStatus.Success;
-            return tcr;
-        }
+       
+       
+        
 
 
       */

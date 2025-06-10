@@ -94,19 +94,19 @@ namespace claims.src.commands
             {
                 return TextCommandResult.Error("claims:has_plot_group");
             }
-            if (plot.getPrice() > (double)claims.economyHandler.getBalance(playerInfo.Guid))
+            if (plot.Price > (double)claims.economyHandler.getBalance(playerInfo.Guid))
             {
                 return TextCommandResult.Error("claims:not_enough_money");
             }
-            if (plot.getType() == PlotType.EMBASSY || (playerInfo.hasCity() && plot.getCity().Equals(playerInfo.City)))
+            if (plot.Type == PlotType.EMBASSY || (playerInfo.hasCity() && plot.getCity().Equals(playerInfo.City)))
             {
                 //Save price localy or do not move after we change plot price
-                decimal savedPrice = (decimal)plot.getPrice();
+                decimal savedPrice = (decimal)plot.Price;
 
-                if(claims.economyHandler.depositFromAToB(playerInfo.MoneyAccountName, plot.getCity().MoneyAccountName, (decimal)plot.getPrice()).ResultState 
+                if(claims.economyHandler.depositFromAToB(playerInfo.MoneyAccountName, plot.getCity().MoneyAccountName, (decimal)plot.Price).ResultState 
                     == caneconomy.src.implementations.OperationResult.EnumOperationResultState.SUCCCESS)
                 {
-                    plot.setPrice(-1);
+                    plot.Price = -1;
                     plot.getPermsHandler().setPerm(playerInfo.PermsHandler);
                     plot.setPlotOwner(playerInfo);
                     playerInfo.PlayerPlots.Add(plot);
@@ -172,10 +172,9 @@ namespace claims.src.commands
         public static TextCommandResult SetPvp(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            TextCommandResult tcr = new TextCommandResult();
+            TextCommandResult tcr = new();
             tcr.Status = EnumCommandStatus.Success;
-            Plot plotHere;
-            if (!HelperFunctionSetFlag(player, out plotHere, tcr))
+            if (!HelperFunctionSetFlag(player, out Plot plotHere, tcr))
             {
                 return tcr;
             }
@@ -193,11 +192,10 @@ namespace claims.src.commands
         public static TextCommandResult SetFire(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            TextCommandResult tcr = new TextCommandResult();
+            TextCommandResult tcr = new();
             tcr.Status = EnumCommandStatus.Success;
 
-            Plot plotHere;
-            if (!HelperFunctionSetFlag(player, out plotHere, tcr))
+            if (!HelperFunctionSetFlag(player, out Plot plotHere, tcr))
             {
                 return tcr;
             }
@@ -216,11 +214,10 @@ namespace claims.src.commands
         public static TextCommandResult SetBlast(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            TextCommandResult tcr = new TextCommandResult();
+            TextCommandResult tcr = new();
             tcr.Status = EnumCommandStatus.Success;
 
-            Plot plotHere;
-            if (!HelperFunctionSetFlag(player, out plotHere, tcr))
+            if (!HelperFunctionSetFlag(player, out Plot plotHere, tcr))
             {
                 return tcr;
             }
@@ -352,7 +349,7 @@ namespace claims.src.commands
                     return TextCommandResult.Success("claims:player_should_be_in_same_city");
                 }
 
-                TextCommandResult tcr = new TextCommandResult();
+                TextCommandResult tcr = new();
                 tcr.Status = EnumCommandStatus.Success;
                 if (!plotHere.setNewType(tcr, (string)args.LastArg, player))
                 {
@@ -371,7 +368,7 @@ namespace claims.src.commands
         public static TextCommandResult SetPermissions(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            TextCommandResult tcr = new TextCommandResult();
+            TextCommandResult tcr = new();
             tcr.Status = EnumCommandStatus.Success;
 
             claims.dataStorage.getPlot(PlotPosition.fromXZ((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Z), out Plot plot);
@@ -429,7 +426,7 @@ namespace claims.src.commands
             {
                 return TextCommandResult.Success("claims:try_pos");
             }
-            plot.setPrice(price);
+            plot.Price = price;
             plot.saveToDatabase();
             claims.dataStorage.setNowEpochZoneTimestampFromPlotPosition(plot.getPos());
             claims.serverPlayerMovementListener.markPlotToWasReUpdated(plot.getPos());
@@ -439,7 +436,7 @@ namespace claims.src.commands
         public static TextCommandResult SetNotForSale(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            TextCommandResult tcr = new TextCommandResult();
+            TextCommandResult tcr = new();
             tcr.Status = EnumCommandStatus.Success;
 
             claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
@@ -462,7 +459,7 @@ namespace claims.src.commands
                 return TextCommandResult.Success("claims:not_your_city");
             }
 
-            plot.setPrice(-1);
+            plot.Price = -1;
             plot.saveToDatabase();
             claims.dataStorage.setNowEpochZoneTimestampFromPlotPosition(plot.getPos());
             claims.serverPlayerMovementListener.markPlotToWasReUpdated(plot.getPos());

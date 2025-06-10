@@ -67,7 +67,7 @@ namespace claims.src.part
             {
                 city.getCityPlots().Remove(plot);
             }
-            if(plot.getType() == PlotType.PRISON)
+            if(plot.Type == PlotType.PRISON)
             {
                 plot.CleanUpCurrentPlotTypeData();
             }

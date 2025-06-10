@@ -217,6 +217,8 @@
     "tavern_plot_type": "Tavern",
     "prison_plot_type": "Prison",
     "temple_plot_type": "Temple",
+    "cannot_remove_from_group": "Cannot remove plot from plots group.",
+
     //RANK
     "no_such_city_rank": "No such city rank.",
     "rank_added_to_player": "{0} now has rank {1}.",
@@ -283,7 +285,7 @@
     "movementgui-pvp-off": "<font color=\"green\">NO-PVP</font>",
     "movementgui-price": "Price: {0}",
     "movementgui-plot-name": "<font color=\"#82A0AB\">{0}</font>",
-    "movementgui-group-name": "Group name: {0}",
+    "movementgui-group-name": "~{0}~",
     "gui-prison-cell-coords": "X: {0} Y: {1} Z: {2}",
     "gui-prison-cell-remove-confirm": "Remove prison cell at {0}?",
     "gui-confirm-button": "Yes",
@@ -296,6 +298,13 @@
     "gui-set-name-button": "Set name",
     "gui-strip-rank-from-player": "Strip player {0} of {1} rank?",
     "gui-leave-city-confirm-button": "Leave city?",
+    "gui-group-members": "Members: {0}",
+    "gui-invite-button": "Invite",
+    "gui-kick-button": "Kick",
+    "gui-kick-player-from-plotsgroup": "Kick {0} from {1}?",
+    "gui-claim-plot-plotsgroup": "Claim plot for plots group {0}?",
+    "gui-unclaim-plot-plotsgroup": "Unclaim plot for plots group {0}?",
+    "gui-enter-plotsgroup-name": "Create new plots group.",
 
     "claimsguide": "Claims",
     "claimsguide-title": "Game Mechanic: Claims",
@@ -330,6 +339,8 @@
     "gui-enter-summon-point-name": "Enter summon point name: ",
     "gui-set-button": "Set",
     "game:tabname-Claims": "Claims",
+    "gui-teleportation-cost": "Summon: ",
+    "gui-no-plotsgroup-invites": "No plot groups invites",
 
     //blocks
     "cantempleblock-desc": "Place to set city respawn point in temple plot.",

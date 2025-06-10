@@ -15,6 +15,7 @@ namespace claims.src.gui.playerGui.structures
         public CityInfo CityInfo { get; set; }
         public HashSet<string> Friends { get; set; } = new HashSet<string>();
         public List<ClientToCityInvitation> ReceivedInvitations { get; set; } = new List<ClientToCityInvitation>();
+        public List<ClientToPlotsGroupInvitation> ReceivedPlotsGroupInvitations { get; set; } = new List<ClientToPlotsGroupInvitation>();
         public EnumShowPlotMovement ShowPlotMovement { get; set; } = EnumShowPlotMovement.SHOW_NONE;
         public PlayerPermissions PlayerPermissions { get; set; }
         public CurrentPlotInfo CurrentPlotInfo { get; set; }
@@ -335,6 +336,78 @@ namespace claims.src.gui.playerGui.structures
                             CityInfo.SummonCells.Remove(it_current);
                             CityInfo.SummonCells.Add(it);
                             break;
+                        }
+                    }
+                }
+            }
+
+            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_PLOTS_GROUPS_ALL, out string plotsgroupCellsAll))
+            {
+                HashSet<PlotsGroupCellElement> pc = JsonConvert.DeserializeObject<HashSet<PlotsGroupCellElement>>(plotsgroupCellsAll);
+                CityInfo.PlotsGroupCells = pc.ToList();
+            }
+
+            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_PLOTS_GROUPS_REMOVE, out string cityplotsgroupRemove))
+            {
+                HashSet<PlotsGroupCellElement> pc = JsonConvert.DeserializeObject<HashSet<PlotsGroupCellElement>>(cityplotsgroupRemove);
+                foreach (var it in pc)
+                {
+                    foreach (var it_current in CityInfo.PlotsGroupCells.ToArray())
+                    {
+                        if (it_current.Guid.Equals(it.Guid))
+                        {
+                            CityInfo.PlotsGroupCells.Remove(it_current);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_PLOTS_GROUPS_ADD, out string cityplotsgroupAdd))
+            {
+                HashSet<PlotsGroupCellElement> pc = JsonConvert.DeserializeObject<HashSet<PlotsGroupCellElement>>(cityplotsgroupAdd);
+                foreach (var it in pc)
+                {
+                    CityInfo.PlotsGroupCells.Add(it);
+                }
+            }
+
+            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_PLOTS_GROUPS_UPDATE, out string cityplotsgroupUpdate))
+            {
+                HashSet<PlotsGroupCellElement> pc = JsonConvert.DeserializeObject<HashSet<PlotsGroupCellElement>>(cityplotsgroupUpdate);
+                foreach (var it in pc)
+                {
+                    foreach (var it_current in CityInfo.PlotsGroupCells.ToArray())
+                    {
+                        if (it_current.Guid.Equals(it.Guid))
+                        {
+                            CityInfo.PlotsGroupCells.Remove(it_current);
+                            CityInfo.PlotsGroupCells.Add(it);
+                        }
+                    }
+                }
+            }
+
+            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.TO_PLOTS_GROUP_INVITE_ADD, out string toPlotsGroupInviteAdd))
+            {
+                HashSet<ClientToPlotsGroupInvitation> pc = JsonConvert.DeserializeObject<HashSet<ClientToPlotsGroupInvitation>>(toPlotsGroupInviteAdd);
+                foreach (var it in pc)
+                {
+                    this.ReceivedPlotsGroupInvitations.Add(it);
+                }
+            }
+
+            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.TO_PLOTS_GROUP_INVITE_REMOVE, out string toPlotsGroupInviteRemove))
+            {
+                HashSet<ClientToPlotsGroupInvitation> pc = JsonConvert.DeserializeObject<HashSet<ClientToPlotsGroupInvitation>>(toPlotsGroupInviteRemove);
+                foreach (var it in pc)
+                {
+                    foreach (var it_current in this.ReceivedPlotsGroupInvitations.ToArray())
+                    {
+                        if (it_current.CityName.Equals(it.CityName))
+                        {
+                            this.ReceivedPlotsGroupInvitations.Remove(it_current);
+                            this.ReceivedPlotsGroupInvitations.Add(it);
                         }
                     }
                 }

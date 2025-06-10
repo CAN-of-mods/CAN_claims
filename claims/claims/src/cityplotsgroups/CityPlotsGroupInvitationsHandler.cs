@@ -1,5 +1,7 @@
 ﻿using claims.src.auxialiry;
+using OpenTK.Graphics.OpenGL;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,32 +11,79 @@ namespace claims.src.cityplotsgroups
 {
     public class CityPlotsGroupInvitationsHandler
     {
-        public static HashSet<CityPlotsGroupInvitation> cityPlotsGroupInvitations = new HashSet<CityPlotsGroupInvitation>();
+        //city: group: invites
+        public static ConcurrentDictionary<string, Dictionary<string, HashSet<CityPlotsGroupInvitation>>> cityPlotsGroupInvitations = new ConcurrentDictionary<string, Dictionary<string, HashSet<CityPlotsGroupInvitation>>>();
+        //public static HashSet<CityPlotsGroupInvitation> cityPlotsGroupInvitations = new HashSet<CityPlotsGroupInvitation>();
 
         public static bool addNewCityPlotGroupInvitation(CityPlotsGroupInvitation invitation)
         {
-            if (cityPlotsGroupInvitations.Add(invitation))
+            if(cityPlotsGroupInvitations.TryGetValue(invitation.Sender.Guid, out var cityInvites))
             {
-                invitation.Receiver.groupInvitations.Add(invitation);
-                invitation.Sender.groupInvitations.Add(invitation);
-                return true;
+                if(cityInvites.TryGetValue(invitation.GroupName, out var groupInvites))
+                {
+                    if (!groupInvites.Add(invitation))
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    groupInvites = new HashSet<CityPlotsGroupInvitation>();
+                    cityInvites[invitation.GroupName] = groupInvites;
+                }
+            }
+            else
+            {
+                cityInvites = new Dictionary<string, HashSet<CityPlotsGroupInvitation>>();               
+                cityPlotsGroupInvitations[invitation.Sender.Guid] = cityInvites;
+                cityInvites.Add(invitation.GroupName, new HashSet<CityPlotsGroupInvitation> { invitation });               
+            }
+            invitation.Receiver.groupInvitations.Add(invitation);
+            invitation.Sender.groupInvitations.Add(invitation);
+            return true;
+        }
+
+        public static bool RemoveInvitation(CityPlotsGroupInvitation invitation)
+        {
+            if(cityPlotsGroupInvitations.TryGetValue(invitation.Sender.Guid, out var cityDict))
+            {
+                if(cityDict.TryGetValue(invitation.GroupName, out var groupDict))
+                {
+                    if (groupDict.Remove(invitation))
+                    {
+                        invitation.Sender.groupInvitations.Remove(invitation);
+                        invitation.Receiver.groupInvitations.Remove(invitation);
+                        if (groupDict.Count == 0)
+                        {
+                            cityDict.Remove(invitation.GroupName);
+                        }
+                        if (cityDict.Count == 0)
+                        {
+                            cityPlotsGroupInvitations.TryRemove(invitation.Sender.Guid, out var _);
+                        }
+                        return true;
+                    }
+                }
             }
             return false;
-        }
-        public static HashSet<CityPlotsGroupInvitation> GetCityPlotsGroupInvitations()
-        {
-            return cityPlotsGroupInvitations;
         }
         public static void updateCityPlotsGroupInvitations()
         {
             long now = TimeFunctions.getEpochSeconds();
-            foreach(CityPlotsGroupInvitation invitation in cityPlotsGroupInvitations.ToArray())
+            foreach (var cityDict in cityPlotsGroupInvitations)
             {
-                if(invitation.TimeStampFinished < now)
+                foreach(var groupDict in cityDict.Value)
                 {
-                    invitation.Sender.groupInvitations.Remove(invitation);
-                    invitation.Receiver.groupInvitations.Remove(invitation);
-                    cityPlotsGroupInvitations.Remove(invitation);
+                    HashSet<CityPlotsGroupInvitation> groupInvitations = groupDict.Value;
+                    foreach (CityPlotsGroupInvitation invitation in groupInvitations.ToArray())
+                    {
+                        if (invitation.TimeStampFinished < now)
+                        {
+                            invitation.Sender.groupInvitations.Remove(invitation);
+                            invitation.Receiver.groupInvitations.Remove(invitation);
+                            groupInvitations.Remove(invitation);
+                        }
+                    }
                 }
             }
         }

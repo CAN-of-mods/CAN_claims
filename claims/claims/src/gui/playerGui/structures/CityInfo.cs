@@ -16,14 +16,15 @@ namespace claims.src.gui.playerGui.structures
         public int CountPlots { get; set; }
         public string Prefix { get; set; }
         public string AfterName { get; set; }
-        public HashSet<string> CityTitles { get; set; } = new HashSet<string>();
-        public List<RankCellElement> CitizensRanks { get; set; } = new List<RankCellElement>();
+        public HashSet<string> CityTitles { get; set; } = new();
+        public List<RankCellElement> CitizensRanks { get; set; } = new();
         public HashSet<string> PossibleCityRanks { get; set; }
         public int PlotsColor;
         public double CityBalance { get; set; }
-        public HashSet<string> Criminals = new HashSet<string>();
-        public List<PrisonCellElement> PrisonCells { get; set; } = new List<PrisonCellElement>();
-        public List<SummonCellElement> SummonCells { get; set; } = new List<SummonCellElement>();
+        public HashSet<string> Criminals = new();
+        public List<PrisonCellElement> PrisonCells { get; set; } = new();
+        public List<SummonCellElement> SummonCells { get; set; } = new();
+        public List<PlotsGroupCellElement> PlotsGroupCells { get; set; } = new();
         public CityInfo()
         {
             Name = "";
