@@ -28,19 +28,19 @@ namespace claims.src.cityplotsgroups
         }
         public void reject()
         {
-            CityPlotsGroupInvitationsHandler.GetCityPlotsGroupInvitations().Remove(this);
+            CityPlotsGroupInvitationsHandler.RemoveInvitation(this);
             this.onReject.Start();
         }
         public void accept()
         {
-            CityPlotsGroupInvitationsHandler.GetCityPlotsGroupInvitations().Remove(this);
+            CityPlotsGroupInvitationsHandler.RemoveInvitation(this);
             Task.Run(() => this.onAccept.Start());
         }      
         public override bool Equals(object obj)
         {
             if (obj == this)
                 return true;
-            if (!(obj is CityPlotsGroupInvitation))
+            if (obj is not CityPlotsGroupInvitation)
                 return false;
 
             return this.Receiver == ((CityPlotsGroupInvitation)obj).Receiver && this.Sender == ((CityPlotsGroupInvitation)obj).Sender;

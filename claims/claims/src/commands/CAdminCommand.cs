@@ -28,8 +28,10 @@ namespace claims.src.commands
         public static TextCommandResult triggerNextDay(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            TextCommandResult tcr = new TextCommandResult();
-            tcr.Status = EnumCommandStatus.Success;
+            TextCommandResult tcr = new TextCommandResult
+            {
+                Status = EnumCommandStatus.Success
+            };
 
             claims.sapi.Event.RegisterCallback((dt =>
             {
@@ -42,8 +44,10 @@ namespace claims.src.commands
         public static TextCommandResult triggerNextHour(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            TextCommandResult tcr = new TextCommandResult();
-            tcr.Status = EnumCommandStatus.Success;
+            TextCommandResult tcr = new TextCommandResult
+            {
+                Status = EnumCommandStatus.Success
+            };
 
             claims.sapi.Event.RegisterCallback((dt =>
             {
@@ -58,8 +62,10 @@ namespace claims.src.commands
         public static TextCommandResult plotPermissions(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            TextCommandResult tcr = new TextCommandResult();
-            tcr.Status = EnumCommandStatus.Success;
+            TextCommandResult tcr = new TextCommandResult
+            {
+                Status = EnumCommandStatus.Success
+            };
 
             claims.dataStorage.getPlot(PlotPosition.fromXZ((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Z), out Plot plot);
             if (plot == null)
@@ -211,7 +217,7 @@ namespace claims.src.commands
                 return tcr;
             }
 
-            plot.setPrice(price);
+            plot.Price = price;
             plot.saveToDatabase();
             return tcr;
         }
@@ -324,7 +330,7 @@ namespace claims.src.commands
             {
                 radius = (int)args.Parsers[1].GetValue();
             }
-            catch (FormatException e)
+            catch
             {
                 tcr.StatusMessage = "claims:need_number";
                 return tcr;
@@ -629,7 +635,7 @@ namespace claims.src.commands
             {
                 fee = int.Parse(args.RawArgs[1]);
             }
-            catch (FormatException e)
+            catch
             {
                 tcr.StatusMessage = "claims:need_number";
                 return tcr;
@@ -883,7 +889,7 @@ namespace claims.src.commands
                 MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:player_should_be_in_same_city"));
                 return;
             }
-            if (plotHere.getCity().getCityPlots().Count() == 1)
+            if (plotHere.getCity().getCityPlots().Count == 1)
             {
                 MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:last_city_plot"));
                 return;
@@ -910,7 +916,7 @@ namespace claims.src.commands
             MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:plot_has_been_claimed", currentPlotPosition.getPos().X, currentPlotPosition.getPos().Y, 0));
             plotHere.setCity(city);
             plotHere.getPermsHandler().setPerm(city.getPermsHandler());
-            plotHere.setPrice(-1);
+            plotHere.Price = -1;
             claims.dataStorage.addClaimedPlot(currentPlotPosition, plotHere);
             city.getCityPlots().Add(plotHere);
             city.saveToDatabase();
@@ -944,7 +950,7 @@ namespace claims.src.commands
             MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:plot_has_been_claimed", currentPlotPosition.getPos().X, currentPlotPosition.getPos().Y, 0));
             plotHere.setCity(city);
             plotHere.getPermsHandler().setPerm(city.getPermsHandler());
-            plotHere.setPrice(-1);
+            plotHere.Price = -1;
             claims.dataStorage.addClaimedPlot(currentPlotPosition, plotHere);
             city.getCityPlots().Add(plotHere);
             city.saveToDatabase();

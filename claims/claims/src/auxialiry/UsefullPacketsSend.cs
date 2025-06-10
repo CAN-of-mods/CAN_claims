@@ -20,8 +20,8 @@ namespace claims.src.auxialiry
         public static ConcurrentDictionary<string, Dictionary<EnumPlayerRelatedInfo, Dictionary<string, List<object>>>> cityDelayedInfoCollector =
             new ConcurrentDictionary<string, Dictionary<EnumPlayerRelatedInfo, Dictionary<string, List<object>>>>();
 
-        public static ConcurrentDictionary<string, HashSet<EnumPlayerRelatedInfo>> playerDelayedInfoCollector =
-            new ConcurrentDictionary<string, HashSet<EnumPlayerRelatedInfo>>();
+        public static ConcurrentDictionary<string, Dictionary<EnumPlayerRelatedInfo, Dictionary<string, List<object>>>> playerDelayedInfoCollector =
+            new ConcurrentDictionary<string, Dictionary<EnumPlayerRelatedInfo, Dictionary<string, List<object>>>>();
 
         public static void sendAllCitiesColorsToPlayer(IServerPlayer player)
         {
@@ -57,7 +57,7 @@ namespace claims.src.auxialiry
                 collector.Add(EnumPlayerRelatedInfo.CITY_CREATED_TIMESTAMP, city.TimeStampCreated.ToString());
                 collector.Add(EnumPlayerRelatedInfo.CITY_MEMBERS, JsonConvert.SerializeObject(StringFunctions.getNamesOfCitizens(city)));
                 collector.Add(EnumPlayerRelatedInfo.MAX_COUNT_PLOTS, Settings.getMaxNumberOfPlotForCity(city).ToString());
-                collector.Add(EnumPlayerRelatedInfo.CLAIMED_PLOTS, city.getCityPlots().Count().ToString());
+                collector.Add(EnumPlayerRelatedInfo.CLAIMED_PLOTS, city.getCityPlots().Count.ToString());
                 collector.Add(EnumPlayerRelatedInfo.PLAYER_PREFIX, playerInfo.Prefix);
                 collector.Add(EnumPlayerRelatedInfo.PLAYER_AFTER_NAME, playerInfo.AfterName);
                 collector.Add(EnumPlayerRelatedInfo.PLAYER_CITY_TITLES, JsonConvert.SerializeObject(playerInfo.getCityTitles()));
@@ -90,7 +90,7 @@ namespace claims.src.auxialiry
                 {
                     collector.Add(EnumPlayerRelatedInfo.CITY_BALANCE, claims.economyHandler.getBalance(city.MoneyAccountName).ToString());
                 }
-                if(city.criminals.Count() > 0)
+                if(city.criminals.Count > 0)
                 {
                     collector.Add(EnumPlayerRelatedInfo.CITY_CRIMINALS_LIST, JsonConvert.SerializeObject(StringFunctions.getNamesOfCriminals(city)));
                 }
@@ -107,14 +107,27 @@ namespace claims.src.auxialiry
                     collector.Add(EnumPlayerRelatedInfo.CITY_PRISON_CELL_ALL, JsonConvert.SerializeObject(prisonCellElements));
                 }
 
-                if(city.summonPlots.Count() > 0)
+                if(city.summonPlots.Count > 0)
                 {
                     HashSet<SummonCellElement> summonCellElements = new HashSet<SummonCellElement>();
                     foreach (var it in city.summonPlots)
                     {
-                        summonCellElements.Add(new SummonCellElement((it.getPlotDesc() as PlotDescSummon).SummonPoint.AsVec3i.Clone(), (it.getPlotDesc() as PlotDescSummon).Name));
+                        summonCellElements.Add(new SummonCellElement((it.PlotDesc as PlotDescSummon).SummonPoint.AsVec3i.Clone(), (it.PlotDesc as PlotDescSummon).Name));
                     }
                     collector.Add(EnumPlayerRelatedInfo.CITY_SUMMON_POINT_ALL, JsonConvert.SerializeObject(summonCellElements));
+                }
+
+                if (city.getCityPlotsGroups().Count > 0)
+                {
+                    HashSet<PlotsGroupCellElement> plotsgroupCellElements = new HashSet<PlotsGroupCellElement>();
+                    foreach (var it in city.getCityPlotsGroups())
+                    {
+                        plotsgroupCellElements.Add(
+                            new PlotsGroupCellElement(it.Guid, it.GetPartName(), it.City.GetPartName(),
+                                                      it.PlayersList.Select(pl => pl.GetPartName()).ToList(),
+                                                      it.PermsHandler, it.PlotsGroupFee));
+                    }
+                    collector.Add(EnumPlayerRelatedInfo.CITY_PLOTS_GROUPS_ALL, JsonConvert.SerializeObject(plotsgroupCellElements));
                 }
             }
 
@@ -170,7 +183,7 @@ namespace claims.src.auxialiry
                     collector.Add(EnumPlayerRelatedInfo.CITY_CREATED_TIMESTAMP, city.TimeStampCreated.ToString());
                     collector.Add(EnumPlayerRelatedInfo.CITY_MEMBERS, JsonConvert.SerializeObject(StringFunctions.getNamesOfCitizens(city)));
                     collector.Add(EnumPlayerRelatedInfo.MAX_COUNT_PLOTS, Settings.getMaxNumberOfPlotForCity(city).ToString());
-                    collector.Add(EnumPlayerRelatedInfo.CLAIMED_PLOTS, city.getCityPlots().Count().ToString());
+                    collector.Add(EnumPlayerRelatedInfo.CLAIMED_PLOTS, city.getCityPlots().Count.ToString());
                     collector.Add(EnumPlayerRelatedInfo.PLAYER_PREFIX, playerInfo.Prefix);
                     collector.Add(EnumPlayerRelatedInfo.PLAYER_AFTER_NAME, playerInfo.AfterName);
                     collector.Add(EnumPlayerRelatedInfo.PLAYER_CITY_TITLES, JsonConvert.SerializeObject(playerInfo.getCityTitles()));
@@ -258,20 +271,49 @@ namespace claims.src.auxialiry
                 cityDelayedInfoCollector.TryAdd(cityName, toUpdate.ToDictionary(k => k, k => (Dictionary<string, List<object>>)null));
             }
         }
-        public static void AddToQueuePlayerInfoUpdate(string playerName, EnumPlayerRelatedInfo toUpdate)
+        public static void AddToQueuePlayerInfoUpdate(string playerName, Dictionary<string, object> additionalInfo, EnumPlayerRelatedInfo toUpdate)
         {
-            if (playerDelayedInfoCollector.TryGetValue(playerName, out HashSet<EnumPlayerRelatedInfo> playerHashSet))
+            if (playerDelayedInfoCollector.TryGetValue(playerName, out Dictionary<EnumPlayerRelatedInfo, Dictionary<string, List<object>>> playerHashSet))
             {
-                playerHashSet.Add(toUpdate);
+                //such enum was added before, just add new additional info to it
+                if (playerHashSet.TryGetValue(toUpdate, out var already_stored_dict))
+                {
+                    foreach (var value_pair in additionalInfo)
+                    {
+                        if (already_stored_dict.TryGetValue(value_pair.Key, out var inner_value))
+                        {
+                            inner_value.Add(value_pair.Value);
+                        }
+                    }
+                }
+                else
+                {
+                    playerHashSet.Add(toUpdate, additionalInfo.ToDictionary(k => k.Key, k => new List<object> { k.Value }));
+                }
             }
             else
             {
-                playerDelayedInfoCollector.TryAdd(playerName, new HashSet<EnumPlayerRelatedInfo> { toUpdate });
+                playerDelayedInfoCollector.TryAdd(playerName,
+                    new Dictionary<EnumPlayerRelatedInfo, Dictionary<string, List<object>>> { { toUpdate, additionalInfo.ToDictionary(k => k.Key, k => new List<object> { k.Value }) } });
+            }
+        }
+        public static void AddToQueuePlayerInfoUpdate(string playerName, params EnumPlayerRelatedInfo[] toUpdate)
+        {
+            if (playerDelayedInfoCollector.TryGetValue(playerName, out Dictionary<EnumPlayerRelatedInfo, Dictionary<string, List<object>>> playerHashSet))
+            {
+                foreach (var it in toUpdate)
+                {
+                    playerHashSet.Add(it, null);
+                }
+            }
+            else
+            {
+                playerDelayedInfoCollector.TryAdd(playerName, toUpdate.ToDictionary(k => k, k => (Dictionary<string, List<object>>)null));
             }
         }
         public static void SendAllCollectedCityUpdatesToCitizens()
         {
-            while(cityDelayedInfoCollector.Count > 0)
+            while(!cityDelayedInfoCollector.IsEmpty)
             {
                 string currentCity = cityDelayedInfoCollector.ElementAt(0).Key;
 
@@ -310,7 +352,7 @@ namespace claims.src.auxialiry
                                 collector.Add(EnumPlayerRelatedInfo.MAX_COUNT_PLOTS, Settings.getMaxNumberOfPlotForCity(city).ToString());
                                 break;
                             case EnumPlayerRelatedInfo.CLAIMED_PLOTS:
-                                collector.Add(EnumPlayerRelatedInfo.CLAIMED_PLOTS, city.getCityPlots().Count().ToString());
+                                collector.Add(EnumPlayerRelatedInfo.CLAIMED_PLOTS, city.getCityPlots().Count.ToString());
                                 break;
                             case EnumPlayerRelatedInfo.CITY_CITIZENS_RANKS:
                                 Dictionary<string, List<string>> rankToCitizens = new Dictionary<string, List<string>>();
@@ -335,7 +377,7 @@ namespace claims.src.auxialiry
                                 collector.Add(EnumPlayerRelatedInfo.CITY_BALANCE, claims.economyHandler.getBalance(city.MoneyAccountName).ToString());
                                 break;
                             case EnumPlayerRelatedInfo.CITY_CRIMINALS_LIST:
-                                if (city.criminals.Count() > 0)
+                                if (city.criminals.Count > 0)
                                 {
                                     collector.Add(EnumPlayerRelatedInfo.CITY_CRIMINALS_LIST, JsonConvert.SerializeObject(StringFunctions.getNamesOfCriminals(city)));
                                 }
@@ -345,42 +387,19 @@ namespace claims.src.auxialiry
                                 }
                                 break;
                             case EnumPlayerRelatedInfo.CITY_ADD_PRISON_CELL:
-                                if(relatedInfo.Value.TryGetValue("value", out var prisons_cells_added))
-                                {
-                                    collector.Add(EnumPlayerRelatedInfo.CITY_ADD_PRISON_CELL, JsonConvert.SerializeObject(prisons_cells_added));
-                                }
-                                break;
                             case EnumPlayerRelatedInfo.CITY_REMOVE_PRISON_CELL:
-                                if (relatedInfo.Value.TryGetValue("value", out var prisons_cells_removed))
-                                {
-                                    collector.Add(EnumPlayerRelatedInfo.CITY_REMOVE_PRISON_CELL, JsonConvert.SerializeObject(prisons_cells_removed));
-                                }
-                                break;
                             case EnumPlayerRelatedInfo.CITY_CELL_PRISON_UPDATE:
-                                if (relatedInfo.Value.TryGetValue("value", out var prisons_cells_updated))
-                                {
-                                    collector.Add(EnumPlayerRelatedInfo.CITY_CELL_PRISON_UPDATE, JsonConvert.SerializeObject(prisons_cells_updated));
-                                }
-                                break;
                             case EnumPlayerRelatedInfo.CITY_SUMMON_POINT_ADD:
-                                if (relatedInfo.Value.TryGetValue("value", out var summonPointAdd))
-                                {
-                                    collector.Add(EnumPlayerRelatedInfo.CITY_SUMMON_POINT_ADD, JsonConvert.SerializeObject(summonPointAdd));
-                                }
-                                break;
                             case EnumPlayerRelatedInfo.CITY_SUMMON_POINT_REMOVE:
-                                if (relatedInfo.Value.TryGetValue("value", out var summonPointRemove))
-                                {
-                                    collector.Add(EnumPlayerRelatedInfo.CITY_SUMMON_POINT_REMOVE, JsonConvert.SerializeObject(summonPointRemove));
-                                }
-                                break;
                             case EnumPlayerRelatedInfo.CITY_SUMMON_POINT_UPDATE:
-                                if (relatedInfo.Value.TryGetValue("value", out var summonPointUpdate))
+                            case EnumPlayerRelatedInfo.CITY_PLOTS_GROUPS_ADD:
+                            case EnumPlayerRelatedInfo.CITY_PLOTS_GROUPS_REMOVE:
+                            case EnumPlayerRelatedInfo.CITY_PLOTS_GROUPS_UPDATE:
+                                if (relatedInfo.Value.TryGetValue("value", out var objectsList))
                                 {
-                                    collector.Add(EnumPlayerRelatedInfo.CITY_SUMMON_POINT_UPDATE, JsonConvert.SerializeObject(summonPointUpdate));
+                                    collector.Add(relatedInfo.Key, JsonConvert.SerializeObject(objectsList));
                                 }
                                 break;
-
                         }
                     }
                     //collector now contains only general info for all citizens
@@ -388,13 +407,13 @@ namespace claims.src.auxialiry
                     foreach (var citizen in onlinePlayersFromCity)
                     {
                         Dictionary<EnumPlayerRelatedInfo, string> playerCollector = new Dictionary<EnumPlayerRelatedInfo, string>();
-                        if (playerDelayedInfoCollector.Remove(citizen.PlayerName, out HashSet<EnumPlayerRelatedInfo> hashSet))
+                        if (playerDelayedInfoCollector.Remove(citizen.PlayerName, out Dictionary<EnumPlayerRelatedInfo, Dictionary<string, List<object>>> dictInfo))
                         {
                             if (claims.dataStorage.getPlayerByUid(citizen.PlayerUID, out PlayerInfo playerInfo))
                             {
-                                foreach (var relatedInfo in hashSet)
+                                foreach (var relatedInfo in dictInfo)
                                 {
-                                    switch (relatedInfo)
+                                    switch (relatedInfo.Key)
                                     {
                                         case EnumPlayerRelatedInfo.PLAYER_PERMISSIONS:
                                             playerCollector.Add(EnumPlayerRelatedInfo.PLAYER_PERMISSIONS, JsonConvert.SerializeObject(playerInfo.PlayerPermissionsHandler.GetPermissions()));
@@ -410,7 +429,14 @@ namespace claims.src.auxialiry
                                             break;
                                         case EnumPlayerRelatedInfo.FRIENDS:
                                             playerCollector.Add(EnumPlayerRelatedInfo.FRIENDS, JsonConvert.SerializeObject(StringFunctions.getNamesOfFriends(playerInfo)));
-                                            break;                                        
+                                            break;
+                                        case EnumPlayerRelatedInfo.TO_PLOTS_GROUP_INVITE_ADD:
+                                        case EnumPlayerRelatedInfo.TO_PLOTS_GROUP_INVITE_REMOVE:
+                                            if (relatedInfo.Value.TryGetValue("value", out var objectsList))
+                                            {
+                                                playerCollector.Add(relatedInfo.Key, JsonConvert.SerializeObject(objectsList));
+                                            }
+                                            break;
                                     }
                                 }
                                 //TODO Rewrite delayed packets
@@ -434,11 +460,11 @@ namespace claims.src.auxialiry
 
             }
 
-            while(playerDelayedInfoCollector.Count > 0)
+            while(!playerDelayedInfoCollector.IsEmpty)
             {
                 string currentPlayerUid = playerDelayedInfoCollector.ElementAt(0).Key;
-                if (playerDelayedInfoCollector.Remove<string, HashSet<EnumPlayerRelatedInfo>>(currentPlayerUid,
-                                                                                                out HashSet<EnumPlayerRelatedInfo> listToUpdate))
+                if (playerDelayedInfoCollector.Remove(currentPlayerUid,
+                                                                    out Dictionary<EnumPlayerRelatedInfo, Dictionary<string, List<object>>> listToUpdate))
                 {
                     Dictionary<EnumPlayerRelatedInfo, string> collector = new Dictionary<EnumPlayerRelatedInfo, string>();
 
@@ -446,7 +472,7 @@ namespace claims.src.auxialiry
                     {
                         foreach (var relatedInfo in listToUpdate)
                         {
-                            switch (relatedInfo)
+                            switch (relatedInfo.Key)
                             {
                                 case EnumPlayerRelatedInfo.PLAYER_PERMISSIONS:
                                     collector.Add(EnumPlayerRelatedInfo.PLAYER_PERMISSIONS, JsonConvert.SerializeObject(playerInfo.PlayerPermissionsHandler.GetPermissions()));
@@ -487,6 +513,13 @@ namespace claims.src.auxialiry
                                     collector.Add(EnumPlayerRelatedInfo.CITY_CITIZENS_RANKS, JsonConvert.SerializeObject(rankToCitizens));
 
                                     break;
+                                case EnumPlayerRelatedInfo.TO_PLOTS_GROUP_INVITE_ADD:
+                                case EnumPlayerRelatedInfo.TO_PLOTS_GROUP_INVITE_REMOVE:
+                                    if (relatedInfo.Value.TryGetValue("value", out var objectsList))
+                                    {
+                                        collector.Add(relatedInfo.Key, JsonConvert.SerializeObject(objectsList));
+                                    }
+                                    break;
                             }
                         }
                         if (collector.Count > 0)
@@ -510,7 +543,7 @@ namespace claims.src.auxialiry
         public static void SendCurrentPlotUpdate(IServerPlayer player, Plot plot)
         {
             CurrentPlotInfo cpi = new CurrentPlotInfo(plot.GetPartName(), plot.getPlotOwner()?.GetPartName() ?? "",
-                plot.getType(), plot.getCustomTax(), plot.getPrice(), plot.getPermsHandler(), plot.extraBought, plot.getPos());
+                plot.Type, plot.getCustomTax(), plot.Price, plot.getPermsHandler(), plot.extraBought, plot.getPos());
             string serializedZones = JsonConvert.SerializeObject(cpi);
 
             claims.serverChannel.SendPacket(new SavedPlotsPacket()

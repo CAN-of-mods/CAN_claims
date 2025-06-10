@@ -1,4 +1,5 @@
 ﻿using claims.src.auxialiry;
+using claims.src.cityplotsgroups;
 using claims.src.delayed;
 using claims.src.messages;
 using claims.src.part;
@@ -62,10 +63,11 @@ namespace claims.src.commands
                     ','));
                 return TextCommandResult.Success();
             }
-            
+            string cityName = (string)args.Parsers[0].GetValue();
+            string groupName = (string)args.Parsers[1].GetValue();
             foreach (var invitation in playerInfo.groupInvitations)
             {
-                if (invitation.Sender.GetPartName().Equals(args[0]))
+                if (invitation.Sender.GetPartName().Equals(cityName) && invitation.GroupName.Equals(groupName))
                 {
                     invitation.Receiver.groupInvitations.Remove(invitation);
                     invitation.Sender.groupInvitations.Remove(invitation);

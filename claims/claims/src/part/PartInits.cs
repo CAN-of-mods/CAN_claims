@@ -47,9 +47,9 @@ namespace claims.src.part
             city.TimeStampCreated = TimeFunctions.getEpochSeconds();
 
             Plot newPlot = new Plot(pos);
-            newPlot.setPrice(-1);
+            newPlot.Price = - 1;
             newPlot.setCity(city);
-            newPlot.setType(PlotType.MAIN_CITY_PLOT);
+            newPlot.Type = PlotType.MAIN_CITY_PLOT;
             claims.dataStorage.addClaimedPlot(newPlot.plotPosition, newPlot);
             city.getCityPlots().Add(newPlot);
             if (creator != null)
@@ -77,9 +77,10 @@ namespace claims.src.part
             var player = creator != null ? claims.sapi.World.PlayerByUid(creator.Guid) : null;
             if (player != null) {
 
-                Dictionary<EnumPlayerRelatedInfo, string> collector = new Dictionary<EnumPlayerRelatedInfo, string>();
-
-                collector.Add(EnumPlayerRelatedInfo.CITY_NAME, city.GetPartName());
+                Dictionary<EnumPlayerRelatedInfo, string> collector = new Dictionary<EnumPlayerRelatedInfo, string>
+                {
+                    { EnumPlayerRelatedInfo.CITY_NAME, city.GetPartName() }
+                };
                 if (city.getMayor() != null)
                 {
                     collector.Add(EnumPlayerRelatedInfo.MAYOR_NAME, city.getMayor().GetPartName());
@@ -87,7 +88,7 @@ namespace claims.src.part
                 collector.Add(EnumPlayerRelatedInfo.CITY_CREATED_TIMESTAMP, city.TimeStampCreated.ToString());
                 collector.Add(EnumPlayerRelatedInfo.CITY_MEMBERS, JsonConvert.SerializeObject(StringFunctions.getNamesOfCitizens(city)));
                 collector.Add(EnumPlayerRelatedInfo.MAX_COUNT_PLOTS, Settings.getMaxNumberOfPlotForCity(city).ToString());
-                collector.Add(EnumPlayerRelatedInfo.CLAIMED_PLOTS, city.getCityPlots().Count().ToString());
+                collector.Add(EnumPlayerRelatedInfo.CLAIMED_PLOTS, city.getCityPlots().Count.ToString());
                 collector.Add(EnumPlayerRelatedInfo.PLAYER_PREFIX, creator.Prefix);
                 collector.Add(EnumPlayerRelatedInfo.PLAYER_AFTER_NAME, creator.AfterName);
                 collector.Add(EnumPlayerRelatedInfo.PLAYER_CITY_TITLES, JsonConvert.SerializeObject(creator.getCityTitles()));
@@ -119,19 +120,19 @@ namespace claims.src.part
                     break;
                 }
             }
-            plot.setType(PlotType.PRISON);
-            plot.setPrison(new Prison("", guid.ToString()));
-            claims.dataStorage.addPrison(plot.getPrison());
-            plot.getPrison().addPrisonCell(new PrisonCellInfo(new Vec3i((int)creator.Entity.ServerPos.X, (int)creator.Entity.ServerPos.Y, (int)creator.Entity.ServerPos.Z)));
-            plot.getCity().getPrisons().Add(plot.getPrison());
-            plot.getPrison().setPlot(plot);
-            plot.getPrison().setCity(plot.getCity());
-            PlotDescPrison pdp = new PlotDescPrison(plot.getPrison().Guid);
-            plot.setPlotDesc(pdp);
+            plot.Type = PlotType.PRISON;
+            plot.Prison = new Prison("", guid.ToString());
+            claims.dataStorage.addPrison(plot.Prison);
+            plot.Prison.addPrisonCell(new PrisonCellInfo(new Vec3i((int)creator.Entity.ServerPos.X, (int)creator.Entity.ServerPos.Y, (int)creator.Entity.ServerPos.Z)));
+            plot.getCity().getPrisons().Add(plot.Prison);
+            plot.Prison.setPlot(plot);
+            plot.Prison.setCity(plot.getCity());
+            PlotDescPrison pdp = new PlotDescPrison(plot.Prison.Guid);
+            plot.PlotDesc = pdp;
 
             plot.getCity().saveToDatabase();
             plot.saveToDatabase();
-            plot.getPrison().saveToDatabase();
+            plot.Prison.saveToDatabase();
         }
     }
 }

@@ -138,8 +138,7 @@ namespace claims.src.blocks
         public override bool IsClimbable(BlockPos pos)
         {
             BEBehaviorShapeFromAttributes bec = this.GetBEBehavior<BEBehaviorShapeFromAttributes>(pos);
-            ClutterTypeProps props;
-            if (bec != null && bec.Type != null && this.clutterByCode.TryGetValue(bec.Type, out props))
+            if (bec != null && bec.Type != null && this.clutterByCode.TryGetValue(bec.Type, out ClutterTypeProps props))
             {
                 return props.Climbable;
             }
@@ -152,8 +151,7 @@ namespace claims.src.blocks
             {
                 return null;
             }
-            ClutterTypeProps cprops;
-            this.clutterByCode.TryGetValue(code, out cprops);
+            this.clutterByCode.TryGetValue(code, out ClutterTypeProps cprops);
             return cprops;
         }
 
@@ -181,7 +179,7 @@ namespace claims.src.blocks
                 {
                     return;
                 }
-                if (plot.getType() != PlotType.TEMPLE)
+                if (plot.Type != PlotType.TEMPLE)
                 {
                     return;
                 }
@@ -211,7 +209,7 @@ namespace claims.src.blocks
                 {
                     return;
                 }
-                if (plot.getType() != PlotType.TEMPLE)
+                if (plot.Type != PlotType.TEMPLE)
                 {
                     return;
                 }

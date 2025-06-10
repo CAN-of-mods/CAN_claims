@@ -55,7 +55,7 @@ namespace claims.src.events
             {
                 //Find where chest should be
                 string signCodePath = __instance.Block.Code.Path;
-                BlockPos chestPos = new BlockPos(__instance.Pos.X, __instance.Pos.Y, __instance.Pos.Z);
+                BlockPos chestPos = new(__instance.Pos.X, __instance.Pos.Y, __instance.Pos.Z);
                 if (signCodePath.EndsWith("east"))
                 {
                     chestPos.X += 1;

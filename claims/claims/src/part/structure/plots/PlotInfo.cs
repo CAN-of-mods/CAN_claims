@@ -61,7 +61,7 @@ namespace claims.src.part.structure.plots
         public static string getPlotDescByType(Plot plot)
         {
             StringBuilder sb = new StringBuilder();
-            switch(plot.getType())
+            switch(plot.Type)
             {
                 case PlotType.DEFAULT:
                     return sb.ToString();
@@ -70,19 +70,19 @@ namespace claims.src.part.structure.plots
                     return sb.ToString();
 
                 case PlotType.SUMMON:
-                    if((plot.getPlotDesc() is PlotDescSummon) && (plot.getPlotDesc() as PlotDescSummon) != null)
+                    if((plot.PlotDesc is PlotDescSummon) && (plot.PlotDesc as PlotDescSummon) != null)
                     {
-                        sb.Append(JsonConvert.SerializeObject(plot.getPlotDesc() as PlotDescSummon));
+                        sb.Append(JsonConvert.SerializeObject(plot.PlotDesc as PlotDescSummon));
                     }
                     return sb.ToString();
                 case PlotType.CAMP:
                     return sb.ToString();
                 case PlotType.PRISON:
-                    sb.Append(plot.getPrison().Guid);
+                    sb.Append(plot.Prison.Guid);
                     return sb.ToString();
                 case PlotType.TAVERN:
                     sb.Append(
-                        (plot.getPlotDesc() as PlotDescTavern).toSaveStringInnerClaims()
+                        (plot.PlotDesc as PlotDescTavern).toSaveStringInnerClaims()
                         );
                     return sb.ToString();
             }

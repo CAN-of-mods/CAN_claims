@@ -69,7 +69,7 @@ namespace claims.src.auxialiry
                                 int.Parse(it.Value["Maxextrachunksbought"].ToString())
                                 ));
                     }
-                }catch(Exception ex)
+                }catch
                 {
                     cityLevelsDict.Clear();
                     createDefaultCityLevels(filePath);
@@ -78,7 +78,7 @@ namespace claims.src.auxialiry
             if (json == "")
             {
                 createDefaultCityLevels(filePath);
-                using (StreamReader r = new StreamReader(filePath))
+                using (StreamReader r = new(filePath))
                 {
                     json = r.ReadToEnd();
                 }
@@ -163,7 +163,7 @@ namespace claims.src.auxialiry
 
         public static void InitColors()
         {
-            HashSet<int> tmpSet = new HashSet<int>();
+            HashSet<int> tmpSet = new();
             foreach(var it in claims.config.CITY_PLOTS_COLOR_AVAILABLE_COLORS_GUI)
             {
                 ColorHandling.tryFindColor(it, out var colorInt);

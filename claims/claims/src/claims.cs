@@ -89,7 +89,9 @@ namespace claims.src
         {
             List<string> iconList = new List<string> { "queen-crown", "exit-door", "achievement",
                                                        "flat-platform", "magnifying-glass", "price-tag",
-                                                       "qaitbay-citadel", "large-paint-brush", "prisoner", "magic-portal", "dodging", "highlighter" };
+                                                       "qaitbay-citadel", "large-paint-brush", "prisoner",
+                                                       "magic-portal", "dodging", "highlighter",
+                                                       "huts-village"};
             foreach (var icon in iconList)
             {
                 capi.Gui.Icons.CustomIcons["claims:" + icon] = delegate (Context ctx, int x, int y, float w, float h, double[] rgba)
@@ -202,9 +204,9 @@ namespace claims.src
             {
                 foreach (var pl in claims.dataStorage.getPlayersDict())
                 {
-                    if (showMsgsDict.ContainsKey(pl.Key))
+                    if (showMsgsDict.TryGetValue(pl.Key, out int value))
                     {
-                        pl.Value.showPlotMovement = (EnumShowPlotMovement)showMsgsDict[pl.Key];
+                        pl.Value.showPlotMovement = (EnumShowPlotMovement)value;
                     }
                 }
             }
@@ -287,10 +289,7 @@ namespace claims.src
         /*==============================================================================================*/
         private bool OnHotKeySkillDialog(KeyCombination comb)
         {
-            if (CANCityGui == null)
-            {
-                CANCityGui = new CANClaimsGui(capi);
-            }
+            CANCityGui ??= new CANClaimsGui(capi);
             if (CANCityGui.IsOpened())
             {
                 CANCityGui.TryClose();
@@ -301,10 +300,7 @@ namespace claims.src
         }
         private bool OnHotKeyPlayerMovementGUI(KeyCombination comb)
         {
-            if (movementClaimGui == null)
-            {
-                movementClaimGui = new ClaimsPlayerMovementGUI(capi);
-            }
+            movementClaimGui ??= new ClaimsPlayerMovementGUI(capi);
             if (movementClaimGui.IsOpened())
             {
                 movementClaimGui.TryClose();

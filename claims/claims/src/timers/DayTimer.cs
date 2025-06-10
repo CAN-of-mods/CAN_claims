@@ -15,9 +15,9 @@ namespace claims.src.timers
 {
     public class DayTimer
     {
-        public static Dictionary<City, List<Plot>> citiesPlots = new Dictionary<City, List<Plot>>();
-        public static Dictionary<PlayerInfo, decimal> playerSumFee = new Dictionary<PlayerInfo, decimal>();
-        public static List<City> toDeleteCities = new List<City>();
+        public static Dictionary<City, List<Plot>> citiesPlots = new();
+        public static Dictionary<PlayerInfo, decimal> playerSumFee = new();
+        public static List<City> toDeleteCities = new();
 
         public void Run(bool scheduleNewDayAfter)
         {
@@ -89,7 +89,7 @@ namespace claims.src.timers
 
             foreach (Plot plot in city.getCityPlots())
             {
-                PlotInfo.dictPlotTypes.TryGetValue(plot.getType(), out PlotInfo plotInfo);
+                PlotInfo.dictPlotTypes.TryGetValue(plot.Type, out PlotInfo plotInfo);
                 sumToPay += (decimal)plotInfo.getCost();
             }
             CityLevelInfo cityLevelInfo = Settings.getCityLevelInfo(city.getCityCitizens().Count);
@@ -101,7 +101,7 @@ namespace claims.src.timers
             
             if (claims.economyHandler.getBalance(city.MoneyAccountName) < sumToPay + (decimal)city.DebtBalance) 
             {
-                city.DebtBalance = city.DebtBalance + (double)sumToPay;
+                city.DebtBalance += (double)sumToPay;
 
                 //0=> WE DON'T DELETE CITIES, JUST SINK THEM DEEPER IN DEBT
                 if (claims.config.CITY_MAX_DEBT != 0)
@@ -207,7 +207,7 @@ namespace claims.src.timers
                 {
                     continue;
                 }
-                if (!playerSumFee.Keys.Contains(citizen))
+                if (!playerSumFee.ContainsKey(citizen))
                 {
                     playerSumFee[citizen] = 0;
                 }
@@ -258,8 +258,8 @@ namespace claims.src.timers
                                     continue;
                                 }
                                 plot.resetOwner();
-                                plot.setPrice(-1);
-                                plot.setType(PlotType.DEFAULT);
+                                plot.Price = -1;
+                                plot.Type = PlotType.DEFAULT;
                                 plot.saveToDatabase();
                             }
                         }

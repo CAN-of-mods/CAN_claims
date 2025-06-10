@@ -55,8 +55,7 @@ namespace claims.src.database
             {
                 while (!this.queryQueue.IsEmpty)
                 {
-                    QuerryInfo query;
-                    this.queryQueue.TryDequeue(out query);
+                    this.queryQueue.TryDequeue(out QuerryInfo query);
 
                     if (query.action == QuerryType.UPDATE)
                     {
@@ -112,7 +111,7 @@ namespace claims.src.database
                     command.ExecuteNonQuery();
 
                 }
-                catch (Exception e)
+                catch
                 {
                     command.CommandText = "ALTER TABLE CITIES ADD COLUMN templerespawnpoints TEXT DEFAULT \"\"";
                     command.ExecuteNonQuery();
@@ -504,7 +503,7 @@ namespace claims.src.database
             {
                 city.cityColor = int.Parse(it["citycolor"].ToString());
             }
-            catch (Exception ex)
+            catch 
             {
                 MessageHandler.sendDebugMsg("loadCity::exc no color" + city.GetPartName());
             }
@@ -581,12 +580,12 @@ namespace claims.src.database
                 { "@z", plot.getPos().Y},
                 { "@city", plot.hasCity() ? plot.getCity().Guid :"" },
                 { "@ownerofplot", plot.hasPlotOwner() ? plot.getPlotOwner().Guid : ""},
-                { "@type", (int)plot.getType() },
-                { "@price", plot.getPrice() },
+                { "@type", (int)plot.Type },
+                { "@price", plot.Price },
                 { "@customtax", plot.getCustomTax() },
                 { "@perms", plot.getPermsHandler().ToString() },
                 { "@plotgroupguid", plot.hasPlotGroup() ? plot.getPlotGroup().Guid : "" },
-                { "@markednopvp", plot.isMarkedNoPVP() },
+                { "@markednopvp", plot.MarkedNoPvp },
                 { "@plotdesc",  PlotInfo.getPlotDescByType(plot) },
                 { "@extraBought", plot.extraBought }
             };
@@ -622,20 +621,20 @@ namespace claims.src.database
                 plot.setPlotOwner(playerInfo);
             }
 
-            plot.setType((PlotType)(int.Parse(it["type"].ToString())));
-            plot.setPrice(int.Parse(it["price"].ToString()));
+            plot.Type = (PlotType)(int.Parse(it["type"].ToString()));
+            plot.Price = int.Parse(it["price"].ToString());
             plot.setCustomTax(int.Parse(it["customtax"].ToString(), CultureInfo.InvariantCulture));
             plot.getPermsHandler().setPerms(it["perms"].ToString());
             if (claims.dataStorage.getCityPlotsGroupsDict().TryGetValue(it["plotgroupguid"].ToString(), out CityPlotsGroup cityPlotsGroup))
                 plot.setPlotGroup(cityPlotsGroup);
-            plot.setMarkedNoPVP(it["markednopvp"].ToString().Equals("0") ? false : true);
-            switch (plot.getType())
+            plot.MarkedNoPvp = it["markednopvp"].ToString().Equals("0") ? false : true;
+            switch (plot.Type)
             {
                 case PlotType.SUMMON:
                     try
                     {
                         PlotDescSummon tmp = JsonConvert.DeserializeObject<PlotDescSummon>(it["plotdesc"].ToString());
-                        plot.setPlotDesc(tmp);
+                        plot.PlotDesc = tmp;
                         plot.getCity().summonPlots.Add(plot);
                     }
                     catch
@@ -645,13 +644,13 @@ namespace claims.src.database
                     break;
                 case PlotType.PRISON:
                     PlotDescPrison tmpPri = new PlotDescPrison(it["plotdesc"].ToString());
-                    plot.setPlotDesc(tmpPri);
+                    plot.PlotDesc = tmpPri;
                     claims.dataStorage.getPrison(tmpPri.getPrisonGuid(), out Prison prison);
-                    plot.setPrison(prison);
+                    plot.Prison = prison;
                     break;
                 case PlotType.TAVERN:
                     PlotDescTavern tmpTav = new PlotDescTavern();
-                    plot.setPlotDesc(tmpTav);
+                    plot.PlotDesc = tmpTav;
                     tmpTav.fromLoadStringInnerClaims(it["plotdesc"].ToString());
                     break;
             }
@@ -859,7 +858,7 @@ namespace claims.src.database
                 { "@name", plotgroup.GetPartName() },
                 { "@guid", plotgroup.Guid },
                 { "@perms", plotgroup.PermsHandler.ToString() },
-                { "@players", StringFunctions.concatStringsWithDelim(plotgroup.PlayersList, ';') },
+                { "@players", JsonConvert.SerializeObject(plotgroup.PlayersList.Select(pl => pl.Guid)) },
                 { "@plotsgroupfee", plotgroup.PlotsGroupFee },
                 { "@city", plotgroup.City.Guid}
             };
@@ -886,17 +885,17 @@ namespace claims.src.database
                 return false;
             }
 
-            //claims.guidToCityPlotsGroupDict.TryGetValue(it["guid"].ToString(), out CityPlotsGroup cityPlotsGroup);
             claims.dataStorage.getCityPlotsGroupsDict().TryGetValue(it["guid"].ToString(), out CityPlotsGroup cityPlotsGroup);
             cityPlotsGroup.City = city;
             claims.dataStorage.addPlotsGroup(cityPlotsGroup);
             cityPlotsGroup.PermsHandler.setPerms(it["perms"].ToString());
-            foreach (string str in it["players"].ToString().Split(';'))
+
+            foreach(string pl in JsonConvert.DeserializeObject<List<string>>(it["players"].ToString()))
             {
-                if (str.Length == 0)
+                if (pl.Length == 0)
                     continue;
 
-                claims.dataStorage.getPlayerByUid(str, out PlayerInfo plTmp);
+                claims.dataStorage.getPlayerByUid(pl, out PlayerInfo plTmp);
                 cityPlotsGroup.PlayersList.Add(plTmp);
             }
 

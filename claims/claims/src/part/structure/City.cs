@@ -58,7 +58,7 @@ namespace claims.src.part
             foreach (var it in cityPlots)
             {
                 if (it.getPermsHandler().pvpFlag)
-                    it.setMarkedNoPVP(false);
+                    it.MarkedNoPvp = false;
             }
         }
         public double getNoPVPCost()
@@ -66,7 +66,7 @@ namespace claims.src.part
             double tmp = 0;
             foreach (Plot it in cityPlots)
             {
-                if (it.isMarkedNoPVP())
+                if (it.MarkedNoPvp)
                 {
                     ++tmp;
                 }
@@ -256,7 +256,7 @@ namespace claims.src.part
             double outSum = 0;
             foreach (Plot plot in getCityPlots())
             {
-                PlotInfo.dictPlotTypes.TryGetValue(plot.getType(), out PlotInfo plotInfo);
+                PlotInfo.dictPlotTypes.TryGetValue(plot.Type, out PlotInfo plotInfo);
                 outSum += plotInfo.getCost();
             }
             return outSum;

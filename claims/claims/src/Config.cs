@@ -49,6 +49,7 @@ namespace claims.src
 
         //PLOTGROUPS
         public int PLOT_GROUP_INVITATION_TIMEOUT = 2;
+        public int MAX_PLOTS_GROUP_PER_CITY = 5;
 
         //TIME
         public int HOUR_NEW_DAY_START = 43200;
@@ -175,7 +176,7 @@ namespace claims.src
                     api.StoreModConfig<Config>(claims.config, "claims.json");
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 if (claims.config == null)
                 {

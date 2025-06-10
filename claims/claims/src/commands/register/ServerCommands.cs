@@ -47,11 +47,11 @@ namespace claims.src.commands.register
 
             sapi.ChatCommands.Create("plotsgroupaccept").HandleWith(commands.AcceptCommand.onAcceptPlotGroup)
               .RequiresPlayer().RequiresPrivilege(Privilege.chat)
-              .WithArgs(parsers.OptionalWord("groupName"));
+              .WithArgs(parsers.Word("cityName"), parsers.Word("groupName"));
 
             sapi.ChatCommands.Create("plotsgroupleave").HandleWith(commands.AcceptCommand.onLeavePlotGroup)
               .RequiresPlayer().RequiresPrivilege(Privilege.chat)
-              .WithArgs(parsers.OptionalWord("cityName:groupName"));
+              .WithArgs(parsers.Word("cityName"), parsers.Word("groupName"));
         }
         public static void RegisterCityCommands(CommandArgumentParsers parsers, ICoreServerAPI sapi)
         {
@@ -765,37 +765,101 @@ namespace claims.src.commands.register
                              .HandleWith(commands.CityCommand.CitySummonTeleport)
                          .EndSub()
                      .EndSub()
-                /////////
-                ;
-
-
-            /*                 
-                                               
-                     /////////
                      .BeginSub("plotsgroup")
+                        .WithAlias("pg")
                          .BeginSub("create")
                              .WithArgs(parsers.Word("groupName"))
+                             .WithPreCondition((TextCommandCallingArgs args) => {
+                                 if (args.Caller.Player is IServerPlayer player)
+                                 {
+                                     if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.CITY_PLOTSGROUP_CREATE }))
+                                     {
+                                         return TextCommandResult.Success();
+                                     }
+                                     else
+                                     {
+                                         return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                     }
+                                 }
+                                 return TextCommandResult.Error("");
+                             })
                              .HandleWith(commands.CityCommand.PlotsGroupCreate)
                              .WithDesc("Create new plotsgroup")
                          .EndSub()
                          .BeginSub("delete")
                              .HandleWith(commands.CityCommand.PlotsGroupDelete)
+                              .WithPreCondition((TextCommandCallingArgs args) => {
+                                  if (args.Caller.Player is IServerPlayer player)
+                                  {
+                                      if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.CITY_PLOTSGROUP_REMOVE }))
+                                      {
+                                          return TextCommandResult.Success();
+                                      }
+                                      else
+                                      {
+                                          return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                      }
+                                  }
+                                  return TextCommandResult.Error("");
+                              })
                              .WithDesc("Remove plotsgroup")
                              .WithArgs(parsers.Word("groupName"))
                          .EndSub()
                          .BeginSub("list")
                              .HandleWith(commands.CityCommand.PlotsGroupList)
+                             .WithPreCondition((TextCommandCallingArgs args) => {
+                                 if (args.Caller.Player is IServerPlayer player)
+                                 {
+                                     if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.CITY_PLOTSGROUP_LIST }))
+                                     {
+                                         return TextCommandResult.Success();
+                                     }
+                                     else
+                                     {
+                                         return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                     }
+                                 }
+                                 return TextCommandResult.Error("");
+                             })
                              .WithDesc("List plotsgroups")
                          .EndSub()
                          .BeginSub("listplayers")
                              .HandleWith(commands.CityCommand.PlotsGroupListPlayers)
+                              .WithPreCondition((TextCommandCallingArgs args) => {
+                                  if (args.Caller.Player is IServerPlayer player)
+                                  {
+                                      if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.CITY_PLOTSGROUP_LIST }))
+                                      {
+                                          return TextCommandResult.Success();
+                                      }
+                                      else
+                                      {
+                                          return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                      }
+                                  }
+                                  return TextCommandResult.Error("");
+                              })
                              .WithDesc("List players in the plotsgroup")
                              .WithArgs(parsers.Word("groupName"))
                          .EndSub()
                          .BeginSub("add")
-                             .HandleWith(commands.CityCommand.PlotsGroupAddTo)
+                             .HandleWith(commands.CityCommand.PlotsGroupAddPlayerToGroup)
+                              .WithPreCondition((TextCommandCallingArgs args) => {
+                                  if (args.Caller.Player is IServerPlayer player)
+                                  {
+                                      if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.CITY_PLOTSGROUP_ADD_PLAYER }))
+                                      {
+                                          return TextCommandResult.Success();
+                                      }
+                                      else
+                                      {
+                                          return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                      }
+                                  }
+                                  return TextCommandResult.Error("");
+                              })
                              .WithDesc("Add player to the plotsgroup")
-                             .IgnoreAdditionalArgs()
+                             .WithArgs(parsers.Word("groupName"), parsers.Word("playerName"))
                          .EndSub()
                          .BeginSub("unadd")
                              .WithDesc("")
@@ -803,25 +867,146 @@ namespace claims.src.commands.register
                          .EndSub()
                          .BeginSub("kick")
                              .WithDesc("Kick player from the plotsgroup")
-                             .HandleWith(commands.CityCommand.PlotsGroupKickFrom)
-                             .WithArgs(parsers.All("groupName playerName"))
+                             .WithPreCondition((TextCommandCallingArgs args) => {
+                                 if (args.Caller.Player is IServerPlayer player)
+                                 {
+                                     if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.CITY_PLOTSGROUP_KICK_PLAYER }))
+                                     {
+                                         return TextCommandResult.Success();
+                                     }
+                                     else
+                                     {
+                                         return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                     }
+                                 }
+                                 return TextCommandResult.Error("");
+                             })
+                             .HandleWith(commands.CityCommand.PlotsGroupKickPlayerFromGroup)
+                             .WithArgs(parsers.Word("groupName"), parsers.Word ("playerName"))
                          .EndSub()
                          .BeginSub("plotadd")
-                             .HandleWith(commands.CityCommand.processPlotAdd)
+                             .HandleWith(commands.CityCommand.PlotsGroupPlotAdd)
+                             .WithPreCondition((TextCommandCallingArgs args) => {
+                                 if (args.Caller.Player is IServerPlayer player)
+                                 {
+                                     if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.CITY_PLOTSGROUP_ADD_PLOT }))
+                                     {
+                                         return TextCommandResult.Success();
+                                     }
+                                     else
+                                     {
+                                         return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                     }
+                                 }
+                                 return TextCommandResult.Error("");
+                             })
                              .WithDesc("Add plot to the plotsgroup")
                              .WithArgs(parsers.Word("groupName"))
                          .EndSub()
                          .BeginSub("plotremove")
-                             .HandleWith(commands.CityCommand.processPlotRemove)
+                             .HandleWith(commands.CityCommand.PlotsGroupPlotRemove)
+                              .WithPreCondition((TextCommandCallingArgs args) => {
+                                  if (args.Caller.Player is IServerPlayer player)
+                                  {
+                                      if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.CITY_PLOTSGROUP_REMOVE_PLOT }))
+                                      {
+                                          return TextCommandResult.Success();
+                                      }
+                                      else
+                                      {
+                                          return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                      }
+                                  }
+                                  return TextCommandResult.Error("");
+                              })
                              .WithDesc("Remove plot from the plotsgroup")
                              .WithArgs(parsers.Word("plotgroup"))
                          .EndSub()
                          .BeginSub("set")
+                             .BeginSub("pvp")
+                                .WithPreCondition((TextCommandCallingArgs args) => {
+                                    if (args.Caller.Player is IServerPlayer player)
+                                    {
+                                        if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.PLOT_SET_ALL_CITY_PLOTS, EnumPlayerPermissions.PLOT_SET_PVP }))
+                                        {
+                                            return TextCommandResult.Success();
+                                        }
+                                        else
+                                        {
+                                            return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                        }
+
+                                    }
+                                    return TextCommandResult.Error("");
+                                })
+                               .HandleWith(commands.CityCommand.PlotsGroupSetPvp)
+                               .WithDesc("Pvp state")
+                               .WithArgs(parsers.Word("groupname"), parsers.WordRange("state", "on", "off"))
+                           .EndSub()
+                           .BeginSub("fire")
+                               .WithPreCondition((TextCommandCallingArgs args) => {
+                                   if (args.Caller.Player is IServerPlayer player)
+                                   {
+                                       if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.PLOT_SET_ALL_CITY_PLOTS, EnumPlayerPermissions.PLOT_SET_FIRE }))
+                                       {
+                                           return TextCommandResult.Success();
+                                       }
+                                       else
+                                       {
+                                           return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                       }
+
+                                   }
+                                   return TextCommandResult.Error("");
+                               })
+                               .HandleWith(commands.CityCommand.PlotsGroupSetFire)
+                               .WithDesc("Firespread state")
+                               .WithArgs(parsers.Word("groupname"), parsers.WordRange("state", "on", "off"))
+                           .EndSub()
+                           .BeginSub("blast")
+                               .WithPreCondition((TextCommandCallingArgs args) => {
+                                   if (args.Caller.Player is IServerPlayer player)
+                                   {
+                                       if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.PLOT_SET_ALL_CITY_PLOTS, EnumPlayerPermissions.PLOT_SET_BLAST }))
+                                       {
+                                           return TextCommandResult.Success();
+                                       }
+                                       else
+                                       {
+                                           return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                       }
+
+                                   }
+                                   return TextCommandResult.Error("");
+                               })
+                               .HandleWith(commands.CityCommand.PlotsGroupSetBlast)
+                               .WithDesc("Blast state")
+                               .WithArgs(parsers.Word("groupname"), parsers.WordRange("state", "on", "off"))
+                           .EndSub()
+                           .BeginSub("permissions")
                              .HandleWith(commands.CityCommand.PlotsGroupSet)
-                             .WithArgs(parsers.All("p groupname permgroup permtype"))
+                             .WithAlias("p")
+                             .WithPreCondition((TextCommandCallingArgs args) => {
+                                 if (args.Caller.Player is IServerPlayer player)
+                                 {
+                                     if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.CITY_PLOTSGROUP_SET }))
+                                     {
+                                         return TextCommandResult.Success();
+                                     }
+                                     else
+                                     {
+                                         return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                     }
+                                 }
+                                 return TextCommandResult.Error("");
+                             })
+                             .WithArgs(parsers.Word("groupname"),
+                                       parsers.WordRange("permgroup", "citizen"),
+                                       parsers.WordRange("permgroup", "build", "use", "attack"),
+                                       parsers.WordRange("state", "on", "off"))
                          .EndSub()
-                     .EndSub()
-                 ;*/
+                         .EndSub()
+                     .EndSub();
         }
         public static void RegisterCitizenCommands(CommandArgumentParsers parsers, ICoreServerAPI sapi)
         {
