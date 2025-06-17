@@ -34,6 +34,7 @@ namespace claims.src.part
         List<CityPlotsGroup> cityPlotsGroups = new List<CityPlotsGroup>();
         List<Prison> prisons = new List<Prison>();
         int defaultPlotCost = 0;
+        public Alliance Alliance { get; set; }
         public List<PlayerInfo> criminals = new List<PlayerInfo>();
         public string invMsg { get; set; } = "";
         public bool openCity { get; set; } = false;
@@ -46,6 +47,9 @@ namespace claims.src.part
         public int cityColor { get; set; } = -992222222;
         public string MoneyAccountName => claims.config.CITY_ACCOUNT_STRING_PREFIX + Guid;
         public Dictionary<Vec2i, Vec3i> TempleRespawnPoints { get; } = new Dictionary<Vec2i, Vec3i>();
+        public List<City> HostileCities { get; set; } = new List<City>();
+        public List<City> ComradeCities { get; set; } = new List<City>();
+        public bool Dirty { get; set; } = false;
         public City(string valName, string guid, bool isTechnical = false) : base(valName, guid)
         {
             this.isTechnical = isTechnical;
@@ -88,6 +92,10 @@ namespace claims.src.part
         public bool isTechnicalCity()
         {
             return isTechnical;
+        }
+        public bool HasAlliance()
+        {
+            return Alliance != null;
         }
         public void setIsTechnicalCity(bool val)
         {
@@ -211,7 +219,7 @@ namespace claims.src.part
             return claims.getModInstance().getDatabaseHandler().saveCity(this, update);
         }
 
-        public List<Invitation> getSentInvitations()
+        public List<Invitation> GetSentInvitations()
         {
             return listSentInvitations;
         }

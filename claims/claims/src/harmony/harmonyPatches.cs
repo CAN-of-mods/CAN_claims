@@ -710,13 +710,9 @@ namespace claims.src.harmony
                             var f = inst;
                             var serv = typeof(ServerSystem).GetField("server", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(inst) as ServerMain;
                             ConnectedClient client = serv.Clients[plr.ClientId];
-                            serv.ServerUdpNetwork.physicsManager.UpdateTrackedEntitiesStates(new Dictionary<int, ConnectedClient>
-                            {
-                                {
-                                    client.Id,
+                            serv.ServerUdpNetwork.physicsManager.UpdateTrackedEntitiesStates(
                                     client
-                                }
-                            });
+                              );
                             
                             claims.sapi.World.RegisterCallback((dt) => { Particles.PlayerRespawnParticles(plr.Entity.Pos.XYZ); }, 1000);
                         }));

@@ -1,5 +1,6 @@
 ﻿using claims.src.auxialiry;
 using claims.src.delayed.invitations;
+using claims.src.gui.playerGui.structures;
 using claims.src.network.packets;
 using claims.src.part.structure;
 using System;
@@ -79,6 +80,78 @@ namespace claims.src.part
             tree.SetInt("chZ", plot.getPos().Y);
             tree.SetString("name", plot.getCity().GetPartName());
             claims.sapi.World.Api.Event.PushEvent("plotunclaimed", tree);
+        }
+        public static void DemolishAlliance(Alliance alliance)
+        {
+            InvitationHandler.deleteAllInvitationsForSender(alliance);
+
+            //TODO
+            /*foreach (Conflict conflict in claims.dataStorage.getConflictsList().ToArray())
+            {
+                if (conflict.getFirstSide().Equals(alliance))
+                {
+                    if (conflict.getConflictState() == ConflictState.FIRST_WON)
+                    {
+                        conflict.getSecondSide().setConqueredBy(null);
+                        conflict.getSecondSide().setDaysBeforeFreedom(0);
+                        lock (claims.dataStorage.getConflictsList())
+                        {
+                            claims.dataStorage.tryRemoveConflict(conflict);
+                            claims.getModInstance().getDatabaseHandler().deleteFromDatabaseConflict(conflict);
+                        }
+                    }
+                }
+                else if (conflict.getSecondSide().Equals(alliance))
+                {
+                    if (conflict.getConflictState() == ConflictState.SECOND_WON)
+                    {
+                        conflict.getFirstSide().setConqueredBy(null);
+                        conflict.getFirstSide().setDaysBeforeFreedom(0);
+                        lock (claims.dataStorage.getConflictsList())
+                        {
+                            claims.dataStorage.tryRemoveConflict(conflict);
+                            claims.getModInstance().getDatabaseHandler().deleteFromDatabaseConflict(conflict);
+                        }
+                    }
+                }
+            }*/
+
+            //FOR HOSTILE ALLIANCE WE DELETE OUR CITIES FROM HOSTILES FOR THIER CITIES
+            foreach (Alliance otherAlliance in alliance.Hostiles)
+            {
+                foreach (City otherCity in otherAlliance.Cities)
+                {
+                    foreach (City city in alliance.Cities)
+                    {
+                        otherCity.HostileCities.Remove(city);
+                        otherCity.saveToDatabase();
+                    }
+
+                }
+            }
+
+            foreach (Alliance comradeAlliance in alliance.ComradAlliancies)
+            {
+                comradeAlliance.ComradAlliancies.Remove(alliance);
+                comradeAlliance.saveToDatabase();
+            }
+
+            foreach (City city in alliance.Cities)
+            {
+
+                city.Alliance = null;
+                foreach (var it in city.getCityCitizens())
+                {
+                    it.ClearAllAllianceTitles();
+                    RightsHandler.reapplyRights(it);
+                }
+                city.saveToDatabase();
+            }
+            foreach (var it in alliance.Cities)
+            {
+                UsefullPacketsSend.AddToQueueCityInfoUpdate(it.Guid, EnumPlayerRelatedInfo.OWN_ALLIANCE_REMOVE);
+            }
+            claims.getModInstance().getDatabaseHandler().deleteFromDatabaseAlliance(alliance);
         }
     }
 }

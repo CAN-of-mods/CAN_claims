@@ -46,6 +46,16 @@ namespace claims.src.messages
                 }
             }
         }
+        public static void SendMsgInAlliance(Alliance alliance, string msg)
+        {
+            foreach (IPlayer player in alliance.getOnlineCitizens())
+            {
+                if (claims.config.USE_MOD_CHAT_WINDOW)
+                    ((IServerPlayer)player).SendMessage(claims.dataStorage.getModChatGroup().Uid, msg, EnumChatType.Notification);
+                else
+                    ((IServerPlayer)player).SendMessage(GlobalConstants.GeneralChatGroup, msg, EnumChatType.Notification);
+            }
+        }
         public static void sendLocalMsg(Vec3d pos, string msg)
         {
             foreach (var it in claims.sapi.World.AllOnlinePlayers)

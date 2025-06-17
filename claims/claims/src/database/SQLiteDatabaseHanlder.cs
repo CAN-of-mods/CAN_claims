@@ -105,6 +105,11 @@ namespace claims.src.database
                 command = new SqliteCommand(SQLiteTables.prisonsTable, SqliteConnection);
                 command.ExecuteNonQuery();
 
+                //ALLIANCIES
+                command = new SqliteCommand(SQLiteTables.allianceTable, SqliteConnection);
+                command.ExecuteNonQuery();
+
+                //templerespawnpoints
                 try
                 {
                     command.CommandText = "SELECT templerespawnpoints FROM CITIES LIMIT 1";
@@ -116,6 +121,83 @@ namespace claims.src.database
                     command.CommandText = "ALTER TABLE CITIES ADD COLUMN templerespawnpoints TEXT DEFAULT \"\"";
                     command.ExecuteNonQuery();
                 }
+                //alliance
+                try
+                {
+                    command.CommandText = "SELECT alliance FROM CITIES LIMIT 1";
+                    command.ExecuteNonQuery();
+
+                }
+                catch
+                {
+                    command.CommandText = "ALTER TABLE CITIES ADD COLUMN alliance TEXT DEFAULT \"\"";
+                    command.ExecuteNonQuery();
+                }
+
+                //alliancetitles
+                try
+                {
+                    command.CommandText = "SELECT alliancetitles FROM PLAYERS LIMIT 1";
+                    command.ExecuteNonQuery();
+
+                }
+                catch
+                {
+                    command.CommandText = "ALTER TABLE PLAYERS ADD COLUMN alliancetitles TEXT DEFAULT \"\"";
+                    command.ExecuteNonQuery();
+                }
+                //alliance prefix
+                try
+                {
+                    command.CommandText = "SELECT prefix FROM ALLIANCIES LIMIT 1";
+                    command.ExecuteNonQuery();
+
+                }
+                catch
+                {
+                    command.CommandText = "ALTER TABLE ALLIANCIES ADD COLUMN prefix TEXT DEFAULT \"\"";
+                    command.ExecuteNonQuery();
+                }
+
+                //alliance timestampcreated
+                try
+                {
+                    command.CommandText = "SELECT timestampcreated FROM ALLIANCIES LIMIT 1";
+                    command.ExecuteNonQuery();
+
+                }
+                catch
+                {
+                    command.CommandText = "ALTER TABLE ALLIANCIES ADD COLUMN timestampcreated TEXT DEFAULT 0";
+                    command.ExecuteNonQuery();
+                }
+
+                //city hotiles
+                try
+                {
+                    command.CommandText = "SELECT hostiles FROM CITIES LIMIT 1";
+                    command.ExecuteNonQuery();
+
+                }
+                catch
+                {
+                    command.CommandText = "ALTER TABLE CITIES ADD COLUMN hostiles TEXT DEFAULT \"\"";
+                    command.ExecuteNonQuery();
+                }
+
+                //city comrades
+                try
+                {
+                    command.CommandText = "SELECT comrades FROM CITIES LIMIT 1";
+                    command.ExecuteNonQuery();
+
+                }
+                catch
+                {
+                    command.CommandText = "ALTER TABLE CITIES ADD COLUMN comrades TEXT DEFAULT \"\"";
+                    command.ExecuteNonQuery();
+                }
+
             }
             catch (Exception ex)
             {
@@ -152,6 +234,9 @@ namespace claims.src.database
                     break;
                 case "PLOTS":
                     querryString = QuerryTemplates.UPDATE_PLOT;
+                    break;
+                case "ALLIANCIES":
+                    querryString = QuerryTemplates.UPDATE_ALLIANCE;
                     break;
             }
 
@@ -200,6 +285,9 @@ namespace claims.src.database
                 case "PLOTS":
                     querryString = QuerryTemplates.DELETE_PLOT;
                     break;
+                case "ALLIANCIES":
+                    querryString = QuerryTemplates.DELETE_ALLIANCE;
+                    break;
             }
 
 
@@ -243,6 +331,9 @@ namespace claims.src.database
                     break;
                 case "PLOTS":
                     querryString = QuerryTemplates.INSERT_PLOT;
+                    break;
+                case "ALLIANCIES":
+                    querryString = QuerryTemplates.INSERT_ALLIANCE;
                     break;
             }
 
@@ -425,6 +516,9 @@ namespace claims.src.database
                 { "@perm", city.getPermsHandler().ToString() },
                 { "@plotgroups", StringFunctions.concatStringsWithDelim(city.getCityPlotsGroups(), ';') },
                 { "@prisons",  StringFunctions.concatStringsWithDelim(city.getPrisons(), ';')},
+                { "@alliance", (city.HasAlliance() ? city.Alliance.Guid : "")},
+                { "@hostiles", StringFunctions.concatStringsWithDelim(city.HostileCities, ';') },
+                { "@comrades", StringFunctions.concatStringsWithDelim(city.ComradeCities, ';')},
                 { "@defaultplotcost", city.getDefaultPlotCost() },
                 { "@invmsg", city.invMsg },
                 { "@opencity", city.openCity },
@@ -482,6 +576,15 @@ namespace claims.src.database
                 if (prison != null)
                     city.getPrisons().Add(prison);
             }
+            var pp = it["alliance"].ToString();
+            if (it["alliance"].ToString().Length != 0)
+            {
+                claims.dataStorage.GetAllianceByGUID(it["alliance"].ToString(), out Alliance alliance);
+                if (alliance != null)
+                {
+                    city.Alliance = alliance;
+                }
+            }
             city.setDefaultPlotCost(int.Parse(it["defaultplotcost"].ToString()));          
             foreach (string str in it["criminals"].ToString().Split(';'))
             {
@@ -496,6 +599,7 @@ namespace claims.src.database
                 city.getCriminals().Add(criminalPlayer);
             }
             city.fee = int.Parse(it["fee"].ToString());
+            city.invMsg = it["invMsg"].ToString();
             city.openCity = it["opencity"].ToString().Equals("0") ? false : true;
             city.setBonusPlots(int.Parse(it["bonusplots"].ToString()));
             city.Extrachunksbought = int.Parse(it["extrachunksbought"].ToString());
@@ -514,6 +618,25 @@ namespace claims.src.database
                 {
                     city.AddTempleRespawnPoint(rPoint.Key, rPoint.Value);
                 }
+            }
+            foreach (string str in it["hostiles"].ToString().Split(';'))
+            {
+                if (str.Length == 0)
+                    continue;
+
+                claims.dataStorage.getCityByGUID(str, out City city1);
+                if (city1 == null)
+                    continue;
+                //HERE WAS NULL BECAUSE HOSTILE CITY WAS DELETED
+                city.HostileCities.Add(city1);
+            }
+            foreach (string str in it["comrades"].ToString().Split(';'))
+            {
+                if (str.Length == 0)
+                    continue;
+
+                claims.dataStorage.getCityByGUID(str, out City city1);
+                city.ComradeCities.Add(city1);
             }
             MessageHandler.sendDebugMsg("loadCity::load city" + city.GetPartName());
             return true;
@@ -942,12 +1065,14 @@ namespace claims.src.database
             Dictionary<string, object> tmpDict = new Dictionary<string, object> {
                 { "@name", alliance.GetPartName() },
                 { "@guid", alliance.Guid },
-                { "@maincity", alliance.mainCity.Guid},
-                { "@cities", StringFunctions.concatStringsWithDelim(alliance.cities, ';') },
-                { "@hostiles", StringFunctions.concatStringsWithDelim(alliance.hostiles, ';') },
-                { "@comrades", StringFunctions.concatStringsWithDelim(alliance.comradAlliancies, ';') },
-                { "@alliancefee", alliance.allianceFee },
-                { "@neutral", alliance.neutral }
+                { "@maincity", alliance.MainCity.Guid},
+                { "@cities", StringFunctions.concatStringsWithDelim(alliance.Cities, ';') },
+                { "@hostiles", StringFunctions.concatStringsWithDelim(alliance.Hostiles, ';') },
+                { "@comrades", StringFunctions.concatStringsWithDelim(alliance.ComradAlliancies, ';') },
+                { "@alliancefee", alliance.AllianceFee },
+                { "@neutral", alliance.Neutral },
+                { "@prefix", alliance.Prefix },
+                { "@timestampcreated", alliance.TimeStampCreated }
             };
 
             queryQueue.Enqueue(new QuerryInfo("ALLIANCIES", update ? QuerryType.UPDATE : QuerryType.INSERT, tmpDict));
@@ -957,7 +1082,7 @@ namespace claims.src.database
         public override bool deleteFromDatabaseAlliance(Alliance alliance)
         {
             Dictionary<string, object> tmpDict = new Dictionary<string, object> {
-                { "@GUID", alliance.Guid}
+                { "@guid", alliance.Guid}
             };
 
             queryQueue.Enqueue(new QuerryInfo("ALLIANCIES", QuerryType.DELETE, tmpDict));
@@ -966,16 +1091,17 @@ namespace claims.src.database
 
         public override bool loadAlliance(DataRow it)
         {
-            claims.dataStorage.getAllianceByGUID(it["guid"].ToString(), out Alliance alliance);
+            claims.dataStorage.GetAllianceByGUID(it["guid"].ToString(), out Alliance alliance);
             claims.dataStorage.getCityByGUID(it["maincity"].ToString(), out City city);
-            alliance.mainCity = city;
+            alliance.MainCity = city;
             foreach (string str in it["cities"].ToString().Split(';'))
             {
                 if (str.Length == 0)
                     continue;
 
                 claims.dataStorage.getCityByGUID(str, out City cityToAdd);
-                alliance.cities.Add(cityToAdd);
+                alliance.Cities.Add(cityToAdd);
+                cityToAdd.Alliance = alliance;
             }
 
             foreach (string str in it["hostiles"].ToString().Split(';'))
@@ -983,21 +1109,23 @@ namespace claims.src.database
                 if (str.Length == 0)
                     continue;
 
-                claims.dataStorage.getAllianceByGUID(str, out Alliance alliance1);
-                alliance.hostiles.Add(alliance1);
+                claims.dataStorage.GetAllianceByGUID(str, out Alliance alliance1);
+                alliance.Hostiles.Add(alliance1);
             }
             foreach (string str in it["comrades"].ToString().Split(';'))
             {
                 if (str.Length == 0)
                     continue;
 
-                claims.dataStorage.getAllianceByGUID(str, out Alliance alliance1);
-                alliance.comradAlliancies.Add(alliance1);
+                claims.dataStorage.GetAllianceByGUID(str, out Alliance alliance1);
+                alliance.ComradAlliancies.Add(alliance1);
             }
 
-            alliance.allianceFee = int.Parse(it["allianceFee"].ToString());
-            alliance.neutral = it["neutral"].ToString().Equals("0") ? false : true;
-
+            alliance.AllianceFee = int.Parse(it["allianceFee"].ToString());
+            alliance.Neutral = it["neutral"].ToString().Equals("0") ? false : true;
+            alliance.Prefix = it["prefix"].ToString();
+            alliance.Leader = alliance.MainCity.getMayor();
+            alliance.TimeStampCreated = long.Parse(it["timestampcreated"].ToString());
             return true;
         }
 

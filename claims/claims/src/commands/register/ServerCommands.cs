@@ -24,6 +24,7 @@ namespace claims.src.commands.register
             RegisterPlotCommands(parsers, sapi);
             RegisterCAdminCommands(parsers, sapi);
             RegisterClaimAreaCommands(parsers, sapi);
+            RegisterAllianceCommands(parsers, sapi);
 
             sapi.ChatCommands.Create("cc").HandleWith(commands.ClaimsChatCommands.onCommandCC)
              .RequiresPlayer().RequiresPrivilege(Privilege.chat);
@@ -68,7 +69,12 @@ namespace claims.src.commands.register
                      .BeginSub("delete")
                         .HandleWith(commands.CityCommand.DeleteCity)
                         .WithDesc("Remove the city.")
-                     .EndSub()                   
+                     .EndSub()
+                      .BeginSub("inviteaccept")
+                        .HandleWith(commands.CityCommand.DeleteCity)
+                        .WithDesc("Accept invitation to an alliance.")
+                        .WithArgs(parsers.Word("allianceName"))
+                     .EndSub()
                     /////////
                     .BeginSub("claim")
                         .WithDesc("Claim new plot for the city.")
@@ -1007,6 +1013,67 @@ namespace claims.src.commands.register
                          .EndSub()
                          .EndSub()
                      .EndSub();
+        }
+        public static void RegisterAllianceCommands(CommandArgumentParsers parsers, ICoreServerAPI sapi)
+        {
+            sapi.ChatCommands.Create("alliance")
+                .RequiresPlayer().RequiresPrivilege(Privilege.chat).WithAlias("a")
+                     /////////
+                     .BeginSub("create")
+                        .HandleWith(commands.AllianceCommand.CreateAlliance)
+                        .WithAlias("new")
+                        .WithDesc("Create a new alliance.")
+                        .WithArgs(parsers.Word("allianceName"))
+                     .EndSub()
+                     .BeginSub("delete")
+                        .HandleWith(commands.AllianceCommand.DeleteAlliance)
+                        .WithAlias("remove")
+                        .WithDesc("Delete an alliance.")
+                     .EndSub()
+                     .BeginSub("leave")
+                        .HandleWith(commands.AllianceCommand.LeaveAlliance)
+                        .WithAlias("l")
+                        .WithDesc("Leave from an alliance.")
+                     .EndSub()
+                     .BeginSub("kick")
+                        .HandleWith(commands.AllianceCommand.KickFromAlliance)
+                        .WithDesc("Kick a city from an alliance.")
+                        .WithArgs(parsers.Word("cityName"))
+                     .EndSub()
+                     .BeginSub("invite")
+                        .HandleWith(commands.AllianceCommand.InviteToAlliance)
+                        .WithDesc("Invite a city to an alliance.")
+                        .WithArgs(parsers.Word("cityName"))
+                     .EndSub()
+                     .BeginSub("listinvites")
+                        .HandleWith(commands.AllianceCommand.PrintInviteList)
+                        .WithDesc("List all invites from the alliance.")
+                        .WithArgs(parsers.OptionalInt("pageNumber"))
+                     .EndSub()
+                     .BeginSub("set")
+                        .BeginSub("name")
+                            .HandleWith(commands.AllianceCommand.SetNameAlliance)
+                            .WithDesc("Change name of the alliance.")
+                            .WithArgs(parsers.Word("newName"))
+                        .EndSub()
+                        .BeginSub("fee")
+                            .HandleWith(commands.AllianceCommand.SetFeeAlliance)
+                            .WithDesc("Set fee of the alliance.")
+                            .WithArgs(parsers.Int("number"))
+                        .EndSub()
+                        .BeginSub("capital")
+                            .HandleWith(commands.AllianceCommand.SetCapitalAlliance)
+                            .WithDesc("Set capital of the alliance.")
+                            .WithArgs(parsers.Word("cityName"))
+                        .EndSub()
+                        .BeginSub("prefix")
+                            .HandleWith(commands.AllianceCommand.SetPrefixAlliance)
+                            .WithDesc("Set prefix string.")
+                            .WithArgs(parsers.OptionalWord("string"))
+                        .EndSub()
+                     .EndSub()
+                     ;
+                     
         }
         public static void RegisterCitizenCommands(CommandArgumentParsers parsers, ICoreServerAPI sapi)
         {

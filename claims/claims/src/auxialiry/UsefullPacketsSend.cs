@@ -12,6 +12,8 @@ using Vintagestory.API.Client;
 using claims.src.part.structure;
 using ProtoBuf;
 using claims.src.part.structure.plots;
+using Vintagestory.API.Datastructures;
+using caneconomy.src.interfaces;
 
 namespace claims.src.auxialiry
 {
@@ -134,7 +136,13 @@ namespace claims.src.auxialiry
             collector.Add(EnumPlayerRelatedInfo.SHOW_PLOT_MOVEMENT, ((int)playerInfo.showPlotMovement).ToString());
             collector.Add(EnumPlayerRelatedInfo.FRIENDS, JsonConvert.SerializeObject(StringFunctions.getNamesOfFriends(playerInfo)));
             collector.Add(EnumPlayerRelatedInfo.TO_CITY_INVITES, JsonConvert.SerializeObject(InvitationHandler.getInvitesForReceiver(playerInfo)));
-
+            Dictionary<string, ClientCityInfoCellElement> CityStatsCashe =
+                ObjectCacheUtil.GetOrCreate<Dictionary<string, ClientCityInfoCellElement>>(claims.sapi,
+                "claims:cityinfocache", () => new Dictionary<string, ClientCityInfoCellElement>());
+            if (CityStatsCashe.Count > 0)
+            {
+                collector.Add(EnumPlayerRelatedInfo.CITY_LIST_ALL, JsonConvert.SerializeObject(CityStatsCashe.Values.ToList()));
+            }
             claims.serverChannel.SendPacket(
                 new SavedPlotsPacket()
                 {
@@ -282,7 +290,14 @@ namespace claims.src.auxialiry
                     {
                         if (already_stored_dict.TryGetValue(value_pair.Key, out var inner_value))
                         {
-                            inner_value.Add(value_pair.Value);
+                            if(value_pair.Value is List<object> listValue)
+                            {
+                                inner_value.AddRange(listValue);
+                            }
+                            else
+                            {
+                                inner_value.Add(value_pair.Value);
+                            }
                         }
                     }
                 }
@@ -303,7 +318,10 @@ namespace claims.src.auxialiry
             {
                 foreach (var it in toUpdate)
                 {
-                    playerHashSet.Add(it, null);
+                    if (!playerHashSet.ContainsKey(it))
+                    {
+                        playerHashSet.Add(it, null);
+                    }
                 }
             }
             else
@@ -400,6 +418,35 @@ namespace claims.src.auxialiry
                                     collector.Add(relatedInfo.Key, JsonConvert.SerializeObject(objectsList));
                                 }
                                 break;
+                            case EnumPlayerRelatedInfo.NEW_ALLIANCE_ALL:
+                                if (relatedInfo.Value.TryGetValue("value", out var allianceGuid))
+                                {
+                                    if (claims.dataStorage.GetAllianceByGUID((string)allianceGuid[0], out var alliance))
+                                    {
+                                        collector.Add(relatedInfo.Key, JsonConvert.SerializeObject(new AllianceInfo(alliance.GetPartName(),
+                                                                                                                    alliance.Leader.GetPartName(),
+                                                                                                                    alliance.TimeStampCreated,
+                                                                                                                    alliance.Prefix,
+                                                                                                                    StringFunctions.GetPartsNames(alliance.Cities),
+                                                                                                                    (double)claims.economyHandler.getBalance(alliance.MoneyAccountName))));
+                                    }
+                                }
+                                break;
+                            case EnumPlayerRelatedInfo.ALLIANCE_BALANCE:
+                                collector.Add(relatedInfo.Key, claims.economyHandler.getBalance(city.Alliance.MoneyAccountName).ToString());
+                                break;
+                            case EnumPlayerRelatedInfo.OWN_ALLIANCE_REMOVE:
+                                collector.Add(relatedInfo.Key, null);
+                                break;
+                            case EnumPlayerRelatedInfo.ALLIANCE_NAME:
+                                if (relatedInfo.Value.TryGetValue("value", out var allianceGuidForName))
+                                {
+                                    if (claims.dataStorage.GetAllianceByGUID((string)allianceGuidForName[0], out var alliance))
+                                    {
+                                        collector.Add(relatedInfo.Key, JsonConvert.SerializeObject((alliance.Guid, alliance.GetPartName())));
+                                    }
+                                }
+                                break;
                         }
                     }
                     //collector now contains only general info for all citizens
@@ -435,6 +482,32 @@ namespace claims.src.auxialiry
                                             if (relatedInfo.Value.TryGetValue("value", out var objectsList))
                                             {
                                                 playerCollector.Add(relatedInfo.Key, JsonConvert.SerializeObject(objectsList));
+                                            }
+                                            break;
+                                        case EnumPlayerRelatedInfo.OWN_ALLIANCE_REMOVE:
+                                            playerCollector.Add(relatedInfo.Key, null);
+                                            break;
+                                        case EnumPlayerRelatedInfo.NEW_ALLIANCE_ALL:
+                                            if (relatedInfo.Value.TryGetValue("value", out var allianceGuid))
+                                            {
+                                                if (claims.dataStorage.GetAllianceByGUID((string)allianceGuid[0], out var alliance))
+                                                {
+                                                    collector.Add(relatedInfo.Key, JsonConvert.SerializeObject(new AllianceInfo(alliance.GetPartName(),
+                                                                                                                                alliance.Leader.GetPartName(),
+                                                                                                                                alliance.TimeStampCreated,
+                                                                                                                                alliance.Prefix,
+                                                                                                                                StringFunctions.GetPartsNames(alliance.Cities),
+                                                                                                                                (double)claims.economyHandler.getBalance(alliance.MoneyAccountName))));
+                                                }
+                                            }
+                                            break;
+                                        case EnumPlayerRelatedInfo.ALLIANCE_NAME:
+                                            if (relatedInfo.Value.TryGetValue("value", out var allianceGuidForName))
+                                            {
+                                                if (claims.dataStorage.GetAllianceByGUID((string)allianceGuidForName[0], out var alliance))
+                                                {
+                                                    collector.Add(relatedInfo.Key, JsonConvert.SerializeObject((alliance.Guid, alliance.GetPartName())));
+                                                }
                                             }
                                             break;
                                     }
@@ -520,6 +593,20 @@ namespace claims.src.auxialiry
                                         collector.Add(relatedInfo.Key, JsonConvert.SerializeObject(objectsList));
                                     }
                                     break;
+                                case EnumPlayerRelatedInfo.NEW_ALLIANCE_ALL:
+                                    if (relatedInfo.Value.TryGetValue("value", out var allianceGuid))
+                                    {
+                                        if (claims.dataStorage.GetAllianceByGUID((string)allianceGuid[0], out var alliance))
+                                        {
+                                            collector.Add(relatedInfo.Key, JsonConvert.SerializeObject(new AllianceInfo(alliance.GetPartName(),
+                                                                                                                        alliance.Leader?.GetPartName() ?? "",
+                                                                                                                        alliance.TimeStampCreated,
+                                                                                                                        alliance.Prefix,
+                                                                                                                        StringFunctions.GetPartsNames(alliance.Cities),
+                                                                                                                        (double)claims.economyHandler.getBalance(alliance.MoneyAccountName))));
+                                        }
+                                    }
+                                    break;
                             }
                         }
                         if (collector.Count > 0)
@@ -553,6 +640,113 @@ namespace claims.src.auxialiry
 
             }, player);            
         }
-
+        public static void AddToQueueAllianceInfoUpdate(string allianceGuid, Dictionary<string, object> additionalInfo, EnumPlayerRelatedInfo toUpdate)
+        {
+            if (claims.dataStorage.GetAllianceByGUID(allianceGuid, out var alliance))
+            {
+                foreach (var city in alliance.Cities)
+                {
+                    if (cityDelayedInfoCollector.TryGetValue(city.Guid, out Dictionary<EnumPlayerRelatedInfo, Dictionary<string, List<object>>> cityHashSet))
+                    {
+                        //such enum was added before, just add new additional info to it
+                        if (cityHashSet.TryGetValue(toUpdate, out var already_stored_dict))
+                        {
+                            foreach (var value_pair in additionalInfo)
+                            {
+                                if (already_stored_dict.TryGetValue(value_pair.Key, out var inner_value))
+                                {
+                                    inner_value.Add(value_pair.Value);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            cityHashSet.Add(toUpdate, additionalInfo.ToDictionary(k => k.Key, k => new List<object> { k.Value }));
+                        }
+                    }
+                    else
+                    {
+                        cityDelayedInfoCollector.TryAdd(city.Guid,
+                            new Dictionary<EnumPlayerRelatedInfo, Dictionary<string, List<object>>> { { toUpdate, additionalInfo.ToDictionary(k => k.Key, k => new List<object> { k.Value }) } });
+                    }
+                }
+            }
+        }
+        public static void AddToQueueAllianceInfoUpdate(string allianceGuid, params EnumPlayerRelatedInfo[] toUpdate)
+        {
+            if (claims.dataStorage.GetAllianceByGUID(allianceGuid, out var alliance))
+            {
+                foreach (var city in alliance.Cities)
+                {
+                    if (cityDelayedInfoCollector.TryGetValue(city.Guid, out Dictionary<EnumPlayerRelatedInfo, Dictionary<string, List<object>>> cityHashSet))
+                    {
+                        foreach (var it in toUpdate)
+                        {
+                            cityHashSet.Add(it, null);
+                        }
+                    }
+                    else
+                    {
+                        cityDelayedInfoCollector.TryAdd(city.Guid, toUpdate.ToDictionary(k => k, k => (Dictionary<string, List<object>>)null));
+                    }
+                }
+            }
+        }
+        public static void CheckCitisUpdatedAndSend()
+        {
+            List<City> updatedCities = new List<City>();
+            foreach (var it in claims.dataStorage.getCitiesList())
+            {
+                if (it.Dirty)
+                {
+                    updatedCities.Add(it);
+                    it.Dirty = false;
+                }
+            }
+            if (updatedCities.Count == 0)
+            {
+                return;
+            }
+            Dictionary<string, ClientCityInfoCellElement> CityStatsCashe =
+                ObjectCacheUtil.GetOrCreate<Dictionary<string, ClientCityInfoCellElement>>(claims.sapi,
+                "claims:cityinfocache", () => new Dictionary<string, ClientCityInfoCellElement>());
+            foreach (var it in updatedCities)
+            {
+                if (CityStatsCashe.TryGetValue(it.Guid, out var stat))
+                {
+                    stat.AllianceName = it?.Alliance.GetPartName() ?? "";
+                    stat.MayorName = it.getMayor()?.GetPartName() ?? "";
+                    stat.Name = it.GetPartName();
+                    stat.InvMsg = it.invMsg;
+                    stat.TimeStampCreated = it.TimeStampCreated;
+                    stat.CitizensAmount = it.getCityCitizens().Count;
+                    stat.Open = it.openCity;
+                    stat.ClaimedPlotsAmount = it.getCityPlots().Count;
+                }
+                else
+                {
+                    CityStatsCashe.Add(it.Guid, new ClientCityInfoCellElement(it.getCityCitizens().Count, it.getMayor()?.GetPartName() ?? "",
+                        it.getCityPlots().Count, it?.Alliance.GetPartName() ?? "", it.TimeStampCreated, it.GetPartName(), it.openCity,
+                        it.invMsg, it.Guid));
+                }
+            }
+            List<ClientCityInfoCellElement> elToSend = new List<ClientCityInfoCellElement>();
+            foreach (var it in updatedCities)
+            {
+                if (CityStatsCashe.TryGetValue(it.Guid, out var stat))
+                {
+                    elToSend.Add(stat);
+                }
+            }
+            foreach (var player in claims.sapi.World.AllOnlinePlayers)
+            {
+                claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+                if (playerInfo == null)
+                {
+                    continue;
+                }
+                UsefullPacketsSend.AddToQueuePlayerInfoUpdate(playerInfo.Guid, new Dictionary<string, object> { { "value", elToSend } }, EnumPlayerRelatedInfo.CITY_LIST_UPDATE);
+            }
+        }
     }
 }

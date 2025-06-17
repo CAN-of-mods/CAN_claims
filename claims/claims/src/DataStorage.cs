@@ -239,8 +239,20 @@ namespace claims.src
         /*==============================================================================================*/
         /*=====================================ALLIANCE=================================================*/
         /*==============================================================================================*/
+        public bool AllianceExistsByGUID(string guid)
+        {
+            return guidToAllianceDict.ContainsKey(guid);
+        }
+        public bool GetAllianceByName(string name, out Alliance alliance)
+        {
+            if (nameToAllianceDict.TryGetValue(name, out alliance))
+            {
+                return true;
+            }
+            return false;
+        }
 
-        public bool getAllianceByGUID(string guid, out Alliance alliance)
+        public bool GetAllianceByGUID(string guid, out Alliance alliance)
         {
             if (guidToAllianceDict.TryGetValue(guid, out alliance))
             {

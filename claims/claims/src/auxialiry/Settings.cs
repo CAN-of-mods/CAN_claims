@@ -18,6 +18,7 @@ namespace claims.src.auxialiry
         public static HashSet<string> blockedCommandsForPrison;
         public static HashSet<string> protectedAnimals;
         public static SortedDictionary<int, CityLevelInfo> cityLevelsDict;
+        public static SortedDictionary<int, AllianceLevelInfo> AllianceLevelsDict;
         public static int[] colors;
         public static void loadAll()
         {
@@ -25,9 +26,11 @@ namespace claims.src.auxialiry
             blockedCommandsForPrison = new HashSet<string>();
             protectedAnimals = new HashSet<string>();
             cityLevelsDict = new SortedDictionary<int, CityLevelInfo>();
+            AllianceLevelsDict = new SortedDictionary<int, AllianceLevelInfo>();
             loadBlockedCommandsForPrison();
             loadProtectedAnimals();
-            loadCityLevelsInfo();
+            LoadCityLevelsInfo();
+            LoadAllianceLevelsInfo();
             InitColors();
         }
         public static void clearAll()
@@ -43,7 +46,7 @@ namespace claims.src.auxialiry
             colors = null;
 
         }
-        public static bool loadCityLevelsInfo()
+        public static bool LoadCityLevelsInfo()
         {
             string filePath;
             if (claims.config.PATH_TO_DB_AND_JSON_FILES.Length == 0)
@@ -85,7 +88,48 @@ namespace claims.src.auxialiry
             }       
             return true;
         }
+        public static bool LoadAllianceLevelsInfo()
+        {
+            string filePath;
+            if (claims.config.PATH_TO_DB_AND_JSON_FILES.Length == 0)
+                filePath = @"" + Path.Combine(GamePaths.ModConfig, "alliance_level_info.json");
+            else
+                filePath = Path.Combine(claims.config.PATH_TO_DB_AND_JSON_FILES, "alliance_level_info.json");
 
+            string json = "";
+            if (File.Exists(filePath))
+            {
+                using (StreamReader r = new StreamReader(filePath))
+                {
+                    json = r.ReadToEnd();
+                }
+                Dictionary<int, Dictionary<String, Object>> levelsDict = JsonConvert.DeserializeObject<Dictionary<int, Dictionary<String, Object>>>(json);
+                try
+                {
+                    foreach (var it in levelsDict)
+                    {
+                        AllianceLevelsDict.Add(it.Key, new AllianceLevelInfo(int.Parse(it.Value["AdditionalAmountOfPlots"].ToString()),
+                                int.Parse(it.Value["MaxCampsAmount"].ToString()),
+                                int.Parse(it.Value["UnconditionalPayment"].ToString())
+                                ));
+                    }
+                }
+                catch
+                {
+                    AllianceLevelsDict.Clear();
+                    CreateDefaultAllianceLevels(filePath);
+                }
+            }
+            if (json == "")
+            {
+                CreateDefaultAllianceLevels(filePath);
+                using (StreamReader r = new(filePath))
+                {
+                    json = r.ReadToEnd();
+                }
+            }
+            return true;
+        }
         public static CityLevelInfo getCityLevelInfo(int count)
         {
             foreach (int level in cityLevelsDict.Keys.Reverse()) //CHECK
@@ -97,9 +141,20 @@ namespace claims.src.auxialiry
             }
             return cityLevelsDict[1];
         }
+        public static AllianceLevelInfo GetAllianceLevelInfo(int count)
+        {
+            foreach (int level in AllianceLevelsDict.Keys.Reverse()) //CHECK
+            {
+                if (count >= level)
+                {
+                    return AllianceLevelsDict[level];
+                }
+            }
+            return AllianceLevelsDict[1];
+        }
         public static void createDefaultCityLevels(string path)
         {
-            //plot amount, unconditionalPayment, summon plot
+            //plot amount, unconditionalPayment, summon plot, extra plots
             cityLevelsDict.Add(1, new CityLevelInfo(2, 0, 0, 2));
             cityLevelsDict.Add(2, new CityLevelInfo(4, 0, 0, 4));
             cityLevelsDict.Add(3, new CityLevelInfo(8, 0, 0, 8));
@@ -115,7 +170,18 @@ namespace claims.src.auxialiry
                 string b = JsonConvert.SerializeObject(cityLevelsDict, Formatting.Indented);
                 r.WriteLine(b);
             }
-        }     
+        }
+        public static void CreateDefaultAllianceLevels(string path)
+        {
+            //plot amount, unconditionalPayment, summon plot, extra plots
+            AllianceLevelsDict.Add(1, new AllianceLevelInfo(12, 1, 4));
+            AllianceLevelsDict.Add(2, new AllianceLevelInfo(24, 1, 5));
+            using (StreamWriter r = new StreamWriter(path))
+            {
+                string b = JsonConvert.SerializeObject(AllianceLevelsDict, Formatting.Indented);
+                r.WriteLine(b);
+            }
+        }
         public static void loadBlockedNames()
         {
             foreach (var it in claims.config.BLOCKED_NAMES)
@@ -153,7 +219,10 @@ namespace claims.src.auxialiry
         public static int getMaxNumberOfPlotForCity(City city)
         {
             CityLevelInfo cityLevel = getCityLevelInfo(city.getCityCitizens().Count);
-            return city.getBonusPlots() + cityLevel.AmountOfPlots;
+            return city.getBonusPlots() + cityLevel.AmountOfPlots + 
+                                                                    (city.HasAlliance() 
+                                                                        ? GetAllianceLevelInfo(city.Alliance.Cities.Count).AdditionalAmountOfPlots
+                                                                        : 0);
         }
         public static int getMaxNumberOfExtraChunksBought(City city)
         {

@@ -1,11 +1,14 @@
 ﻿using claims.src.auxialiry;
+using claims.src.gui.playerGui.structures;
 using claims.src.messages;
 using claims.src.network.packets;
 using claims.src.part;
+using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Server;
+using Vintagestory.API.Util;
 
 namespace claims.src.events
 {
@@ -38,7 +41,7 @@ namespace claims.src.events
                 claims.dataStorage.addPlayer(playerInfo);
                 playerInfo.TimeStampLasOnline = TimeFunctions.getEpochSeconds();
                 playerInfo.TimeStampFirstJoined = TimeFunctions.getEpochSeconds();
-                MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:new_player_greetings", player.PlayerName));
+                //MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:new_player_greetings", player.PlayerName));
             }
             else
             {
@@ -52,7 +55,17 @@ namespace claims.src.events
             UsefullPacketsSend.sendAllCitiesColorsToPlayer(player);
             UsefullPacketsSend.SendPlayerCityRelatedInfo(player);
             UsefullPacketsSend.SendUpdatedConfigValues(player);
-            if(claims.config.NO_ACCESS_WITH_FOR_NOT_CLAIMED_AREA)
+            if(playerInfo.HasAlliance())
+            {
+                UsefullPacketsSend.AddToQueuePlayerInfoUpdate(playerInfo.Guid, new Dictionary<string, object> { { "value", playerInfo.Alliance.Guid } }, EnumPlayerRelatedInfo.NEW_ALLIANCE_ALL);
+            }
+
+            Dictionary<string, ClientCityInfoCellElement> CityStatsCashe =
+                ObjectCacheUtil.GetOrCreate<Dictionary<string, ClientCityInfoCellElement>>(claims.sapi,
+                "claims:cityinfocache", () => new Dictionary<string, ClientCityInfoCellElement>());
+            UsefullPacketsSend.AddToQueuePlayerInfoUpdate(playerInfo.Guid, new Dictionary<string, object> { { "value", CityStatsCashe.Values.ToList() } }, EnumPlayerRelatedInfo.CITY_LIST_ALL);
+
+            if (claims.config.NO_ACCESS_WITH_FOR_NOT_CLAIMED_AREA)
             {
                 if (claims.dataStorage.serverClaimAreaHandler.GetAllClaimAreas() != null)
                 {

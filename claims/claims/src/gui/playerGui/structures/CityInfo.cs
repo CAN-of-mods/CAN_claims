@@ -24,7 +24,8 @@ namespace claims.src.gui.playerGui.structures
         public HashSet<string> Criminals = new();
         public List<PrisonCellElement> PrisonCells { get; set; } = new();
         public List<SummonCellElement> SummonCells { get; set; } = new();
-        public List<PlotsGroupCellElement> PlotsGroupCells { get; set; } = new();
+        public List<PlotsGroupCellElement> PlotsGroupCells { get; set; } = new();   
+        public List<ClientToAllianceInvitationCellElement> ClientToAllianceInvitations { get; set; } = new();
         public CityInfo()
         {
             Name = "";

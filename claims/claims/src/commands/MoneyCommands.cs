@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Vintagestory.API.Common;
+using Vintagestory.API.Config;
 using Vintagestory.API.Server;
 
 namespace claims.src.commands
@@ -73,9 +74,75 @@ namespace claims.src.commands
             decimal collectedValue = VirtualMoneyEconomyHandler.TakeCurrencyItemsFromPlayerActiveSlot(player);
             if(collectedValue > 0)
             {
-                claims.economyHandler.deposit(claims.config.CITY_ACCOUNT_STRING_PREFIX + playerInfo.City.Guid, (decimal)collectedValue);
+                claims.economyHandler.deposit(playerInfo.City.MoneyAccountName, (decimal)collectedValue);
                 UsefullPacketsSend.AddToQueueCityInfoUpdate(playerInfo.City.Guid, gui.playerGui.structures.EnumPlayerRelatedInfo.CITY_BALANCE);
                 return SuccessWithParams("claims:economy_virtual_city_deposited", new object[] { collectedValue });
+            }
+            return TextCommandResult.Success("claims:economy_virtual_city_deposit_error");
+        }
+        public static TextCommandResult OnAllianceBalance(TextCommandCallingArgs args)
+        {
+            IServerPlayer player = args.Caller.Player as IServerPlayer;
+
+            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            {
+                return TextCommandResult.Success("claims:no_such_player_info");
+            }
+
+            if(!playerInfo.HasAlliance())
+            {
+                return TextCommandResult.Error(Lang.Get("claims:no_alliance"));
+            }
+            return SuccessWithParams("claims:economy_virtual_alliance_balance", new object[] { claims.economyHandler.getBalance(playerInfo.Alliance.MoneyAccountName) });
+        }
+
+        public static TextCommandResult OnAllianceWithdraw(TextCommandCallingArgs args)
+        {
+            IServerPlayer player = args.Caller.Player as IServerPlayer;
+            int toWithdraw = (int)args.Parsers[0].GetValue();
+
+            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            {
+                return TextCommandResult.Success("claims:no_such_player_info");
+            }
+            if (!playerInfo.HasAlliance())
+            {
+                return TextCommandResult.Error(Lang.Get("claims:no_alliance"));
+            }
+
+            if (claims.economyHandler.getBalance(playerInfo.Alliance.MoneyAccountName) < toWithdraw)
+            {
+                return TextCommandResult.Success("claims:economy_virtual_city_not_enough_money");
+            }
+
+            if (claims.economyHandler.withdraw(playerInfo.Alliance.MoneyAccountName, (decimal)toWithdraw).ResultState == caneconomy.src.implementations.OperationResult.EnumOperationResultState.SUCCCESS)
+            {
+                VirtualMoneyEconomyHandler.GiveCurrencyItemsToPlayer(player, toWithdraw);
+                UsefullPacketsSend.AddToQueueAllianceInfoUpdate(playerInfo.Alliance.Guid, gui.playerGui.structures.EnumPlayerRelatedInfo.ALLIANCE_BALANCE);
+                return SuccessWithParams("claims:economy_virtual_alliance_withdrawn", new object[] { toWithdraw });
+            }
+            return TextCommandResult.Success("claims:economy_virtual_city_withdraw_error");
+        }
+
+        public static TextCommandResult OnAllianceDeposit(TextCommandCallingArgs args)
+        {
+            IServerPlayer player = args.Caller.Player as IServerPlayer;
+
+            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            {
+                return TextCommandResult.Success("claims:no_such_player_info");
+            }
+            if (!playerInfo.HasAlliance())
+            {
+                return TextCommandResult.Error(Lang.Get("claims:no_alliance"));
+            }
+
+            decimal collectedValue = VirtualMoneyEconomyHandler.TakeCurrencyItemsFromPlayerActiveSlot(player);
+            if (collectedValue > 0)
+            {
+                claims.economyHandler.deposit(playerInfo.Alliance.MoneyAccountName, (decimal)collectedValue);
+                UsefullPacketsSend.AddToQueueAllianceInfoUpdate(playerInfo.Alliance.Guid, gui.playerGui.structures.EnumPlayerRelatedInfo.ALLIANCE_BALANCE);
+                return SuccessWithParams("claims:economy_virtual_alliance_deposited", new object[] { collectedValue });
             }
             return TextCommandResult.Success("claims:economy_virtual_city_deposit_error");
         }

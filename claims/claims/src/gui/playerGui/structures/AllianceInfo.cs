@@ -1,0 +1,28 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using claims.src.part;
+
+namespace claims.src.gui.playerGui.structures
+{
+    public class AllianceInfo
+    {
+        public string Name { get; set; }
+        public string LeaderName { get; set; }
+        public long TimeStampCreated { get; set; }
+        public string Prefix { get; set; }
+        public List<string> Cities { get; set; } = new List<string>();
+        public double Balance { get; set; }
+        public AllianceInfo(string name, string leaderName, long timeStampCreated, string prefix, List<string> cities, double balance)
+        {
+            Name = name;
+            LeaderName = leaderName;
+            TimeStampCreated = timeStampCreated;
+            Prefix = prefix;
+            Cities = cities;
+            Balance = balance;
+        }
+    }
+}

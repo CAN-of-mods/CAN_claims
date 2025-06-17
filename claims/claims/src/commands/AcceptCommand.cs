@@ -4,6 +4,7 @@ using claims.src.delayed;
 using claims.src.messages;
 using claims.src.part;
 using claims.src.part.interfaces;
+using claims.src.part.structure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -143,6 +144,53 @@ namespace claims.src.commands
             searchedGroup.PlayersList.Remove(playerInfo);
             searchedGroup.saveToDatabase();
             return SuccessWithParams("claims:you_left_plotsgroup", new object[] { searchedGroup.GetPartName() });
+        }
+        public static TextCommandResult AcceptToAllianceInvitation(TextCommandCallingArgs args)
+        {
+            TextCommandResult tcr = new TextCommandResult();
+            tcr.Status = EnumCommandStatus.Success;
+            IServerPlayer player = args.Caller.Player as IServerPlayer;
+            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            if (playerInfo == null)
+            {
+                return tcr;
+            }
+            if (!playerInfo.hasCity())
+            {
+                tcr.StatusMessage = "claims:player_has_no_city";
+                return tcr;
+            }
+            if (playerInfo.HasAlliance())
+            {
+                tcr.StatusMessage = "claims:has_alliance_already";
+                return tcr;
+            }
+
+            int invitationsCount = playerInfo.City.getReceivedInvitations().Count;
+            if (args.LastArg == null)
+            {
+                if (invitationsCount == 0)
+                {
+                    tcr.StatusMessage = "claims:no_invitations";
+                    return tcr;
+                }
+
+                MessageHandler.sendMsgToPlayer(player, StringFunctions.makeFeasibleStringFromNames(
+                         StringFunctions.getNamesOfAllianciesFromInvitations(
+                             Lang.Get("claims:invitations_to_alliance"), playerInfo.City.getReceivedInvitations()),
+                    ','));
+                return tcr;
+            }
+            foreach (var invitation in playerInfo.City.getReceivedInvitations())
+            {
+                if ((invitation.getSender() as Alliance).GetPartName().Equals(args.LastArg))
+                {
+                    invitation.accept();
+                    return tcr;
+                }
+            }
+            tcr.StatusMessage = "claims:no_invitations";
+            return tcr;
         }
     }
 }

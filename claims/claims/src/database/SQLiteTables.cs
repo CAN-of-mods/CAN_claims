@@ -18,6 +18,9 @@ namespace claims.src.database
             "perm TEXT,"+
             "plotgroups TEXT," +
             "prisons TEXT," +
+            "alliance TEXT," +
+            "hostiles TEXT," +
+            "comrades TEXT," +
             "defaultplotcost INTEGER," +
             "invMsg TEXT," +
             "opencity INTEGER," +
@@ -39,6 +42,7 @@ namespace claims.src.database
             "comrades TEXT," +
             "city TEXT," +
             "citytitles TEXT,"+
+            "alliancetitles TEXT," +
             "title TEXT," +
             "aftername TEXT," +
             "perms TEXT," +
@@ -98,6 +102,7 @@ namespace claims.src.database
            "CREATE TABLE IF NOT EXISTS ALLIANCIES(" +
            "name TEXT," +
            "guid TEXT PRIMARY KEY NOT NULL," +
+           "timestampcreated INTEGER DEFAULT 0," +
            "maincity TEXT," +
            "cities TEXT," +
            "hostiles TEXT," +

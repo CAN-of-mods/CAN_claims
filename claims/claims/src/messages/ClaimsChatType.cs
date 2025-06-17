@@ -8,6 +8,6 @@ namespace claims.src.messages
 {
     public enum ClaimsChatType
     {
-        NONE, CITY, LOCAL
+        NONE, CITY, LOCAL, ALLIANCE
     }
 }

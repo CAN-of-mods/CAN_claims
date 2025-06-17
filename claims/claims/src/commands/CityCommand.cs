@@ -623,17 +623,17 @@ namespace claims.src.commands
             }
             if (args.LastArg == null)
             {
-                return TextCommandResult.Success(StringFunctions.getNthPageOf(playerInfo.City.getSentInvitations(), 1));
+                return TextCommandResult.Success(StringFunctions.getNthPageOf(playerInfo.City.GetSentInvitations(), 1));
             }
 
             int page = (int)args.LastArg;
 
-            var sentInvites = playerInfo.City.getSentInvitations();
+            var sentInvites = playerInfo.City.GetSentInvitations();
             if (sentInvites.Count < 1)
             {
                 return TextCommandResult.Success("claims:no_invitations");
             }
-            return TextCommandResult.Success(StringFunctions.getNthPageOf(playerInfo.City.getSentInvitations(), page));
+            return TextCommandResult.Success(StringFunctions.getNthPageOf(playerInfo.City.GetSentInvitations(), page));
         }
         public static TextCommandResult CityJoin(TextCommandCallingArgs args)
         {
@@ -940,6 +940,10 @@ namespace claims.src.commands
             }
 
             city.setMayor(targetPlayer);
+            if(city.HasAlliance())
+            {
+                city.Alliance.Leader = targetPlayer;
+            }
             RightsHandler.reapplyRights(playerInfo);
             RightsHandler.reapplyRights(targetPlayer);
             MessageHandler.sendMsgInCity(city, Lang.Get("claims:player_now_is_a_mayor", targetPlayer.GetPartName()));

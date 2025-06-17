@@ -30,20 +30,30 @@ namespace claims.src.events
                     Match somePrefix = Regex.Match(message, "<font(.+)/font>");
                     
                     Match onlyMsg = Regex.Match(message, "> (.+)");
-                   // var i = somePrefix.Value;
-                    message = (somePrefix.Success 
+
+
+
+                    //prefix[cityName] playerName message
+                    message = string.Format("{0}{1}{2}{3}{4}{5} {6}", 
+                        somePrefix.Success
                             ? somePrefix.Value
-                            : "")
-                        + StringFunctions.setStringColor("[", ColorsClaims.WHITE)
-                           + StringFunctions.setBold(StringFunctions.setStringColor(StringFunctions.replaceUnderscore(playerInfo.City.GetPartName()), claims.config.CITY_COLOR_NAME))
-                           + StringFunctions.setStringColor("]", ColorsClaims.WHITE) +
-                           playerInfo.getNameForChat() + " " + onlyMsg.Groups[1].Value;
+                            : "",
+                        playerInfo.HasAlliance() && playerInfo.Alliance.Prefix.Length > 0
+                            ? StringFunctions.setStringColor("[", ColorsClaims.WHITE) +
+                                StringFunctions.setBold(StringFunctions.setStringColor(playerInfo.Alliance.Prefix, claims.config.ALLIANCE_COLOR_NAME)) +
+                                StringFunctions.setStringColor("]", ColorsClaims.WHITE)
+                            : "",
+                        StringFunctions.setStringColor("[", ColorsClaims.WHITE),
+                        StringFunctions.setBold(StringFunctions.setStringColor(StringFunctions.replaceUnderscore(playerInfo.City.GetPartName()), claims.config.CITY_COLOR_NAME)),
+                        StringFunctions.setStringColor("]", ColorsClaims.WHITE),
+                        playerInfo.getNameForChat(),
+                        onlyMsg.Groups[1].Value
+                        );
                 }
                 else
                 {
 
                 }
-                //consumed.value = true;
                 return;
             }
 
@@ -51,9 +61,14 @@ namespace claims.src.events
             {
                 MessageHandler.sendMsgInCity(playerInfo.City, message, false);
                 consumed.value = true;
-            }      
-            
-            if(channelId == claims.dataStorage.getModChatGroup()?.Uid)
+            }
+            else if (chat == ClaimsChatType.ALLIANCE)
+            {
+                MessageHandler.SendMsgInAlliance(playerInfo.Alliance, message);
+                consumed.value = true;
+            }
+
+            if (channelId == claims.dataStorage.getModChatGroup()?.Uid)
             {
                 consumed.value = true;
                 return;

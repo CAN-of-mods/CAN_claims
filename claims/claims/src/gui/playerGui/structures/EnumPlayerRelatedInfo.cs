@@ -37,5 +37,14 @@ namespace claims.src.gui.playerGui.structures
         TO_PLOTS_GROUP_INVITES,
         TO_PLOTS_GROUP_INVITE_ADD,
         TO_PLOTS_GROUP_INVITE_REMOVE,
+
+        NEW_ALLIANCE_ALL,
+        OWN_ALLIANCE_REMOVE,
+
+        CITY_LIST_ALL,
+        CITY_LIST_UPDATE,
+
+        ALLIANCE_BALANCE,
+        ALLIANCE_NAME,
     }
 }

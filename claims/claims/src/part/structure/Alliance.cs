@@ -1,10 +1,13 @@
-﻿using claims.src.delayed.invitations;
+﻿using claims.src.auxialiry;
+using claims.src.delayed.invitations;
 using claims.src.part.interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Vintagestory.API.Config;
+using Vintagestory.API.Server;
 using Vintagestory.GameContent;
 
 namespace claims.src.part.structure
@@ -12,14 +15,31 @@ namespace claims.src.part.structure
     public class Alliance : Part, ISender, IGetStatus, ICooldown
     {
         public string MoneyAccountName => claims.config.CITY_ACCOUNT_STRING_PREFIX + Guid;
-        PlayerInfo leader;
-        List<Invitation> listSentInvitations = new List<Invitation>();
-        public List<City> cities { get; set; } = new List<City>(); 
-        public City mainCity { get; set; }
-        public List<Alliance> hostiles { get; set; } = new List<Alliance>();
-        public List<Alliance> comradAlliancies { get; set; } = new List<Alliance>();
-        public int allianceFee = 0;
-        public bool neutral { get; set; } = false;
+        public PlayerInfo Leader { get; set; }
+        List<Invitation> ListSentInvitations = new List<Invitation>();
+        public List<City> Cities { get; set; } = new List<City>(); 
+        public City MainCity { get; set; }
+        public List<Alliance> Hostiles { get; set; } = new List<Alliance>();
+        public List<Alliance> ComradAlliancies { get; set; } = new List<Alliance>();
+        public int AllianceFee { get; set; } = 0;
+        public long TimeStampCreated { get; set; }
+        public bool Neutral { get; set; } = false;
+        private string prefix = "";
+        public string Prefix
+        {
+            get { return prefix; }
+            set
+            {
+                if (value.Length > claims.config.ALLIANCE_PREFIX_LENGTH)
+                {
+                    prefix = value.Substring(0, claims.config.ALLIANCE_PREFIX_LENGTH);
+                }
+                else
+                {
+                    prefix = value;
+                }
+            }
+        }
         public Alliance(string val, string guid) : base(val, guid)
         {
         }
@@ -27,35 +47,79 @@ namespace claims.src.part.structure
         {
             return claims.getModInstance().getDatabaseHandler().saveAlliance(this, update);
         }
-        public List<Invitation> getSentInvitations()
+        public List<Invitation> GetSentInvitations()
         {
-            throw new NotImplementedException();
+            return ListSentInvitations;
         }
+        public List<IServerPlayer> getOnlineCitizens()
+        {
+            List<IServerPlayer> outList = new List<IServerPlayer>();
+            foreach (var city in Cities)
+            {
+                foreach (var player in city.getCityCitizens())
+                {
+                    IServerPlayer tmp = (IServerPlayer)claims.sapi.World.PlayerByUid(player.Guid);
+                    if (tmp != null && claims.sapi.World.AllOnlinePlayers.Contains(tmp))
+                    {
+                        outList.Add(tmp);
+                    }
 
+                }
+            }
+            return outList;
+        }
+        public bool IsLeader(PlayerInfo player)
+        {
+            return player.Equals(MainCity.getMayor());
+        }
         public void deleteSentInvitation(Invitation invitation)
         {
-            throw new NotImplementedException();
+            this.ListSentInvitations.Remove(invitation);
         }
 
         public void addSentInvitation(Invitation invitation)
         {
-            throw new NotImplementedException();
+            this.ListSentInvitations.Add(invitation);
         }
 
         public int getMaxSentInvitations()
         {
-            
-            throw new NotImplementedException();
+
+            return claims.config.MAX_SENT_INVITATIONS_ALLIANCE;
         }
 
         public string getNameSender()
         {
-            throw new NotImplementedException();
+            return GetPartName();
         }
 
         public List<string> getStatus(PlayerInfo forPlayer)
         {
-            throw new NotImplementedException();
+            List<string> outList = new List<string>
+            {
+                "[" + this.getPartNameReplaceUnder() + "]\n",
+                Lang.Get("claims:main_city") + this.MainCity.getPartNameReplaceUnder() + "\n",
+                StringFunctions.makeFeasibleStringFromNames(StringFunctions.getNamesOfCities(Lang.Get("claims:cities"), Cities), ',') + "\n",
+                Lang.Get("claims:bank_status") + claims.economyHandler.getBalance(this.MoneyAccountName) + "\n"
+            };
+            if (this.Neutral)
+            {
+                outList.Add(Lang.Get("claims:neutral") + "\n");
+            }
+            
+            if (this.Hostiles.Count > 0)
+            {
+                outList.Add(StringFunctions.makeFeasibleStringFromNames(StringFunctions.
+                getNamesOfPartReplaceUnder(Lang.Get("claims:hostiles"), new List<Part>(this.Hostiles))
+                , ','));
+            }
+            if (this.ComradAlliancies.Count > 0)
+            {
+                outList.Add(StringFunctions.makeFeasibleStringFromNames(StringFunctions.
+                    getNamesOfPartReplaceUnder(Lang.Get("claims:allies"), new List<Part>(this.ComradAlliancies))
+                    , ','));
+            }
+            return outList;
         }
     }
 }

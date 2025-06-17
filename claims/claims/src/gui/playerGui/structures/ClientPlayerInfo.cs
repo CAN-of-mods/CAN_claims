@@ -19,6 +19,8 @@ namespace claims.src.gui.playerGui.structures
         public EnumShowPlotMovement ShowPlotMovement { get; set; } = EnumShowPlotMovement.SHOW_NONE;
         public PlayerPermissions PlayerPermissions { get; set; }
         public CurrentPlotInfo CurrentPlotInfo { get; set; }
+        public AllianceInfo AllianceInfo { get; set; }
+        public List<ClientCityInfoCellElement> AllCitiesList { get; set; } = new List<ClientCityInfoCellElement>();
         public ClientPlayerInfo()
         {
             CityInfo = null;
@@ -411,6 +413,53 @@ namespace claims.src.gui.playerGui.structures
                         }
                     }
                 }
+            }
+
+            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.NEW_ALLIANCE_ALL, out string newAllianceInfo))
+            {
+                AllianceInfo ai = JsonConvert.DeserializeObject<AllianceInfo>(newAllianceInfo);
+                claims.clientDataStorage.clientPlayerInfo.AllianceInfo = ai;
+            }
+
+            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.OWN_ALLIANCE_REMOVE, out string _))
+            {
+                claims.clientDataStorage.clientPlayerInfo.AllianceInfo = null;
+            }
+
+            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_LIST_ALL, out string allCitiesList))
+            {
+                List<ClientCityInfoCellElement> ai = JsonConvert.DeserializeObject<List<ClientCityInfoCellElement>>(allCitiesList);
+                claims.clientDataStorage.clientPlayerInfo.AllCitiesList = ai;
+            }
+
+            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_LIST_UPDATE, out string cityListUpdate))
+            {
+                List<ClientCityInfoCellElement> ai = JsonConvert.DeserializeObject<List<ClientCityInfoCellElement>>(allCitiesList);
+                foreach (var it in ai)
+                {
+                    var existing = AllCitiesList.FirstOrDefault(c => c.Guid == it.Guid);
+                    if (existing != null)
+                    {
+                        existing.CitizensAmount = it.CitizensAmount;
+                        existing.MayorName = it.MayorName;
+                        existing.ClaimedPlotsAmount = it.ClaimedPlotsAmount;
+                        existing.AllianceName = it.AllianceName;
+                        existing.TimeStampCreated = it.TimeStampCreated;
+                        existing.Name = it.Name;
+                        existing.Open = it.Open;
+                        existing.InvMsg = it.InvMsg;
+                    }
+                    else
+                    {
+                        AllCitiesList.Add(it);
+                    }
+                }
+            }
+
+            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.ALLIANCE_NAME, out string allianceName))
+            {
+                Tuple<string, string> tup = JsonConvert.DeserializeObject<Tuple<string, string>>(allianceName);
+                claims.clientDataStorage.clientPlayerInfo.AllianceInfo.Name = tup.Item2;
             }
         }
     }

@@ -74,11 +74,13 @@ namespace claims.src.database
                && loadDummyPlots()
                && loadDummyPrisons()
                && loadDummyCityPlotGroups()
+               && loadDummyAlliancies()
                && loadAllPlayersInfo()
                && loadAllPlots()
                && loadAllCityPlotGroups()
                && loadAllCitis()        
-               && loadAllPrisons();              
+               && loadAllPrisons()
+               && loadAllAlliancies();              
         }
         abstract public bool saveEveryThing();
 
