@@ -71,7 +71,7 @@ namespace claims.src.commands.register
                         .WithDesc("Remove the city.")
                      .EndSub()
                       .BeginSub("inviteaccept")
-                        .HandleWith(commands.CityCommand.DeleteCity)
+                        .HandleWith(commands.AcceptCommand.AcceptToAllianceInvitation)
                         .WithDesc("Accept invitation to an alliance.")
                         .WithArgs(parsers.Word("allianceName"))
                      .EndSub()
@@ -1018,7 +1018,153 @@ namespace claims.src.commands.register
         {
             sapi.ChatCommands.Create("alliance")
                 .RequiresPlayer().RequiresPrivilege(Privilege.chat).WithAlias("a")
-                     /////////
+                        /////////
+                      .BeginSub("conflict")
+                        .WithAlias("c")
+                          .BeginSub("declare")
+                            .WithAlias("d")
+                            .HandleWith(commands.AllianceCommand.DeclareConflict)
+                            .WithDesc("Try to start a conflict with an alliance.")
+                            .WithPreCondition((TextCommandCallingArgs args) => {
+                                if (args.Caller.Player is IServerPlayer player)
+                                {
+                                    if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.ALLIANCE_DECLARE_CONFLICT }))
+                                    {
+                                        return TextCommandResult.Success();
+                                    }
+                                    else
+                                    {
+                                        return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                    }
+
+                                }
+                                return TextCommandResult.Error("");
+                            })
+                            .WithArgs(parsers.Word("allianceName"))
+                         .EndSub()
+                         .BeginSub("revoke")
+                            .WithAlias("r")
+                            .HandleWith(commands.AllianceCommand.RevokeConflict)
+                            .WithDesc("Remove declaration if it's not accepted yet.")
+                            .WithPreCondition((TextCommandCallingArgs args) => {
+                                if (args.Caller.Player is IServerPlayer player)
+                                {
+                                    if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.ALLIANCE_REVOKE_CONFLICT }))
+                                    {
+                                        return TextCommandResult.Success();
+                                    }
+                                    else
+                                    {
+                                        return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                    }
+
+                                }
+                                return TextCommandResult.Error("");
+                            })
+                            .WithArgs(parsers.Word("allianceName"))
+                         .EndSub()
+                         .BeginSub("accept")
+                            .WithAlias("a")
+                            .HandleWith(commands.AllianceCommand.AcceptStartConflict)
+                            .WithDesc("Accept to start a conflict.")
+                            .WithPreCondition((TextCommandCallingArgs args) => {
+                                if (args.Caller.Player is IServerPlayer player)
+                                {
+                                    if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.ALLIANCE_ACCEPT_CONFLICT }))
+                                    {
+                                        return TextCommandResult.Success();
+                                    }
+                                    else
+                                    {
+                                        return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                    }
+
+                                }
+                                return TextCommandResult.Error("");
+                            })
+                            .WithArgs(parsers.Word("allianceName"))
+                         .EndSub()
+                         .BeginSub("deny")
+                            .HandleWith(commands.AllianceCommand.DenyStartConflict)
+                            .WithDesc("Deny to start a conflict.")
+                            .WithPreCondition((TextCommandCallingArgs args) => {
+                                if (args.Caller.Player is IServerPlayer player)
+                                {
+                                    if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.ALLIANCE_DENY_CONFLICT }))
+                                    {
+                                        return TextCommandResult.Success();
+                                    }
+                                    else
+                                    {
+                                        return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                    }
+
+                                }
+                                return TextCommandResult.Error("");
+                            })
+                            .WithArgs(parsers.Word("allianceName"))
+                         .EndSub()
+                         .BeginSub("offerstop")
+                            .HandleWith(commands.AllianceCommand.OfferStopConflict)
+                            .WithDesc("Offer to stop a conflict.")
+                            .WithPreCondition((TextCommandCallingArgs args) => {
+                                if (args.Caller.Player is IServerPlayer player)
+                                {
+                                    if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.ALLIANCE_OFFER_STOP_CONFLICT }))
+                                    {
+                                        return TextCommandResult.Success();
+                                    }
+                                    else
+                                    {
+                                        return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                    }
+
+                                }
+                                return TextCommandResult.Error("");
+                            })
+                            .WithArgs(parsers.Word("allianceName"))
+                         .EndSub()
+                         .BeginSub("acceptstop")
+                            .HandleWith(commands.AllianceCommand.AcceptStopConflict)
+                            .WithDesc("Accept to stop a conflict.")
+                            .WithPreCondition((TextCommandCallingArgs args) => {
+                                if (args.Caller.Player is IServerPlayer player)
+                                {
+                                    if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.ALLIANCE_ACCEPT_STOP_CONFLICT }))
+                                    {
+                                        return TextCommandResult.Success();
+                                    }
+                                    else
+                                    {
+                                        return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                    }
+
+                                }
+                                return TextCommandResult.Error("");
+                            })
+                            .WithArgs(parsers.Word("allianceName"))
+                         .EndSub()
+                         .BeginSub("denystop")
+                            .HandleWith(commands.AllianceCommand.DenyStopConflict)
+                            .WithDesc("Deny to stop a conflict.")
+                            .WithPreCondition((TextCommandCallingArgs args) => {
+                                if (args.Caller.Player is IServerPlayer player)
+                                {
+                                    if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.ALLIANCE_DENY_STOP_CONFLICT }))
+                                    {
+                                        return TextCommandResult.Success();
+                                    }
+                                    else
+                                    {
+                                        return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                    }
+
+                                }
+                                return TextCommandResult.Error("");
+                            })
+                            .WithArgs(parsers.Word("allianceName"))
+                         .EndSub()
+                     .EndSub()
                      .BeginSub("create")
                         .HandleWith(commands.AllianceCommand.CreateAlliance)
                         .WithAlias("new")

@@ -25,6 +25,7 @@ using claims.src.playerMovements;
 using claims.src.perms.type;
 using claims.src.gui.playerGui.structures;
 using claims.src.auxialiry.claimAreas;
+using claims.src.part.structure.conflict;
 
 namespace claims.src
 {
@@ -67,6 +68,7 @@ namespace claims.src
         //and timestamp for it
         protected Dictionary<Vec2i, ClientSavedZone> ClientSavedPlotsInZones;
         public ClientPlayerInfo clientPlayerInfo { get; set; }
+        public List<Conflict> conflicts { get; } = new List<Conflict>();
 
         //zone pos and timestamp when we get info about it last time
         //will be used by client when it enters new zone and send to server this timestamps
@@ -361,7 +363,7 @@ namespace claims.src
         }
 
         /*==============================================================================================*/
-        /*=====================================PLOTSGROUP================================================*/
+        /*=====================================PLOTSGROUP===============================================*/
         /*==============================================================================================*/
         public ConcurrentDictionary<string, CityPlotsGroup> getCityPlotsGroupsDict()
         {
@@ -382,6 +384,26 @@ namespace claims.src
         public bool removePlotsGroup(string guid)
         {
             return guidToCityPlotsGroupDict.TryRemove(guid, out _);
+        }
+
+        /*==============================================================================================*/
+        /*=====================================CONFLICTS================================================*/
+        /*==============================================================================================*/
+        public bool TryAddConflict(Conflict conflict)
+        {
+            if (conflicts.Contains(conflict))
+            {
+                return false;
+            }
+            else
+            {
+                conflicts.Add(conflict);
+                return true;
+            }
+        }
+        public bool TryRemoveConflict(Conflict conflict)
+        {
+            return conflicts.Remove(conflict);
         }
         /*==============================================================================================*/
         /*=====================================INNER CLAIMS=============================================*/
@@ -602,7 +624,7 @@ namespace claims.src
                 return false;
             }
             return true;
-        }
+        }       
         public bool plotHasDistantEnoughFromOtherForNewCity(Vec2i pos)
         {
             foreach (City city in getCitiesList())

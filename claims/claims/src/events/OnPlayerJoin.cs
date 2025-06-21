@@ -3,6 +3,8 @@ using claims.src.gui.playerGui.structures;
 using claims.src.messages;
 using claims.src.network.packets;
 using claims.src.part;
+using claims.src.part.structure.conflict;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Common;
@@ -58,6 +60,28 @@ namespace claims.src.events
             if(playerInfo.HasAlliance())
             {
                 UsefullPacketsSend.AddToQueuePlayerInfoUpdate(playerInfo.Guid, new Dictionary<string, object> { { "value", playerInfo.Alliance.Guid } }, EnumPlayerRelatedInfo.NEW_ALLIANCE_ALL);
+
+                List<ClientConflictLetterCellElement> li = new List<ClientConflictLetterCellElement>();
+                foreach(var it in ConflictHandler.GetAllLettersForAlliance(playerInfo.Alliance))
+                {
+                    li.Add(new ClientConflictLetterCellElement(it.From.GetPartName(), it.From.Guid, it.To.GetPartName(), it.To.Guid,
+                        it.Purpose, it.TimeStampExpire, it.Guid));
+                }
+                if (li.Count > 0)
+                {
+                    UsefullPacketsSend.AddToQueuePlayerInfoUpdate(playerInfo.Guid, new Dictionary<string, object> { { "value", li } }, EnumPlayerRelatedInfo.ALLIANCE_LETTER_ALL);
+                }
+
+                List<ClientConflictCellElement> lic = new List<ClientConflictCellElement>();
+                foreach (var it in ConflictHandler.GetAllConflictsForAlliance(playerInfo.Alliance))
+                {
+                    lic.Add(new ClientConflictCellElement(it.GetPartName(), it.First.GetPartName(), it.Second.GetPartName(),
+                        it.StartedBy.GetPartName(), it.State, it.Guid, it.WarRanges, it.TimeStampStarted));
+                }
+                if (lic.Count > 0)
+                {
+                    UsefullPacketsSend.AddToQueuePlayerInfoUpdate(playerInfo.Guid, new Dictionary<string, object> { { "value", lic } }, EnumPlayerRelatedInfo.ALLIANCE_CONFLICT_ALL);
+                }
             }
 
             Dictionary<string, ClientCityInfoCellElement> CityStatsCashe =

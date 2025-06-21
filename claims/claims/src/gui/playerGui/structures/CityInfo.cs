@@ -26,6 +26,8 @@ namespace claims.src.gui.playerGui.structures
         public List<SummonCellElement> SummonCells { get; set; } = new();
         public List<PlotsGroupCellElement> PlotsGroupCells { get; set; } = new();   
         public List<ClientToAllianceInvitationCellElement> ClientToAllianceInvitations { get; set; } = new();
+        public List<ClientConflictCellElement> ClientConflictCellElements { get; set; } = new();
+        public List<ClientConflictLetterCellElement> ClientConflictLetterCellElements { get; set; } = new();
         public CityInfo()
         {
             Name = "";

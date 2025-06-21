@@ -1,6 +1,7 @@
 ﻿using claims.src.auxialiry;
 using claims.src.messages;
 using claims.src.part;
+using claims.src.part.structure;
 using claims.src.rights;
 using Newtonsoft.Json;
 using System;
@@ -73,7 +74,8 @@ namespace claims.src
                     }
                 },
 
-                { "CITY_ASSISTANT", new HashSet<EnumPlayerPermissions>
+                { 
+                    "CITY_ASSISTANT", new HashSet<EnumPlayerPermissions>
                     {
                         EnumPlayerPermissions.CITY_CLAIM_PLOT,
                         EnumPlayerPermissions.CITY_UNCLAIM_PLOT,
@@ -83,6 +85,16 @@ namespace claims.src
                         EnumPlayerPermissions.CITY_SEE_BALANCE
                     }
                 },
+                {
+                    "LEADER", new HashSet<EnumPlayerPermissions>
+                    {
+                        EnumPlayerPermissions.ALLIANCE_ACCEPT_CONFLICT,
+                        EnumPlayerPermissions.ALLIANCE_DECLARE_CONFLICT,
+                        EnumPlayerPermissions.ALLIANCE_REVOKE_CONFLICT,
+                        EnumPlayerPermissions.ALLIANCE_DENY_CONFLICT,
+                        EnumPlayerPermissions.ALLIANCE_OFFER_STOP_CONFLICT
+                    }
+                }
 
             };
             return outDict;
@@ -141,6 +153,17 @@ namespace claims.src
                     if (PlayerPermissionsByGroups.TryGetValue("CITY_" + str, out HashSet<EnumPlayerPermissions> titlePerms))
                     {
                         playerInfo.PlayerPermissionsHandler.AddPermissions(titlePerms);
+                    }
+                }
+            }
+            Alliance alliance = playerInfo.Alliance;
+            if(alliance != null)
+            {
+                if (alliance.IsLeader(playerInfo))
+                {
+                    if (PlayerPermissionsByGroups.TryGetValue("LEADER", out HashSet<EnumPlayerPermissions> leaderPerms))
+                    {
+                        playerInfo.PlayerPermissionsHandler.AddPermissions(leaderPerms);
                     }
                 }
             }

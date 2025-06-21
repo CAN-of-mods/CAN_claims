@@ -163,6 +163,13 @@ namespace claims.src.part
             {
                 claims.economyHandler.newAccount(newAlliace.MoneyAccountName, new Dictionary<string, object> { { "lastknownname", newAlliace.GetPartName() } });
             }
+            foreach (var city in newAlliace.Cities)
+            {
+                foreach (var it in city.getCityCitizens())
+                {
+                    RightsHandler.reapplyRights(it);
+                }
+            }
             UsefullPacketsSend.AddToQueueAllianceInfoUpdate(newAlliace.Guid, new Dictionary<string, object> { { "value", newAlliace.Guid } },  EnumPlayerRelatedInfo.NEW_ALLIANCE_ALL);
             creator.City.saveToDatabase();
             newAlliace.saveToDatabase(false);

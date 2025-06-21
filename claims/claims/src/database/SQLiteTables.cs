@@ -110,5 +110,20 @@ namespace claims.src.database
            "alliancefee INTEGER," +
            "neutral INTEGER" +
            ");";
+
+        public static string conflictsTable =
+             "CREATE TABLE IF NOT EXISTS CONFLICTS(" +
+             "name TEXT," +
+             "guid TEXT PRIMARY KEY NOT NULL," +
+             "firstside TEXT," +
+             "secondside TEXT," +
+             "conflictstate INTEGER," +
+             "startedby TEXT," +
+             "warranges TEXT," +
+             "minimumdaysbetweenbattles INTEGER," +
+             "lastbattledatestart TEXT," +
+             "lastbattledateend TEXT," +
+             "timestampstarted INTEGER DEFAULT 0" +
+             ");";
     }
 }

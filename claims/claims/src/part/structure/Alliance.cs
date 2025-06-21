@@ -1,6 +1,7 @@
 ﻿using claims.src.auxialiry;
 using claims.src.delayed.invitations;
 using claims.src.part.interfaces;
+using claims.src.part.structure.conflict;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +25,7 @@ namespace claims.src.part.structure
         public int AllianceFee { get; set; } = 0;
         public long TimeStampCreated { get; set; }
         public bool Neutral { get; set; } = false;
+        public HashSet<Conflict> RunningConflicts { get; } = new HashSet<Conflict>();
         private string prefix = "";
         public string Prefix
         {
@@ -120,6 +122,17 @@ namespace claims.src.part.structure
                     , ','));
             }
             return outList;
+        }
+        public static string GetUnusedGuid()
+        {
+            string newGuid;
+            while (true)
+            {
+                newGuid = System.Guid.NewGuid().ToString();
+                if (claims.dataStorage.checkGuidForCityVillage(newGuid))
+                    break;
+            }
+            return newGuid;
         }
     }
 }

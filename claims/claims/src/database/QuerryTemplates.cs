@@ -45,5 +45,10 @@ namespace claims.src.database
                                                     " VALUES (@name,@x,@z,@city,@ownerofplot,@type,@price,@customtax,@perms,@plotgroupguid, @markednopvp, @plotdesc, @extraBought)";
         public static readonly string UPDATE_PLOT = "UPDATE PLOTS SET name=@name, x=@x,z=@z,city=@city, ownerofplot=@ownerofplot, type=@type,price=@price,customtax=@customtax,perms=@perms, plotgroupguid=@plotgroupguid, markednopvp=@markednopvp, plotdesc=@plotdesc, extraBought=@extraBought" +
                                                     " where x=@x and z=@z";
+
+        //CONFLICT
+        public static readonly string DELETE_CONFLICT = "DELETE FROM CONFLICTS WHERE guid=@guid";
+        public static readonly string INSERT_CONFLICT = "INSERT INTO CONFLICTS (name, guid, firstside, secondside, conflictstate, startedby, warranges, minimumdaysbetweenbattles, lastbattledatestart, lastbattledateend, timestampstarted) VALUES (@name,@guid,@firstside,@secondside,@conflictstate, @startedby, @warranges, @minimumdaysbetweenbattles, @lastbattledatestart, @lastbattledateend, @timestampstarted)";
+        public static readonly string UPDATE_CONFLICT = "UPDATE CONFLICTS  SET name=@name, guid=@guid, firstside=@firstside, secondside=@secondside, conflictstate=@conflictstate, startedby=@startedby, warranges=@warranges, minimumdaysbetweenbattles=@minimumdaysbetweenbattles, lastbattledatestart=@lastbattledatestart, lastbattledateend=@lastbattledateend, timestampstarted=@timestampstarted where guid=@guid";
     }
 }

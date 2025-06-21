@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,7 +15,7 @@ using Vintagestory.Client.NoObf;
 
 namespace claims.src.gui.playerGui.GuiElements
 {
-    public class GuiElementToAllianceInvitation : GuiElementTextBase, IGuiElementCell, IDisposable
+    public class GuiElementConflictLetterCell: GuiElementTextBase, IGuiElementCell, IDisposable
     {
         public enum HighlightedTexture
         {
@@ -22,7 +23,7 @@ namespace claims.src.gui.playerGui.GuiElements
         }
         public static double unscaledRightBoxWidth = 40.0;
 
-        public ClientToAllianceInvitationCellElement cell;
+        public ClientConflictLetterCellElement cell;
 
         private bool showModifyIcons = true;
 
@@ -51,10 +52,13 @@ namespace claims.src.gui.playerGui.GuiElements
         public Action<int> OnMouseDownOnCellMiddle;
         public Action<int> OnMouseDownOnCellRight;
 
+        private IAsset dove;
+        private IAsset sword;
+        private LoadedTexture normalTexture;
 
         ElementBounds IGuiElementCell.Bounds => Bounds;
 
-        public GuiElementToAllianceInvitation(ICoreClientAPI capi, ClientToAllianceInvitationCellElement cell, ElementBounds bounds)
+        public GuiElementConflictLetterCell(ICoreClientAPI capi, ClientConflictLetterCellElement cell, ElementBounds bounds)
             : base(capi, "", null, bounds)
         {
             this.cell = cell;
@@ -64,7 +68,12 @@ namespace claims.src.gui.playerGui.GuiElements
             this.cancelIcon = capi.Assets.Get(new AssetLocation("claims:textures/icons/cancel.svg"));
             this.approveIcon = capi.Assets.Get(new AssetLocation("claims:textures/icons/check-mark.svg"));
 
+
+            this.dove = capi.Assets.Get(new AssetLocation("claims:textures/icons/peace-dove.svg"));
+            //this.sword = capi.Assets.Get(new AssetLocation("claims:sword-brandish.svg"));
+
             this.capi = capi;
+            normalTexture = new LoadedTexture(capi);
         }
 
         private void Compose()
@@ -78,10 +87,10 @@ namespace claims.src.gui.playerGui.GuiElements
             double num = GuiElement.scaled(unscaledRightBoxWidth);
             Bounds.CalcWorldBounds();
 
-            string cellName = cell.AllianceName;
+            string cellName = string.Format("{0} x {1}", cell.From, cell.To);
             TextExtents textExtents = Font.GetTextExtents(cellName);
             textUtil.AutobreakAndDrawMultilineTextAt(context, Font, cellName, Bounds.absPaddingX, Bounds.absPaddingY + GuiElement.scaled(10), textExtents.Width + 1.0, EnumTextOrientation.Left);
-            string expDate = TimeFunctions.getDateFromEpochSecondsWithHoursMinutes(cell.TimeoutStamp, true).ToString();
+            string expDate = TimeFunctions.getDateFromEpochSecondsWithHoursMinutes(cell.TimeStampExpire, true).ToString();
             textExtents = Font.GetTextExtents(expDate);
             textUtil.AutobreakAndDrawMultilineTextAt(context, CairoFont.WhiteDetailText(), expDate, Bounds.absPaddingX, Bounds.absPaddingY + GuiElement.scaled(36), textExtents.Width + 1.0, EnumTextOrientation.Left);
 
@@ -93,12 +102,47 @@ namespace claims.src.gui.playerGui.GuiElements
             double num7 = Bounds.absPaddingX + Bounds.InnerWidth - GuiElement.scaled(0.0) - num5 - num6;
             double num8 = Bounds.absPaddingY + Bounds.absPaddingY;
 
-            capi.Gui.DrawSvg(cancelIcon, imageSurface, (int)(num7 - GuiElement.scaled(3.0)), (int)(num8 + GuiElement.scaled(15.0)), (int)GuiElement.scaled(30.0), (int)GuiElement.scaled(30.0), ColorUtil.ColorFromRgba(255, 128, 0, 255));
-            capi.Gui.DrawSvg(approveIcon, imageSurface, (int)(num7 - GuiElement.scaled(unscaledRightBoxWidth) - GuiElement.scaled(10.0)), (int)(num8 + GuiElement.scaled(15.0)), (int)GuiElement.scaled(30.0), (int)GuiElement.scaled(30.0), ColorUtil.ColorFromRgba(0, 153, 0, 255));
+            capi.Gui.DrawSvg(cancelIcon, imageSurface, (int)(num7 - GuiElement.scaled(3.0)),
+                                                            (int)(num8 + GuiElement.scaled(15.0)),
+                                                            (int)GuiElement.scaled(30.0),
+                                                            (int)GuiElement.scaled(30.0),
+                                                            ColorUtil.ColorFromRgba(255, 128, 0, 255));
+            if (claims.clientDataStorage.clientPlayerInfo.AllianceInfo?.Guid?.Equals(this.cell.ToGuid) ?? false)
+            {
+                capi.Gui.DrawSvg(approveIcon, imageSurface,
+                (int)(num7 - GuiElement.scaled(unscaledRightBoxWidth) - GuiElement.scaled(10.0)),
+                (int)(num8 + GuiElement.scaled(15.0)),
+                (int)GuiElement.scaled(30.0),
+                (int)GuiElement.scaled(30.0),
+                ColorUtil.ColorFromRgba(0, 153, 0, 255));
+            }
+            
 
             generateTexture(imageSurface, ref modcellTexture);
+            
             context.Dispose();
             imageSurface.Dispose();
+
+            ImageSurface imageSurface2 = new ImageSurface(Format.Argb32, Bounds.OuterWidthInt, Bounds.OuterHeightInt);
+            Context context2 = new Context(imageSurface2);
+            Bounds.CalcWorldBounds();
+            if (this.cell.Purpose == part.structure.conflict.LetterPurpose.END_CONFLICT)
+            {
+                capi.Gui.Icons.DrawIcon(context2, "claims:peace-dove", (int)(num7 - GuiElement.scaled(unscaledRightBoxWidth) - GuiElement.scaled(10.0)),
+                    (int)(num8 + GuiElement.scaled(15.0)),
+                    (int)GuiElement.scaled(64),
+                    (int)GuiElement.scaled(64), new double[] { 0, 153, 0, 255 });
+            }
+            else
+            {
+                capi.Gui.Icons.DrawIcon(context2, "claims:sword-brandish", (int)(num7 - GuiElement.scaled(unscaledRightBoxWidth) - GuiElement.scaled(10.0)),
+                    (int)(num8 + GuiElement.scaled(15.0)),
+                    (int)GuiElement.scaled(64),
+                    (int)GuiElement.scaled(64), new double[] { 0, 153, 0, 255 });
+            }
+            generateTexture(imageSurface2, ref normalTexture);
+            context2.Dispose();
+            imageSurface2.Dispose();
         }
 
         private void genOnTexture()
@@ -169,6 +213,16 @@ namespace claims.src.gui.playerGui.GuiElements
                 Compose();
             }
 
+            ElementBounds imageBounds = ElementBounds.Fixed(Bounds.absX + 10, Bounds.absY + 10, 32, 32);
+            //imageBounds.CalcWorldBounds();
+
+           
+            api.Render.Render2DTexturePremultipliedAlpha(
+                normalTexture.TextureId,
+                this.Bounds.renderX/ 1.5, this.Bounds.renderY / 1.05
+                , (double)this.Bounds.OuterWidthInt, (double)this.Bounds.OuterHeightInt
+            );
+
             api.Render.Render2DTexturePremultipliedAlpha(modcellTexture.TextureId, (int)Bounds.absX, (int)Bounds.absY, Bounds.OuterWidthInt, Bounds.OuterHeightInt);
             int mouseX = api.Input.MouseX;
             int mouseY = api.Input.MouseY;
@@ -200,6 +254,8 @@ namespace claims.src.gui.playerGui.GuiElements
             api.Render.GLDeleteTexture(middleHighlightTextureId);
             api.Render.GLDeleteTexture(rightHighlightTextureId);
             api.Render.GLDeleteTexture(switchOnTextureId);
+            api.Render.GLDeleteTexture(normalTexture.TextureId);
+            normalTexture?.Dispose();
         }
 
         public void OnMouseUpOnElement(MouseEvent args, int elementIndex)
@@ -212,11 +268,18 @@ namespace claims.src.gui.playerGui.GuiElements
                     vec2d.X < Bounds.InnerWidth - GuiElement.scaled(GuiElementMainMenuCell.unscaledRightBoxWidth))
             {
                 ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
-                clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/c inviteaccept " + this.cell.AllianceName, EnumChatType.Macro, "");
-                var cell = claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientToAllianceInvitations.FirstOrDefault(c => c.AllianceName == this.cell.AllianceName);
+                if (claims.clientDataStorage.clientPlayerInfo.AllianceInfo?.Guid?.Equals(this.cell.Guid) ?? false)
+                {
+                    return;
+                }
+                else
+                {
+                    clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/a conflict accept " + this.cell.From, EnumChatType.Macro, "");
+                }
+                var cell = claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientConflictLetterCellElements.FirstOrDefault(c => c.From == this.cell.From);
                 if (cell != null)
                 {
-                    claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientToAllianceInvitations.Remove(cell);
+                    claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientConflictLetterCellElements.Remove(cell);
                     claims.CANCityGui.BuildMainWindow();
                 }
                 //OnMouseDownOnCellMiddle?.Invoke(elementIndex);
@@ -224,7 +287,21 @@ namespace claims.src.gui.playerGui.GuiElements
             }
             else if (vec2d.X > Bounds.InnerWidth - GuiElement.scaled(GuiElementMainMenuCell.unscaledRightBoxWidth))
             {
-                //OnMouseDownOnCellRight?.Invoke(elementIndex);
+                ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
+                if (claims.clientDataStorage.clientPlayerInfo.AllianceInfo?.Guid?.Equals(this.cell.Guid) ?? false)
+                {
+                    clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/a conflict deny " + this.cell.From, EnumChatType.Macro, "");
+                }
+                else 
+                {
+                    clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/a conflict revoke " + this.cell.To, EnumChatType.Macro, "");
+                }
+                var cell = claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientConflictLetterCellElements.FirstOrDefault(c => c.Guid == this.cell.Guid);
+                if (cell != null)
+                {
+                    claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientConflictLetterCellElements.Remove(cell);
+                    claims.CANCityGui.BuildMainWindow();
+                }
                 args.Handled = true;
             }
             else

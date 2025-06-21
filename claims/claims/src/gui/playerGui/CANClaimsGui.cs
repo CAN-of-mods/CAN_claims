@@ -49,7 +49,7 @@ namespace claims.src.gui.playerGui
             CITY_PLOTSGROUP_ADD_NEW_NEED_NAME, CITY_PLOTSGROUP_REMOVE_SELECT, CITY_PLOTSGROUP_REMOVE_CONFIRM,
 
             SELECT_NEW_ALLIANCE_NAME, INVITE_TO_ALLIANCE_NEED_NAME, KICK_FROM_ALLIANCE_NEED_NAME, UNINVITE_TO_ALLIANCE,
-            LEAVE_ALLIANCE_CONFIRM, NEW_ALLIANCE_NEED_NAME, ALLIANCE_PREFIX_NEED_NAME
+            LEAVE_ALLIANCE_CONFIRM, NEW_ALLIANCE_NEED_NAME, ALLIANCE_PREFIX_NEED_NAME, ALLIANCE_SEND_NEW_CONFLICT_LETTER_NEED_NAME
         }
         public EnumUpperWindowSelectedState CreateNewCityState { get; set; } = EnumUpperWindowSelectedState.NONE;
         public string collectedNewCityName { get; set; } = "";
@@ -60,7 +60,7 @@ namespace claims.src.gui.playerGui
         public enum EnumSelectedTab
         {
             City, Player, Prices, Plot, Prison, Summon, PlotsGroup, PlotsGroupReceivedInvites, Ranks, CityPlotsColorSelector, PlotsGroupInfoPage, 
-            AllianceInfoPage, CitiesListPage
+            AllianceInfoPage, CitiesListPage, ConflictLettersPage, ConflictsPage
         }
         private Dictionary<EnumSelectedTab, Action<ElementBounds, ElementBounds>> TabDictionary = new Dictionary<EnumSelectedTab, Action<ElementBounds, ElementBounds>>();
         public int selectedClaimsPage = 0;
@@ -93,6 +93,8 @@ namespace claims.src.gui.playerGui
             TabDictionary.Add(EnumSelectedTab.PlotsGroupReceivedInvites, BuildPlotsGroupReceivedInvitesPage);
             TabDictionary.Add(EnumSelectedTab.AllianceInfoPage, BuildAlliancePage);
             TabDictionary.Add(EnumSelectedTab.CitiesListPage, BuildCitiesListPage);
+            TabDictionary.Add(EnumSelectedTab.ConflictLettersPage, BuildConflictLettersPage);
+            TabDictionary.Add(EnumSelectedTab.ConflictsPage, BuildConflictsPage);
         }
         public override void OnGuiOpened()
         {
@@ -1443,6 +1445,87 @@ namespace claims.src.gui.playerGui
                 }), enterNameBounds, EnumButtonStyle.Normal);
 
             }
+            else if (CreateNewCityState == EnumUpperWindowSelectedState.ALLIANCE_PREFIX_NEED_NAME)
+            {
+                Composers["canclaimsgui-upper"].AddStaticText(Lang.Get("claims:gui-enter-alliance-prefix"),
+                               CairoFont.WhiteDetailText(),
+                               el);
+                ElementBounds inputNameBounds = el.BelowCopy(0, 15);
+                bgBounds.WithChildren(inputNameBounds);
+                Composers["canclaimsgui-upper"].AddTextInput(inputNameBounds,
+                    (name) => collectedNewCityName = name, null, "collectedNewPlotsGroupName");
+
+                ElementBounds enterNameBounds = inputNameBounds.BelowCopy(0, 15);
+                bgBounds.WithChildren(enterNameBounds);
+
+                Composers["canclaimsgui-upper"].AddButton(Lang.Get("claims:gui-set-button"), new ActionConsumable(() =>
+                {
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
+                    clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup,
+                        string.Format("/a set prefix {0}",
+                        this.collectedNewCityName), EnumChatType.Macro, "");
+                    Composers["canclaimsgui-upper"].GetTextInput("collectedNewPlotsGroupName").SetValue("");
+                    collectedNewCityName = "";
+                    CreateNewCityState = EnumUpperWindowSelectedState.NONE;
+                    BuildUpperWindow();
+                    return true;
+                }), enterNameBounds, EnumButtonStyle.Normal);
+
+            }
+            else if (CreateNewCityState == EnumUpperWindowSelectedState.LEAVE_ALLIANCE_CONFIRM)
+            {
+                Composers["canclaimsgui-upper"].AddStaticText(Lang.Get("claims:gui-leave-alliance-confirm-button"),
+                CairoFont.WhiteDetailText(),
+                el);
+                ElementBounds yesButtonBounds = el.BelowCopy(0, 15);
+                yesButtonBounds.fixedWidth /= 2;
+                bgBounds.WithChildren(yesButtonBounds);
+
+
+                Composers["canclaimsgui-upper"].AddButton(Lang.Get("claims:gui-confirm-button"), new ActionConsumable(() =>
+                {
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
+                    clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/alliance leave", EnumChatType.Macro, "");
+                    CreateNewCityState = EnumUpperWindowSelectedState.NONE;
+                    BuildUpperWindow();
+                    return true;
+                }), yesButtonBounds, EnumButtonStyle.Normal);
+
+                ElementBounds noButtonBounds = yesButtonBounds.RightCopy(0, 0);
+                Composers["canclaimsgui-upper"].AddButton(Lang.Get("claims:gui-decline-button"), new ActionConsumable(() =>
+                {
+                    CreateNewCityState = EnumUpperWindowSelectedState.NONE;
+                    BuildUpperWindow();
+                    return true;
+                }), noButtonBounds, EnumButtonStyle.Normal);
+            }
+            else if (CreateNewCityState == EnumUpperWindowSelectedState.ALLIANCE_SEND_NEW_CONFLICT_LETTER_NEED_NAME)
+            {
+                Composers["canclaimsgui-upper"].AddStaticText(Lang.Get("claims:name_of_alliance_to_send_conflict_letter"),
+                CairoFont.WhiteDetailText(),
+                el);
+
+                ElementBounds inputNameBounds = el.BelowCopy(0, 15);
+                bgBounds.WithChildren(inputNameBounds);
+                Composers["canclaimsgui-upper"].AddTextInput(inputNameBounds,
+                    (name) => collectedNewCityName = name, null, "collectedNewPlotsGroupName");
+
+                ElementBounds enterNameBounds = inputNameBounds.BelowCopy(0, 15);
+                bgBounds.WithChildren(enterNameBounds);
+
+                Composers["canclaimsgui-upper"].AddButton(Lang.Get("claims:gui-confirm-button"), new ActionConsumable(() =>
+                {
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
+                    clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup,
+                        string.Format("/a conflict declare {0}",
+                        this.collectedNewCityName), EnumChatType.Macro, "");
+                    Composers["canclaimsgui-upper"].GetTextInput("collectedNewPlotsGroupName").SetValue("");
+                    collectedNewCityName = "";
+                    CreateNewCityState = EnumUpperWindowSelectedState.NONE;
+                    BuildUpperWindow();
+                    return true;
+                }), enterNameBounds, EnumButtonStyle.Normal);
+            }
             Composers["canclaimsgui-upper"].AddDialogTitleBar(Lang.Get(""), 
                 () => 
                 { 
@@ -2711,8 +2794,9 @@ namespace claims.src.gui.playerGui
                        EnumTextOrientation.Left,
                        currentBounds, "alliancePreifx");
 
-                ElementBounds changeAlliancePrefixButtonBounds = currentBounds.RightCopy().WithFixedWidth(25).WithFixedHeight(25); ;
-                SingleComposer.AddIconButton("pencil", (bool t) =>
+                ElementBounds changeAlliancePrefixButtonBounds = currentBounds.RightCopy();
+                changeAlliancePrefixButtonBounds.WithFixedWidth(25).WithFixedHeight(25);
+                SingleComposer.AddIconButton("claims:soldering-iron", (bool t) =>
                 {
                     if (t)
                     {
@@ -2720,7 +2804,7 @@ namespace claims.src.gui.playerGui
                         BuildUpperWindow();
                     }
                 }, changeAlliancePrefixButtonBounds);
-
+                              
                 /*==============================================================================================*/
                 /*=====================================UNDER 2 LINE=============================================*/
                 /*==============================================================================================*/
@@ -2730,7 +2814,7 @@ namespace claims.src.gui.playerGui
                 SingleComposer.AddInset(line2Bounds);
 
                 ElementBounds nextIconBounds = line2Bounds.BelowCopy().WithFixedSize(48, 48).WithAlignment(EnumDialogArea.LeftTop);
-                nextIconBounds.fixedX = 0;
+                nextIconBounds.fixedX = 15;
                 nextIconBounds.fixedY = mainBounds.fixedHeight * 0.90;
 
 
@@ -2742,6 +2826,25 @@ namespace claims.src.gui.playerGui
                     return;
                 }), nextIconBounds);
 
+                ElementBounds conflictLettersButtonBounds = nextIconBounds.RightCopy(15).WithFixedSize(48, 48);
+                SingleComposer.AddIconButton("claims:envelope", (bool t) =>
+                {
+                    if (t)
+                    {
+                        SelectedTab = EnumSelectedTab.ConflictLettersPage;
+                        BuildMainWindow();
+                    }
+                }, conflictLettersButtonBounds);
+
+                ElementBounds conflictsButtonBounds = conflictLettersButtonBounds.RightCopy(15).WithFixedSize(48, 48);
+                SingleComposer.AddIconButton("claims:frog-mouth-helm", (bool t) =>
+                {
+                    if (t)
+                    {
+                        SelectedTab = EnumSelectedTab.ConflictsPage;
+                        BuildMainWindow();
+                    }
+                }, conflictsButtonBounds);
             }
             else
             {
@@ -2870,6 +2973,139 @@ namespace claims.src.gui.playerGui
                 }, scrollbarBounds, "scrollbar")
                 .EndChildElements();
             var c = SingleComposer.GetCellList<ClientCityInfoCellElement>("citystatcells");
+            c.BeforeCalcBounds();
+
+            SingleComposer.Compose();
+
+            SingleComposer.GetScrollbar("scrollbar").SetHeights((float)this.clippingRansksBounds.fixedHeight, (float)this.listRanksBounds.fixedHeight);
+        }
+        public void BuildConflictLettersPage(ElementBounds currentBounds, ElementBounds lineBounds)
+        {
+            var criminalsTabFont = CairoFont.ButtonText().WithFontSize(20).WithOrientation(EnumTextOrientation.Left);
+            currentBounds.fixedWidth /= 2;
+            currentBounds.WithAlignment(EnumDialogArea.LeftTop);
+
+            var clientInfo = claims.clientDataStorage.clientPlayerInfo;
+            currentBounds.fixedWidth = lineBounds.fixedWidth;
+
+            currentBounds = currentBounds.BelowCopy(0, 0);
+            ElementBounds createCityBounds = currentBounds.FlatCopy();
+            int numClaimsToSkip = selectedClaimsPage * claimsPerPage;
+            ElementBounds topTextBounds = ElementBounds.Fixed(GuiStyle.ElementToDialogPadding, 40, createCityBounds.fixedWidth - 30, 30);
+
+            ElementBounds logtextBounds = ElementBounds.Fixed(0, 0, createCityBounds.fixedWidth - 30, mainBounds.fixedHeight - 250).FixedUnder(topTextBounds, 5);
+            ElementBounds invitationTextBounds = createCityBounds.BelowCopy();
+
+            invitationTextBounds.fixedHeight -= 50;
+            invitationTextBounds.WithAlignment(EnumDialogArea.CenterTop);
+            ElementBounds clippingBounds = logtextBounds.ForkBoundingParent();
+
+            ElementBounds insetBounds = logtextBounds.FlatCopy().FixedGrow(6).WithFixedOffset(-3, -3);
+
+            ElementBounds scrollbarBounds = insetBounds.CopyOffsetedSibling(logtextBounds.fixedWidth + 7).WithFixedWidth(20);
+
+            SingleComposer.AddStaticText(Lang.Get("claims:conflict_letters_list"),
+                CairoFont.WhiteMediumText().WithOrientation(EnumTextOrientation.Center),
+                invitationTextBounds);
+
+            this.clippingRansksBounds = insetBounds.ForkContainingChild(3.0, 3.0, 3.0, 3.0);
+
+            SingleComposer.BeginChildElements(invitationTextBounds)
+                .BeginClip(clippingBounds)
+                .AddInset(insetBounds, 3)
+                .AddCellList(this.listRanksBounds = this.clippingRansksBounds.
+                ForkContainingChild(0.0, 0.0, 0.0, -3.0).WithFixedPadding(5.0),
+                (ClientConflictLetterCellElement cell, ElementBounds bounds) =>
+                {
+                    return new GuiElementConflictLetterCell(capi, cell, bounds)
+                    {
+                        On = true
+                    };
+                },
+                claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientConflictLetterCellElements, "conflictletterscells")
+                .EndClip()
+                .AddVerticalScrollbar((float value) =>
+                {
+                    ElementBounds bounds = SingleComposer.GetCellList<ClientConflictLetterCellElement>("conflictletterscells").Bounds;
+                    bounds.fixedY = (double)(0f - value);
+                    bounds.CalcWorldBounds();
+                }, scrollbarBounds, "scrollbar")
+                .EndChildElements();
+            var c = SingleComposer.GetCellList<ClientConflictLetterCellElement>("conflictletterscells");
+            c.BeforeCalcBounds();
+
+            ElementBounds addPlotsGroupBounds = insetBounds.BelowCopy(15, 15);
+            addPlotsGroupBounds.WithFixedWidth(25).WithFixedHeight(25);
+            SingleComposer.AddInset(addPlotsGroupBounds);
+            SingleComposer.AddIconButton("claims:sword-brandish", (bool t) =>
+            {
+                if (t)
+                {
+                    CreateNewCityState = EnumUpperWindowSelectedState.ALLIANCE_SEND_NEW_CONFLICT_LETTER_NEED_NAME;
+                    BuildUpperWindow();
+                }
+            }, addPlotsGroupBounds);
+            SingleComposer.AddHoverText("Send a new conflict letter",
+                                            CairoFont.SmallButtonText(),
+                                            (int)currentBounds.fixedWidth / 2, addPlotsGroupBounds);
+
+            SingleComposer.Compose();
+
+            SingleComposer.GetScrollbar("scrollbar").SetHeights((float)this.clippingRansksBounds.fixedHeight, (float)this.listRanksBounds.fixedHeight);
+        }
+        public void BuildConflictsPage(ElementBounds currentBounds, ElementBounds lineBounds)
+        {
+            var criminalsTabFont = CairoFont.ButtonText().WithFontSize(20).WithOrientation(EnumTextOrientation.Left);
+            currentBounds.fixedWidth /= 2;
+            currentBounds.WithAlignment(EnumDialogArea.LeftTop);
+
+            var clientInfo = claims.clientDataStorage.clientPlayerInfo;
+            currentBounds.fixedWidth = lineBounds.fixedWidth;
+
+            currentBounds = currentBounds.BelowCopy(0, 0);
+            ElementBounds createCityBounds = currentBounds.FlatCopy();
+            int numClaimsToSkip = selectedClaimsPage * claimsPerPage;
+            ElementBounds topTextBounds = ElementBounds.Fixed(GuiStyle.ElementToDialogPadding, 40, createCityBounds.fixedWidth - 30, 30);
+
+            ElementBounds logtextBounds = ElementBounds.Fixed(0, 0, createCityBounds.fixedWidth - 30, mainBounds.fixedHeight - 250).FixedUnder(topTextBounds, 5);
+            ElementBounds invitationTextBounds = createCityBounds.BelowCopy();
+
+            invitationTextBounds.fixedHeight -= 50;
+            invitationTextBounds.WithAlignment(EnumDialogArea.CenterTop);
+            ElementBounds clippingBounds = logtextBounds.ForkBoundingParent();
+
+            ElementBounds insetBounds = logtextBounds.FlatCopy().FixedGrow(6).WithFixedOffset(-3, -3);
+
+            ElementBounds scrollbarBounds = insetBounds.CopyOffsetedSibling(logtextBounds.fixedWidth + 7).WithFixedWidth(20);
+
+            SingleComposer.AddStaticText(Lang.Get("claims:conflict_list"),
+                CairoFont.WhiteMediumText().WithOrientation(EnumTextOrientation.Center),
+                invitationTextBounds);
+
+            this.clippingRansksBounds = insetBounds.ForkContainingChild(3.0, 3.0, 3.0, 3.0);
+
+            SingleComposer.BeginChildElements(invitationTextBounds)
+                .BeginClip(clippingBounds)
+                .AddInset(insetBounds, 3)
+                .AddCellList(this.listRanksBounds = this.clippingRansksBounds.
+                ForkContainingChild(0.0, 0.0, 0.0, -3.0).WithFixedPadding(5.0),
+                (ClientConflictCellElement cell, ElementBounds bounds) =>
+                {
+                    return new GuiElementConflictCell(capi, cell, bounds)
+                    {
+                        On = true
+                    };
+                },
+                claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientConflictCellElements, "conflicscells")
+                .EndClip()
+                .AddVerticalScrollbar((float value) =>
+                {
+                    ElementBounds bounds = SingleComposer.GetCellList<ClientConflictCellElement>("conflicscells").Bounds;
+                    bounds.fixedY = (double)(0f - value);
+                    bounds.CalcWorldBounds();
+                }, scrollbarBounds, "scrollbar")
+                .EndChildElements();
+            var c = SingleComposer.GetCellList<ClientConflictCellElement>("conflicscells");
             c.BeforeCalcBounds();
 
             SingleComposer.Compose();

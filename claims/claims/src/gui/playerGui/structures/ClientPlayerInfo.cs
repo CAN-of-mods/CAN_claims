@@ -461,6 +461,79 @@ namespace claims.src.gui.playerGui.structures
                 Tuple<string, string> tup = JsonConvert.DeserializeObject<Tuple<string, string>>(allianceName);
                 claims.clientDataStorage.clientPlayerInfo.AllianceInfo.Name = tup.Item2;
             }
+
+            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.TO_ALLIANCE_INVITE_ADD, out string toAllianceInviteAdd))
+            {
+                HashSet<ClientToAllianceInvitationCellElement> pc = JsonConvert.DeserializeObject<HashSet<ClientToAllianceInvitationCellElement>>(toAllianceInviteAdd);
+                foreach (var it in pc)
+                {
+                    this.CityInfo.ClientToAllianceInvitations.Add(it);
+                }
+            }
+
+            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.ALLIANCE_LETTER_ADD, out string conflictLetterAdd))
+            {
+                HashSet<ClientConflictLetterCellElement> pc = JsonConvert.DeserializeObject<HashSet<ClientConflictLetterCellElement>>(conflictLetterAdd);
+                foreach (var it in pc)
+                {
+                    this.CityInfo.ClientConflictLetterCellElements.Add(it);
+                }
+            }
+
+            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.ALLIANCE_LETTER_REMOVE, out string conflictLetterRemove))
+            {
+                HashSet<string> pc = JsonConvert.DeserializeObject<HashSet<string>>(conflictLetterRemove);
+                foreach (var it in pc)
+                {
+                    foreach (var it_current in this.CityInfo.ClientConflictLetterCellElements.ToArray())
+                    {
+                        if (it_current.Guid.ToString().Equals(it))
+                        {
+                            this.CityInfo.ClientConflictLetterCellElements.Remove(it_current);
+                        }
+                    }
+                }
+            }
+            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.ALLIANCE_LETTER_ALL, out string allianceLetterAll))
+            {
+                HashSet<ClientConflictLetterCellElement> pc = JsonConvert.DeserializeObject<HashSet<ClientConflictLetterCellElement>>(allianceLetterAll);
+                foreach (var it in pc)
+                {
+                    this.CityInfo.ClientConflictLetterCellElements.Add(it);
+                }
+            }
+
+            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.ALLIANCE_CONFLICT_ADD, out string conflictAdd))
+            {
+                HashSet<ClientConflictCellElement> pc = JsonConvert.DeserializeObject<HashSet<ClientConflictCellElement>>(conflictAdd);
+                foreach (var it in pc)
+                {
+                    this.CityInfo.ClientConflictCellElements.Add(it);
+                }
+            }
+
+            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.ALLIANCE_LETTER_REMOVE, out string conflictRemove))
+            {
+                HashSet<string> pc = JsonConvert.DeserializeObject<HashSet<string>>(conflictRemove);
+                foreach (var it in pc)
+                {
+                    foreach (var it_current in this.CityInfo.ClientConflictCellElements.ToArray())
+                    {
+                        if (it_current.Guid.ToString().Equals(it))
+                        {
+                            this.CityInfo.ClientConflictCellElements.Remove(it_current);
+                        }
+                    }
+                }
+            }
+            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.ALLIANCE_CONFLICT_ALL, out string conflictAll))
+            {
+                HashSet<ClientConflictCellElement> pc = JsonConvert.DeserializeObject<HashSet<ClientConflictCellElement>>(conflictAll);
+                foreach (var it in pc)
+                {
+                    this.CityInfo.ClientConflictCellElements.Add(it);
+                }
+            }
         }
     }
 }

@@ -91,7 +91,9 @@ namespace claims.src
                                                        "flat-platform", "magnifying-glass", "price-tag",
                                                        "qaitbay-citadel", "large-paint-brush", "prisoner",
                                                        "magic-portal", "dodging", "highlighter",
-                                                       "huts-village", "vertical-banner", "village", "stairs-goal", "info", "pencil"};
+                                                       "huts-village", "vertical-banner", "village", "stairs-goal",
+                                                        "info", "pencil", "soldering-iron", "envelope", "peace-dove",
+                                                        "sword-brandish", "frog-mouth-helm"};
             foreach (var icon in iconList)
             {
                 capi.Gui.Icons.CustomIcons["claims:" + icon] = delegate (Context ctx, int x, int y, float w, float h, double[] rgba)

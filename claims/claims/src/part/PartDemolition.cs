@@ -3,6 +3,7 @@ using claims.src.delayed.invitations;
 using claims.src.gui.playerGui.structures;
 using claims.src.network.packets;
 using claims.src.part.structure;
+using claims.src.part.structure.conflict;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -152,6 +153,31 @@ namespace claims.src.part
                 UsefullPacketsSend.AddToQueueCityInfoUpdate(it.Guid, EnumPlayerRelatedInfo.OWN_ALLIANCE_REMOVE);
             }
             claims.getModInstance().getDatabaseHandler().deleteFromDatabaseAlliance(alliance);
+        }
+        public static void DemolishConflict(Conflict conflict)
+        {
+            claims.dataStorage.TryRemoveConflict(conflict);
+            foreach (City ourCity in conflict.First.Cities)
+            {
+                foreach (City targetCity in conflict.Second.Cities)
+                {
+                    ourCity.HostileCities.Add(targetCity);
+                    ourCity.saveToDatabase();
+                }
+            }
+            foreach (City targetCity in conflict.First.Cities)
+            {
+                foreach (City ourCity in conflict.Second.Cities)
+                {
+                    targetCity.HostileCities.Add(ourCity);
+                    targetCity.saveToDatabase();
+                }
+            }
+            conflict.First.RunningConflicts.Remove(conflict);
+            conflict.Second.RunningConflicts.Remove(conflict);
+            conflict.First.saveToDatabase();
+            conflict.Second.saveToDatabase();
+            claims.getModInstance().getDatabaseHandler().deleteFromDatabaseConflict(conflict);
         }
     }
 }

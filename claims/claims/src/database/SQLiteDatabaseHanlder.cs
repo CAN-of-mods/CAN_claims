@@ -2,6 +2,7 @@
 using claims.src.messages;
 using claims.src.part;
 using claims.src.part.structure;
+using claims.src.part.structure.conflict;
 using claims.src.part.structure.plots;
 using Microsoft.Data.Sqlite;
 using Newtonsoft.Json;
@@ -11,7 +12,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
@@ -107,6 +107,10 @@ namespace claims.src.database
 
                 //ALLIANCIES
                 command = new SqliteCommand(SQLiteTables.allianceTable, SqliteConnection);
+                command.ExecuteNonQuery();
+
+                //CONFLICT
+                command = new SqliteCommand(SQLiteTables.conflictsTable, SqliteConnection);
                 command.ExecuteNonQuery();
 
                 //templerespawnpoints
@@ -238,6 +242,9 @@ namespace claims.src.database
                 case "ALLIANCIES":
                     querryString = QuerryTemplates.UPDATE_ALLIANCE;
                     break;
+                case "CONFLICTS":
+                    querryString = QuerryTemplates.UPDATE_CONFLICT;
+                    break;
             }
 
 
@@ -288,6 +295,9 @@ namespace claims.src.database
                 case "ALLIANCIES":
                     querryString = QuerryTemplates.DELETE_ALLIANCE;
                     break;
+                case "CONFLICTS":
+                    querryString = QuerryTemplates.DELETE_CONFLICT;
+                    break;
             }
 
 
@@ -334,6 +344,9 @@ namespace claims.src.database
                     break;
                 case "ALLIANCIES":
                     querryString = QuerryTemplates.INSERT_ALLIANCE;
+                    break;
+                case "CONFLICTS":
+                    querryString = QuerryTemplates.INSERT_CONFLICT;
                     break;
             }
 
@@ -1160,6 +1173,84 @@ namespace claims.src.database
                 Alliance tmp = new Alliance(it["name"].ToString(), it["guid"].ToString());
                 claims.dataStorage.addAlliance(tmp);
             }
+            return true;
+        }
+
+        //CONFLICT
+        public override bool saveConflict(Conflict conflict, bool update = true)
+        {
+            Dictionary<string, object> tmpDict = new Dictionary<string, object> {
+                { "@name", conflict.GetPartName() },
+                { "@guid", conflict.Guid },
+                { "@firstside", conflict.First.Guid},
+                { "@secondside", conflict.Second.Guid },
+                { "@conflictstate", conflict.State },
+                { "@startedby", conflict.StartedBy.Guid },
+                { "@warranges", JsonConvert.SerializeObject(conflict.WarRanges) },
+                { "@minimumdaysbetweenbattles", conflict.MinimumDaysBetweenBattles },
+                { "@lastbattledatestart", JsonConvert.SerializeObject(conflict.LastBattleDateStart) },
+                { "@lastbattledateend", JsonConvert.SerializeObject(conflict.LastBattleDateEnd) },
+                { "@timestampstarted", conflict.TimeStampStarted }
+            };
+
+            queryQueue.Enqueue(new QuerryInfo("CONFLICTS", update ? QuerryType.UPDATE : QuerryType.INSERT, tmpDict));
+            return true;
+        }
+        public override bool loadConflict(DataRow it)
+        {
+            claims.dataStorage.GetAllianceByGUID(it["firstside"].ToString(), out Alliance firstSide);
+            claims.dataStorage.GetAllianceByGUID(it["secondside"].ToString(), out Alliance secondSide);
+
+            if (firstSide == null || secondSide == null)
+            {
+                return false;
+            }
+            Conflict tmpConflict = new Conflict(it["name"].ToString(), it["guid"].ToString());
+
+            tmpConflict.State = ((ConflictState)int.Parse(it["conflictstate"].ToString()));
+            tmpConflict.First = firstSide;
+            tmpConflict.Second = secondSide;
+            claims.dataStorage.GetAllianceByGUID(it["startedby"].ToString(), out Alliance startedBy);
+            tmpConflict.StartedBy = startedBy;
+            tmpConflict.WarRanges = JsonConvert.DeserializeObject<List<SelectedWarRange>>(it["warranges"].ToString());
+            tmpConflict.MinimumDaysBetweenBattles = int.Parse(it["minimumdaysbetweenbattles"].ToString());
+            tmpConflict.LastBattleDateStart = JsonConvert.DeserializeObject<DateTime>(it["lastbattledatestart"].ToString());
+            tmpConflict.LastBattleDateEnd = JsonConvert.DeserializeObject<DateTime>(it["lastbattledateend"].ToString());
+            tmpConflict.TimeStampStarted = long.Parse(it["timestampstarted"].ToString());
+
+            claims.dataStorage.TryAddConflict(tmpConflict);
+            return true;
+        }
+        public override bool loadConflicts()
+        {
+            MessageHandler.sendDebugMsg("Load all CONFLICTS.");
+            if (this.SqliteConnection.State != System.Data.ConnectionState.Open)
+            {
+                SqliteConnection.Open();
+            }
+            try
+            {
+                DataTable dt = readFromDatabase("SELECT * FROM CONFLICTS", new Dictionary<string, object> { });
+                foreach (DataRow it in dt.Rows)
+                {
+                    loadConflict(it);
+                }
+            }
+            catch (SqliteException e)
+            {
+                MessageHandler.sendErrorMsg("loadAllConflicts::error" + e.Message);
+                return false;
+            }
+            return true;
+        }
+
+        public override bool deleteFromDatabaseConflict(Conflict conflict)
+        {
+            Dictionary<string, object> tmpDict = new Dictionary<string, object> {
+                { "@guid", conflict.Guid}
+            };
+
+            queryQueue.Enqueue(new QuerryInfo("CONFLICTS", QuerryType.DELETE, tmpDict));
             return true;
         }
     }

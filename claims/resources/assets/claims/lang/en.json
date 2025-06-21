@@ -95,7 +95,21 @@
     "gui-enter-new-alliance-name": "Name for a new alliance",
     "gui-enter-alliance-name": "Enter name of the alliance",
     "not_main_city_to_kick": "Main city cannot be kicked.",
-    "gui-alliance-prefix": "Prefix:",
+    "gui-alliance-prefix": "Prefix: {0}",
+    "gui-enter-alliance-prefix": "Enter a new prefix:",
+    "our_city_left_alliance": "Our city left alliance",
+    "must_not_be_leader": "Main city cannot leave alliance",
+    "city_left_alliance": "City {0} left alliance",
+    "conflict_created_with": "Conflict created with {0}",
+    "no_conflict_found": "No conflict found",
+    "conflict_declaration_removed": "Conflict declaration with {0} was removed",
+    "end_conflict_letter_exist": "End conflict letter already exists",
+    "conflict_stopped_with": "Conflict stopped with {0}",
+    "conflict_stop_denied": "Conflict stop denied",
+    "conflict_letters_list": "Conflict letters",
+    "conflict_letter_sent": "Conflict letter was sent",
+    "conflict_list": "Conflicts",
+    "name_of_alliance_to_send_conflict_letter": "Name of an alliance to send a letter",
     //INVITATION
     "player_disagreed_with_invitation_to_city": "Player {0} dissagreed with invitation to city {1}.",
     "player_already_invited_to_city": "Player is already invited to the city.",
@@ -108,6 +122,9 @@
     "city_already_has_invitation": "Invitation for the city was already sent.",
     "city_invite_player": "Invite player",
     "city_invite_unplayer": "Uninvite player",
+    "your_city_was_invited_to_alliance": "Your city was invited to alliance {0}",
+    "invitation_to_alliance_was_sent": "Invitation to city {0} was sent",
+    "city_joined_alliance": "City joined alliance {0}",
     //PLOTSGROUP
     "you_were_invited_to_group": "You were invited by city {0} by {1}.",
     "need_group_name": "Need group name.",
@@ -201,7 +218,7 @@
     "help_agreement_delete_city": "To remove city: /{0}",
 
     //MOD
-    "mod_default_mark": "[C&N] ",
+    "mod_default_mark": "[claims] ",
 
 
     //TELEPORTATION
@@ -317,6 +334,7 @@
     "gui-set-name-button": "Set name",
     "gui-strip-rank-from-player": "Strip player {0} of {1} rank?",
     "gui-leave-city-confirm-button": "Leave city?",
+    "gui-leave-alliance-confirm-button": "Leave alliance?",
     "gui-group-members": "Members: {0}",
     "gui-invite-button": "Invite",
     "gui-kick-button": "Kick",

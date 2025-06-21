@@ -46,7 +46,8 @@ namespace claims.src
         //INVITATIONS
         public int MAX_SENT_INVITATIONS_CITY = 20;
         public int MAX_SENT_INVITATIONS_VILLAGE = 10;
-
+        public bool NEED_AGREE_FOR_CONFLICT = true;
+        public int DELAY_FOR_CONFLICT_ACTIVATED = 300;
 
         public int MAX_RECEIVED_INVITATIONS_CITY = 10;
         public int MAX_RECEIVED_INVITATIONS_PLAYER = 10;
