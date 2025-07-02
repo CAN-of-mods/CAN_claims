@@ -2,6 +2,7 @@
 using System.Runtime.ConstrainedExecution;
 using claims.src.auxialiry;
 using claims.src.gui.playerGui.structures;
+using claims.src.gui.playerGui.structures.cellElements;
 using claims.src.part;
 using claims.src.part.structure;
 using Vintagestory.API.Common;

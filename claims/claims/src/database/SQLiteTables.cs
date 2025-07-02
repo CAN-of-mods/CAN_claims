@@ -64,6 +64,7 @@ namespace claims.src.database
             "markednopvp INTEGER," +
             "plotdesc TEXT," +
             "extraBought INTEGER," +
+            "wascaptured INTEGER," +
             "PRIMARY KEY(x, z)" +
             ");";
 
@@ -120,9 +121,13 @@ namespace claims.src.database
              "conflictstate INTEGER," +
              "startedby TEXT," +
              "warranges TEXT," +
+             "firstwarranges TEXT," +
+             "secondwarranges TEXT," +
              "minimumdaysbetweenbattles INTEGER," +
              "lastbattledatestart TEXT," +
              "lastbattledateend TEXT," +
+             "nextbattledatestart TEXT," +
+             "nextbattledateend TEXT," +
              "timestampstarted INTEGER DEFAULT 0" +
              ");";
     }

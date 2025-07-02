@@ -1,10 +1,13 @@
 ﻿using claims.src.auxialiry;
 using claims.src.auxialiry.innerclaims;
 using claims.src.gui.playerGui.structures;
+using claims.src.gui.playerGui.structures.cellElements;
 using claims.src.part.interfaces;
 using claims.src.part.structure.plots;
 using claims.src.perms;
+using System;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Config;
@@ -27,6 +30,8 @@ namespace claims.src.part.structure
         public bool MarkedNoPvp { get; set; } = false;
         public PlotDesc PlotDesc { get; set; }
         public bool extraBought { get; set; }
+        public bool BorderPlot { get; set; } = false;
+        public bool WasCaptured { get; set; } = false;
         public Plot(Vec2i chunkPos) : base("", "")
         {
             this.plotPosition = new PlotPosition(chunkPos);
@@ -184,9 +189,7 @@ namespace claims.src.part.structure
             else if( plotType == PlotType.TEMPLE)
             {
                 Type = plotType;
-
             }
-
 
             Type = plotType;
             saveToDatabase();
@@ -319,6 +322,51 @@ namespace claims.src.part.structure
             }
             outStrings.Add(permsHandler.getStringForChat() + "\n");
             return outStrings;
+        }
+        public void UpdateBorderPlotValue()
+        {
+            this.CheckBorderPlotValue();
+            PlotPosition posTmp = new PlotPosition(0, 0);
+            for (int i = -1; i <= 1; i++)
+            {
+                for (int j = -1; j <= 1; j++)
+                {
+                    if ((Math.Abs(i) + Math.Abs(j)) != 1) continue;
+                    posTmp.X = this.plotPosition.X + i;
+                    posTmp.Z = this.plotPosition.Z + j;
+                    if (claims.dataStorage.getPlot(posTmp, out var targetPlot))
+                    {
+                        targetPlot.CheckBorderPlotValue();
+                    }
+                }
+            }          
+        }
+        public void CheckBorderPlotValue()
+        {
+            PlotPosition posTmp = new PlotPosition(0, 0);
+            for (int i = -1; i <= 1; i++)
+            {
+                for (int j = -1; j <= 1; j++)
+                {
+                    if ((Math.Abs(i) + Math.Abs(j)) != 1) continue;
+                    posTmp.X = this.plotPosition.X + i;
+                    posTmp.Z = this.plotPosition.Z + j;
+                    if (!claims.dataStorage.getPlot(posTmp, out var nearPlot))
+                    {
+                        this.BorderPlot = true;
+                        return;                      
+                    }
+                    else
+                    {
+                        if (!nearPlot.getCity().Equals(this.getCity()))
+                        {
+                            this.BorderPlot = true;
+                            return;
+                        }
+                    }
+                }
+                this.BorderPlot = false;
+            }
         }
     }
 }

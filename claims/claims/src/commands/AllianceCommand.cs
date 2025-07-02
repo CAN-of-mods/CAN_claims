@@ -17,6 +17,7 @@ using Vintagestory.API.Server;
 using System.Collections;
 using claims.src.gui.playerGui.structures;
 using claims.src.part.structure.conflict;
+using claims.src.gui.playerGui.structures.cellElements;
 
 namespace claims.src.commands
 {
@@ -151,6 +152,7 @@ namespace claims.src.commands
             MessageHandler.sendMsgInCity(city, Lang.Get("claims:our_city_left_alliance"));
             city.ComradeCities.Clear();
             city.HostileCities.Clear();
+            RightsHandler.RemoveCityHostilesInAlliance(city, alliance);
             city.Alliance = null;
             UsefullPacketsSend.AddToQueueAllianceInfoUpdate(alliance.Guid, new Dictionary<string, object> { { "value", alliance.Guid } }, EnumPlayerRelatedInfo.NEW_ALLIANCE_ALL);
             UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid, EnumPlayerRelatedInfo.OWN_ALLIANCE_REMOVE);
@@ -199,29 +201,7 @@ namespace claims.src.commands
             {
                 RightsHandler.reapplyRights(playerInCity);
             }
-            /*if (alliance.runningConflicts.Count > 0)
-            {
-                foreach (Conflict conflict in alliance.runningConflicts)
-                {
-                    if (conflict.getFirstSide().Equals(alliance))
-                    {
-                        foreach (City hostileCity in conflict.getSecondSide().getCities())
-                        {
-                            hostileCity.getHostiles().Remove(city);
-                            hostileCity.saveToDatabase();
-                        }
-                    }
-                    else
-                    {
-                        foreach (City hostileCity in conflict.getFirstSide().getCities())
-                        {
-                            hostileCity.getHostiles().Remove(city);
-                            hostileCity.saveToDatabase();
-                        }
-                    }
-
-                }
-            }*/
+            RightsHandler.RemoveCityHostilesInAlliance(city, alliance);
             alliance.saveToDatabase();
             UsefullPacketsSend.AddToQueueAllianceInfoUpdate(alliance.Guid, new Dictionary<string, object> { { "value", alliance.Guid } }, EnumPlayerRelatedInfo.NEW_ALLIANCE_ALL);
             UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid, new Dictionary<string, object> { { "value", alliance.Guid } }, EnumPlayerRelatedInfo.OWN_ALLIANCE_REMOVE);
@@ -270,30 +250,7 @@ namespace claims.src.commands
                 new Thread(new ThreadStart(() =>
                 {
                     alliance.Cities.Add(city);
-                    /*if (alliance.runningConflicts.Count > 0)
-                    {
-                        foreach (Conflict conflict in alliance.runningConflicts)
-                        {
-                            if (conflict.getFirstSide().Equals(alliance))
-                            {
-                                foreach (City hostileCity in conflict.getSecondSide().getCities())
-                                {
-                                    hostileCity.hostileCities.Add(city);
-                                    hostileCity.saveToDatabase();
-                                    city.hostileCities.Add(hostileCity);
-                                }
-                            }
-                            else
-                            {
-                                foreach (City hostileCity in conflict.getFirstSide().getCities())
-                                {
-                                    hostileCity.hostileCities.Add(city);
-                                    hostileCity.saveToDatabase();
-                                    city.hostileCities.Add(hostileCity);
-                                }
-                            }
-                        }
-                    }*/
+                    RightsHandler.AddCityHostilesInAlliance(city, alliance);
                     foreach (PlayerInfo playerInCity in city.getPlayerInfos())
                     {
                         RightsHandler.reapplyRights(playerInCity);
@@ -511,7 +468,10 @@ namespace claims.src.commands
             }
 
             Alliance ourAlliance = playerInfo.Alliance;
-
+            if (ourAlliance.Neutral)
+            {
+                return TextCommandResult.Success(Lang.Get("claims:our_alliance_is_neutral"));
+            }
             if (ConflictHandler.conflictAlreadyExist(ourAlliance, targetAlliance))
             {
                 return TextCommandResult.Success(Lang.Get("claims:conflict_already_exists"));
@@ -541,22 +501,8 @@ namespace claims.src.commands
                             }
                             
                             Conflict newConflict = new Conflict("", newConflictGuid);
-                            foreach (City ourCity in ourAlliance.Cities)
-                            {
-                                foreach (City targetCity in targetAlliance.Cities)
-                                {
-                                    ourCity.HostileCities.Add(targetCity);
-                                    ourCity.saveToDatabase();
-                                }
-                            }
-                            foreach (City targetCity in targetAlliance.Cities)
-                            {
-                                foreach (City ourCity in ourAlliance.Cities)
-                                {
-                                    targetCity.HostileCities.Add(ourCity);
-                                    targetCity.saveToDatabase();
-                                }
-                            }
+
+                            RightsHandler.SetAllianciesHostile(ourAlliance, targetAlliance, newConflict);
 
                             claims.dataStorage.TryAddConflict(newConflict);
                             ConflictHandler.removeConflictLetter(letter);
@@ -571,21 +517,26 @@ namespace claims.src.commands
                             newConflict.StartedBy = ourAlliance;
                             newConflict.State = ConflictState.CREATED;
                             newConflict.TimeStampStarted = TimeFunctions.getEpochSeconds();
-
+                            newConflict.MinimumDaysBetweenBattles = claims.config.MINIMUM_DAYS_BETWEEN_BATTLES;
                             UsefullPacketsSend.AddToQueueAllianceInfoUpdate(ourAlliance.Guid,
                                 new Dictionary<string, object> { { "value", new ClientConflictCellElement(newConflict.GetPartName(),
                                 newConflict.First.GetPartName(), newConflict.Second.GetPartName(), newConflict.First.GetPartName(),
-                                newConflict.State, newConflict.Guid, newConflict.WarRanges, newConflict.TimeStampStarted) } }, EnumPlayerRelatedInfo.ALLIANCE_CONFLICT_ADD);
+                                newConflict.State, newConflict.Guid,
+                                newConflict.MinimumDaysBetweenBattles, newConflict.LastBattleDateStart, newConflict.LastBattleDateEnd,
+                                newConflict.NextBattleDateStart, newConflict.NextBattleDateEnd, newConflict.WarRanges, newConflict.FirstWarRanges,
+                                newConflict.SecondWarRanges, newConflict.TimeStampStarted) } }, EnumPlayerRelatedInfo.ALLIANCE_CONFLICT_ADD);
                             UsefullPacketsSend.AddToQueueAllianceInfoUpdate(targetAlliance.Guid,
                                 new Dictionary<string, object> { { "value", new ClientConflictCellElement(newConflict.GetPartName(),
                                 newConflict.First.GetPartName(), newConflict.Second.GetPartName(), newConflict.First.GetPartName(),
-                                newConflict.State, newConflict.Guid, newConflict.WarRanges, newConflict.TimeStampStarted) } }, EnumPlayerRelatedInfo.ALLIANCE_CONFLICT_ADD);
+                                newConflict.State, newConflict.Guid, newConflict.MinimumDaysBetweenBattles, newConflict.LastBattleDateStart,
+                                newConflict.LastBattleDateEnd, newConflict.NextBattleDateStart, newConflict.NextBattleDateEnd,
+                                newConflict.WarRanges, newConflict.FirstWarRanges, newConflict.SecondWarRanges, newConflict.TimeStampStarted) } },
+                                EnumPlayerRelatedInfo.ALLIANCE_CONFLICT_ADD);
 
-                            targetAlliance.RunningConflicts.Add(newConflict);
-                            ourAlliance.RunningConflicts.Add(newConflict);
                             targetAlliance.saveToDatabase();
                             ourAlliance.saveToDatabase();
                             newConflict.saveToDatabase(false);
+                            ConflictHandler.removeConflictLetter(letter);
                             MessageHandler.SendMsgInAlliance(targetAlliance, Lang.Get("claims:conflict_created_with", targetAlliance.getPartNameReplaceUnder()));
                         })),
                         new Thread(new ThreadStart(() =>
@@ -623,30 +574,14 @@ namespace claims.src.commands
 
                 Conflict newConflict = new Conflict("", Alliance.GetUnusedGuid());
 
-                foreach (City ourCity in ourAlliance.Cities)
-                {
-                    foreach (City targetCity in targetAlliance.Cities)
-                    {
-                        ourCity.HostileCities.Add(targetCity);
-                        ourCity.saveToDatabase();
-                    }
-                }
-                foreach (City targetCity in targetAlliance.Cities)
-                {
-                    foreach (City ourCity in ourAlliance.Cities)
-                    {
-                        targetCity.HostileCities.Add(ourCity);
-                        targetCity.saveToDatabase();
-                    }
-                }
+                RightsHandler.SetAllianciesHostile(ourAlliance, targetAlliance, newConflict);
 
                 claims.dataStorage.TryAddConflict(newConflict);
                 newConflict.First = ourAlliance;
                 newConflict.StartedBy = ourAlliance;
                 newConflict.Second = targetAlliance;
                 newConflict.State = ConflictState.CREATED;
-                targetAlliance.RunningConflicts.Add(newConflict);
-                ourAlliance.RunningConflicts.Add(newConflict);
+                newConflict.MinimumDaysBetweenBattles = claims.config.MINIMUM_DAYS_BETWEEN_BATTLES;
                 targetAlliance.saveToDatabase();
                 ourAlliance.saveToDatabase();
                 newConflict.saveToDatabase(false);
@@ -737,7 +672,7 @@ namespace claims.src.commands
                 return TextCommandResult.Success(Lang.Get("claims:conflict_letter_doesnt_exist"));
             }
 
-            letter.OnAccept.Start();
+            letter.OnAccept.Start();            
             return TextCommandResult.Success();
         }
         public static TextCommandResult DenyStartConflict(TextCommandCallingArgs args)
@@ -806,6 +741,11 @@ namespace claims.src.commands
                 return TextCommandResult.Success(Lang.Get("claims:no_conflict_found"));
             }
 
+            if (!ConflictHandler.TryGetConflictWithSides(ourAlliance, targetAlliance, out Conflict conflict))
+            {
+                return TextCommandResult.Success(Lang.Get("claims:no_conflict_found"));
+            }
+
             if (ConflictHandler.TryGetConflictLetter(ourAlliance, targetAlliance, LetterPurpose.END_CONFLICT, out var letter))
             {
                 return TextCommandResult.Success(Lang.Get("claims:end_conflict_letter_exist"));
@@ -815,7 +755,6 @@ namespace claims.src.commands
             if (claims.config.NEED_AGREE_FOR_CONFLICT)
             {
                 long timestamp = TimeFunctions.getEpochSeconds() + claims.config.DELAY_FOR_CONFLICT_ACTIVATED;
-                Guid newConflictGuid = ConflictLetter.GetUnusedGuid();
                 if (ConflictHandler.addConflictLetter(new ConflictLetter(ourAlliance, targetAlliance, LetterPurpose.END_CONFLICT, timestamp,
                         new Thread(new ThreadStart(() =>
                         {
@@ -832,15 +771,41 @@ namespace claims.src.commands
                             }
                             PartDemolition.DemolishConflict(conflict);
                             MessageHandler.SendMsgInAlliance(targetAlliance, Lang.Get("claims:conflict_stopped_with", targetAlliance.getPartNameReplaceUnder()));
+                            ConflictHandler.removeConflictLetter(letter);
+                            foreach (City ourCity in ourAlliance.Cities)
+                            {
+                                foreach (City targetCity in targetAlliance.Cities)
+                                {
+                                    ourCity.HostileCities.Remove(targetCity);
+                                    ourCity.saveToDatabase();
+                                }
+                            }
+                            foreach (City targetCity in targetAlliance.Cities)
+                            {
+                                foreach (City ourCity in ourAlliance.Cities)
+                                {
+                                    targetCity.HostileCities.Remove(ourCity);
+                                    targetCity.saveToDatabase();
+                                }
+                            }
                         })),
                         new Thread(new ThreadStart(() =>
                         {
                             MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:conflict_stop_denied"));
                             ConflictHandler.removeConflictLetter(ourAlliance, targetAlliance, LetterPurpose.START_CONFLICT);
                         })),
-                        newConflictGuid.ToString()
+                        conflict.Guid
                         )))
                 {
+                    ConflictHandler.TryGetConflictLetter(conflict.Guid, out ConflictLetter conflictLetter);
+                    UsefullPacketsSend.AddToQueueAllianceInfoUpdate(targetAlliance.Guid, new Dictionary<string, object> { { "value",
+                            new ClientConflictLetterCellElement(conflictLetter.From.GetPartName(), conflictLetter.From.Guid.ToString(),
+                            conflictLetter.To.GetPartName(), conflictLetter.To.Guid.ToString(),
+                            conflictLetter.Purpose, conflictLetter.TimeStampExpire, conflictLetter.Guid) } }, EnumPlayerRelatedInfo.ALLIANCE_LETTER_ADD);
+                    UsefullPacketsSend.AddToQueueAllianceInfoUpdate(ourAlliance.Guid, new Dictionary<string, object> { { "value", new ClientConflictLetterCellElement(
+                            conflictLetter.From.GetPartName(), conflictLetter.From.Guid.ToString(),
+                            conflictLetter.To.GetPartName(), conflictLetter.To.Guid.ToString(),
+                            conflictLetter.Purpose, conflictLetter.TimeStampExpire, conflictLetter.Guid) } }, EnumPlayerRelatedInfo.ALLIANCE_LETTER_ADD);
                     MessageHandler.SendMsgInAlliance(targetAlliance, Lang.Get("claims:alliance_has_sent_conflict_letter", ourAlliance.getPartNameReplaceUnder()));
                     return TextCommandResult.Success(Lang.Get("claims:conflict_letter_sent"));
                 }
@@ -858,10 +823,6 @@ namespace claims.src.commands
                     return TextCommandResult.Success(Lang.Get("claims:sanity_test_for_new_alliance"));
                 }
 
-                if (!ConflictHandler.TryGetConflictWithSides(ourAlliance, targetAlliance, out Conflict conflict))
-                {
-                    return TextCommandResult.Success(Lang.Get("claims:conflict_not_found"));
-                }
                 PartDemolition.DemolishConflict(conflict);
                 return TextCommandResult.Success(Lang.Get("claims:conflict_stopped_with", targetAlliance.getPartNameReplaceUnder()));
             }
@@ -902,6 +863,11 @@ namespace claims.src.commands
             }
 
             letter.OnAccept.Start();
+            UsefullPacketsSend.AddToQueueAllianceInfoUpdate(targetAlliance.Guid, new Dictionary<string, object> { { "value", letter.Guid } }, EnumPlayerRelatedInfo.ALLIANCE_LETTER_REMOVE);
+            UsefullPacketsSend.AddToQueueAllianceInfoUpdate(ourAlliance.Guid, new Dictionary<string, object> { { "value", letter.Guid } }, EnumPlayerRelatedInfo.ALLIANCE_LETTER_REMOVE);
+
+            UsefullPacketsSend.AddToQueueAllianceInfoUpdate(targetAlliance.Guid, new Dictionary<string, object> { { "value", letter.Guid } }, EnumPlayerRelatedInfo.ALLIANCE_CONFLICT_REMOVE);
+            UsefullPacketsSend.AddToQueueAllianceInfoUpdate(ourAlliance.Guid, new Dictionary<string, object> { { "value", letter.Guid } }, EnumPlayerRelatedInfo.ALLIANCE_CONFLICT_REMOVE);
             return TextCommandResult.Success();
         }
         public static TextCommandResult DenyStopConflict(TextCommandCallingArgs args)
@@ -940,6 +906,8 @@ namespace claims.src.commands
             }
 
             letter.OnDeny.Start();
+            UsefullPacketsSend.AddToQueueAllianceInfoUpdate(targetAlliance.Guid, new Dictionary<string, object> { { "value", letter.Guid } }, EnumPlayerRelatedInfo.ALLIANCE_LETTER_REMOVE);
+            UsefullPacketsSend.AddToQueueAllianceInfoUpdate(ourAlliance.Guid, new Dictionary<string, object> { { "value", letter.Guid } }, EnumPlayerRelatedInfo.ALLIANCE_LETTER_REMOVE);
             return TextCommandResult.Success();
         }
     }

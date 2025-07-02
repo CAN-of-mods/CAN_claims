@@ -110,6 +110,16 @@
     "conflict_letter_sent": "Conflict letter was sent",
     "conflict_list": "Conflicts",
     "name_of_alliance_to_send_conflict_letter": "Name of an alliance to send a letter",
+    "gui_minimum_days_between_battles": "Minimum pause days: {0}",
+    "gui_conflict_start_date": "Started: {0}",
+    "gui_last_start_end_battle": "Last start/end battle: {0}/{1}",
+    "gui_next_start_end_battle": "Next start/end battle: {0}/{1}",
+    "target_alliance_is_neutral": "Target alliance is neutral.",
+    "our_alliance_is_neutral": "Our alliance is neutral.",
+    "gui_conflict_cell_first_line": "{0} x {1}",
+    "gui_conflict_cell_started_line": "Started: {0}",
+    "gui_send_peace_offer": "Send peace offer to {0} alliance",
+    "conflict_already_exists": "Conflict already exists",
     //INVITATION
     "player_disagreed_with_invitation_to_city": "Player {0} dissagreed with invitation to city {1}.",
     "player_already_invited_to_city": "Player is already invited to the city.",
@@ -220,7 +230,9 @@
     //MOD
     "mod_default_mark": "[claims] ",
 
-
+    //BATTLE
+    "battle_started_with": "Battle started with alliance {0}.",
+    "battle_ended_with": "Battle ended with alliance {0}.",
     //TELEPORTATION
     "teleportation_canceled": "Teleporation has been canceled",
 
@@ -388,6 +400,7 @@
     "cantempleblock-gravestone-2": "Gravestone",
     "cantempleblock-gravestone-3": "Gravestone",
     "cantempleblock-gravestone-4": "Gravestone",
-    "cantempleblock-gravestone-5": "Gravestone"
+    "cantempleblock-gravestone-5": "Gravestone",
+    "flagpole": "Flagpole"
 
 }

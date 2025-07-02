@@ -32,6 +32,8 @@ using System.Collections;
 using claims.src.blocks;
 using claims.src.auxialiry.claimAreas;
 using System;
+using claims.src.beb;
+using claims.src.bb;
 
 namespace claims.src
 {
@@ -109,6 +111,9 @@ namespace claims.src
         {
             base.Start(api);
             api.RegisterBlockClass("CANTempleBlock", typeof(CANTempleBlock));
+            api.RegisterBlockClass("CANCaptureFlagBlock", typeof(CaptureFlagBlock));
+            api.RegisterBlockEntityBehaviorClass("FlagEntity", typeof(BlockEntityBehaviorFlag));
+            api.RegisterBlockBehaviorClass("Flag", typeof(BlockBehaviorFlag));
         }
         public override void StartClientSide(ICoreClientAPI api)
         {

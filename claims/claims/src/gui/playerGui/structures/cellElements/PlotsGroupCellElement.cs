@@ -7,7 +7,7 @@ using claims.src.part;
 using claims.src.perms;
 using Vintagestory.API.MathTools;
 
-namespace claims.src.gui.playerGui.structures
+namespace claims.src.gui.playerGui.structures.cellElements
 {
     public class PlotsGroupCellElement
     {

@@ -77,6 +77,19 @@ namespace claims.src.part.structure.conflict
             conflict = null;
             return false;
         }
+        public static bool TryGetConflictByGuid(string Guid, out Conflict conflict)
+        {
+            foreach (Conflict it in claims.dataStorage.conflicts)
+            {
+                if (it.Guid.Equals(Guid))
+                {
+                    conflict = it;
+                    return true;
+                }
+            }
+            conflict = null;
+            return false;
+        }
         public static List<Conflict> GetAllConflictsForAlliance(Alliance alliance)
         {
             List<Conflict> sentLetters = new List<Conflict>();
@@ -129,7 +142,6 @@ namespace claims.src.part.structure.conflict
             }
             return sentLetters;
         }
-
         public static List<ConflictLetter> getReceivedLettersForAllianceWithPurpose(Alliance alliance, LetterPurpose purpose)
         {
             List<ConflictLetter> sentLetters = new List<ConflictLetter>();
@@ -143,7 +155,6 @@ namespace claims.src.part.structure.conflict
             }
             return sentLetters;
         }
-
         public static bool TryGetConflictLetter(Alliance first, Alliance second, LetterPurpose purpose, out ConflictLetter letter)
         {
             foreach (var it in conflictLettersList)

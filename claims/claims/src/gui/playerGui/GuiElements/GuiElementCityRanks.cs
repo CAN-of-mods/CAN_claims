@@ -1,6 +1,5 @@
 ﻿using Cairo;
 using claims.src.auxialiry;
-using claims.src.gui.playerGui.structures;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -18,6 +17,7 @@ using System.Reflection.Emit;
 using static claims.src.gui.playerGui.CANClaimsGui;
 using System.Reflection;
 using Vintagestory.Client.NoObf;
+using claims.src.gui.playerGui.structures.cellElements;
 
 namespace claims.src.gui.playerGui.GuiElements
 {

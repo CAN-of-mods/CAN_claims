@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Cairo;
 using claims.src.auxialiry;
-using claims.src.gui.playerGui.structures;
+using claims.src.gui.playerGui.structures.cellElements;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
@@ -86,10 +86,10 @@ namespace claims.src.gui.playerGui.GuiElements
             double num = GuiElement.scaled(unscaledRightBoxWidth);
             Bounds.CalcWorldBounds();
 
-            string cellName = string.Format("{0} x {1}", cell.FirstAllianceName, cell.SecondAllianceName);
+            string cellName = Lang.Get("claims:gui_conflict_cell_first_line", cell.FirstAllianceName, cell.SecondAllianceName);
             TextExtents textExtents = Font.GetTextExtents(cellName);
             textUtil.AutobreakAndDrawMultilineTextAt(context, Font, cellName, Bounds.absPaddingX, Bounds.absPaddingY + GuiElement.scaled(10), textExtents.Width + 1.0, EnumTextOrientation.Left);
-            string expDate = TimeFunctions.getDateFromEpochSecondsWithHoursMinutes(cell.TimeStampCreated, true).ToString();
+            string expDate = Lang.Get("claims:gui_conflict_cell_started_line", TimeFunctions.getDateFromEpochSecondsWithHoursMinutes(cell.TimeStampCreated, true));
             textExtents = Font.GetTextExtents(expDate);
             textUtil.AutobreakAndDrawMultilineTextAt(context, CairoFont.WhiteDetailText(), expDate, Bounds.absPaddingX, Bounds.absPaddingY + GuiElement.scaled(36), textExtents.Width + 1.0, EnumTextOrientation.Left);
 
@@ -254,6 +254,7 @@ namespace claims.src.gui.playerGui.GuiElements
             api.Render.GLDeleteTexture(rightHighlightTextureId);
             api.Render.GLDeleteTexture(switchOnTextureId);
             api.Render.GLDeleteTexture(normalTexture.TextureId);
+            normalTexture?.Dispose();
         }
 
         public void OnMouseUpOnElement(MouseEvent args, int elementIndex)
@@ -285,27 +286,19 @@ namespace claims.src.gui.playerGui.GuiElements
             }
             else if (vec2d.X > Bounds.InnerWidth - GuiElement.scaled(GuiElementMainMenuCell.unscaledRightBoxWidth))
             {
-                ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
-                if (claims.clientDataStorage.clientPlayerInfo.AllianceInfo?.Guid?.Equals(this.cell.Guid) ?? false)
-                {
-                   // clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/a conflict deny " + this.cell.From, EnumChatType.Macro, "");
-                }
-                else
-                {
-                   // clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/a conflict revoke " + this.cell.To, EnumChatType.Macro, "");
-                }
-                var cell = claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientConflictLetterCellElements.FirstOrDefault(c => c.Guid == this.cell.Guid);
-                if (cell != null)
-                {
-                    claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientConflictLetterCellElements.Remove(cell);
-                    claims.CANCityGui.BuildMainWindow();
-                }
-                args.Handled = true;
+                claims.CANCityGui.CreateNewCityState = CANClaimsGui.EnumUpperWindowSelectedState.ALLIANCE_SEND_PEACE_OFFER_CONFIRM;
+                claims.CANCityGui.selectedString = cell.Guid;
+                string targetAlliance = cell.FirstAllianceName.Equals(claims.clientDataStorage.clientPlayerInfo.AllianceInfo.Name) ? cell.SecondAllianceName : cell.FirstAllianceName;
+                claims.CANCityGui.secondSelectedString = targetAlliance;
+                claims.CANCityGui.BuildUpperWindow();                
             }
             else
             {
                 //OnMouseDownOnCellLeft?.Invoke(elementIndex);
                 args.Handled = true;
+                claims.CANCityGui.selectedString = cell.Guid;
+                claims.CANCityGui.SelectedTab = CANClaimsGui.EnumSelectedTab.ConflictInfoPage;
+                claims.CANCityGui.BuildMainWindow();
             }
         }
 

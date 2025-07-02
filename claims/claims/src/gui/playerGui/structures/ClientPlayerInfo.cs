@@ -1,4 +1,6 @@
-﻿using claims.src.part;
+﻿using claims.src.gui.playerGui.structures.cellElements;
+using claims.src.part;
+using claims.src.part.structure;
 using claims.src.rights;
 using Newtonsoft.Json;
 using System;
@@ -7,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Vintagestory.API.Datastructures;
+using Vintagestory.API.MathTools;
 
 namespace claims.src.gui.playerGui.structures
 {
@@ -222,6 +225,14 @@ namespace claims.src.gui.playerGui.structures
             if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_PLOTS_COLOR, out string cityPlotsColor))
             {
                 CityInfo.PlotsColor = int.Parse(cityPlotsColor);
+                claims.clientDataStorage.ClientSetCityPlotsColor(claims.clientDataStorage.clientPlayerInfo.CityInfo.Name, CityInfo.PlotsColor);
+                if (claims.clientDataStorage.clientPlayerInfo?.CityInfo != null)
+                {
+                    foreach (var it in claims.clientDataStorage.GetCitySavedPlotInfos(claims.clientDataStorage.clientPlayerInfo.CityInfo.Name))
+                    {
+                        claims.clientModInstance.plotsMapLayer.OnResChunkPixels(it, claims.clientDataStorage.ClientGetCityColor(claims.clientDataStorage.clientPlayerInfo?.CityInfo.Name ?? ""), claims.clientDataStorage.clientPlayerInfo?.CityInfo.Name);
+                    }
+                }
             }
 
             if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_BALANCE, out string cityBalance))
@@ -512,7 +523,7 @@ namespace claims.src.gui.playerGui.structures
                 }
             }
 
-            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.ALLIANCE_LETTER_REMOVE, out string conflictRemove))
+            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.ALLIANCE_CONFLICT_REMOVE, out string conflictRemove))
             {
                 HashSet<string> pc = JsonConvert.DeserializeObject<HashSet<string>>(conflictRemove);
                 foreach (var it in pc)
@@ -532,6 +543,34 @@ namespace claims.src.gui.playerGui.structures
                 foreach (var it in pc)
                 {
                     this.CityInfo.ClientConflictCellElements.Add(it);
+                }
+            }
+
+            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.ALLIANCE_CONFLICT_WARRANGES_UPDATED, out string warrangesUpdate))
+            {
+                HashSet<ClientConflictCellElement> pc = JsonConvert.DeserializeObject<HashSet<ClientConflictCellElement>>(warrangesUpdate);
+                foreach (var it in pc)
+                {
+                    ClientConflictCellElement cell = this.CityInfo.ClientConflictCellElements.FirstOrDefault(c => c.Guid == it.Guid);
+                    if (cell != null)
+                    {
+                        cell.WarRanges = it.WarRanges;
+                        cell.FirstWarRanges = it.FirstWarRanges;
+                        cell.SecondWarRanges = it.SecondWarRanges;
+                        cell.NextBattleDateEnd = it.NextBattleDateEnd;
+                        cell.NextBattleDateStart = it.NextBattleDateStart;
+                    }
+                }
+            }
+            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_PLOT_RECOLOR, out string recolorPlots))
+            {
+                HashSet<Vec2i> pc = JsonConvert.DeserializeObject<HashSet<Vec2i>>(recolorPlots);
+                foreach (var it in pc)
+                {
+                    if (claims.clientDataStorage.getSavedPlot(it, out var plot))
+                    {
+                        claims.clientModInstance.plotsMapLayer.OnResChunkPixels(it, claims.clientDataStorage.ClientGetCityColor(plot.cityName), plot.cityName);
+                    }
                 }
             }
         }

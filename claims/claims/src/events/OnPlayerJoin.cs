@@ -1,10 +1,12 @@
 ﻿using claims.src.auxialiry;
 using claims.src.gui.playerGui.structures;
+using claims.src.gui.playerGui.structures.cellElements;
 using claims.src.messages;
 using claims.src.network.packets;
 using claims.src.part;
 using claims.src.part.structure.conflict;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Common;
@@ -76,7 +78,9 @@ namespace claims.src.events
                 foreach (var it in ConflictHandler.GetAllConflictsForAlliance(playerInfo.Alliance))
                 {
                     lic.Add(new ClientConflictCellElement(it.GetPartName(), it.First.GetPartName(), it.Second.GetPartName(),
-                        it.StartedBy.GetPartName(), it.State, it.Guid, it.WarRanges, it.TimeStampStarted));
+                        it.StartedBy.GetPartName(), it.State, it.Guid,
+                        it.MinimumDaysBetweenBattles, it.LastBattleDateStart, it.LastBattleDateEnd, it.NextBattleDateStart, it.NextBattleDateEnd,
+                        it.WarRanges, it.FirstWarRanges, it.SecondWarRanges, it.TimeStampStarted));
                 }
                 if (lic.Count > 0)
                 {

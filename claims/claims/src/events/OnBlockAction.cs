@@ -1,6 +1,8 @@
-﻿using claims.src.auxialiry;
+﻿using System.Linq;
+using claims.src.auxialiry;
 using claims.src.part;
 using claims.src.part.structure;
+using claims.src.part.structure.conflict;
 using claims.src.part.structure.plots;
 using claims.src.perms;
 using claims.src.perms.type;
@@ -167,6 +169,27 @@ namespace claims.src.events
                         return checkInnerClaimPerm(PermType.BUILD_AND_DESTROY_PERM, playerInfo.Guid, plot, blockSel);
                     }
                     return b;
+                case PlotRelation.FOE:
+                    if (!plot.BorderPlot)
+                    {
+                        b = false;
+                    }
+                    else
+                    {
+                        Alliance playerAlliance = playerInfo.Alliance;
+                        Alliance plotAlliance = plot.getCity().Alliance;
+                        if(ConflictHandler.TryGetConflictWithSides(playerAlliance, plotAlliance, out Conflict conflict))
+                        {
+                            b = conflict.ActiveWarTime;
+                        }
+                        else
+                        {
+                            b = false;
+                        }
+                        //use item - cloth to check for use and spawn flag block after that
+                    }
+                    playerInfo.PlayerCache.getCache()[(int)PermType.BUILD_AND_DESTROY_PERM] = b;
+                    return b;
             }
             return false;
         }        
@@ -245,6 +268,27 @@ namespace claims.src.events
                         return checkInnerClaimPerm(PermType.USE_PERM, playerInfo.Guid, plot, blockSel);
                     }
                     return b;
+                case PlotRelation.FOE:
+                    if (!plot.BorderPlot)
+                    {
+                        b = false;
+                    }
+                    else
+                    {
+                        Alliance playerAlliance = playerInfo.Alliance;
+                        Alliance plotAlliance = plot.getCity().Alliance;
+                        if (ConflictHandler.TryGetConflictWithSides(playerAlliance, plotAlliance, out Conflict conflict))
+                        {
+                            b = conflict.ActiveWarTime;
+                        }
+                        else
+                        {
+                            b = false;
+                        }
+                        //use item - cloth to check for use and spawn flag block after that
+                    }
+                    playerInfo.PlayerCache.getCache()[(int)PermType.USE_PERM] = b;
+                    return b;
             }
             return false;   
 
@@ -296,6 +340,27 @@ namespace claims.src.events
                     return b;
                 case PlotRelation.COMRADE:
                     b = plot.getPermsHandler().getPerm(PermGroup.COMRADE, PermType.USE_PERM);
+                    playerInfo.PlayerCache.getCache()[(int)PermType.USE_PERM] = b;
+                    return b;
+                case PlotRelation.FOE:
+                    if (!plot.BorderPlot)
+                    {
+                        b = false;
+                    }
+                    else
+                    {
+                        Alliance playerAlliance = playerInfo.Alliance;
+                        Alliance plotAlliance = plot.getCity().Alliance;
+                        if (ConflictHandler.TryGetConflictWithSides(playerAlliance, plotAlliance, out Conflict conflict))
+                        {
+                            b = conflict.ActiveWarTime;
+                        }
+                        else
+                        {
+                            b = false;
+                        }
+                        //use item - cloth to check for use and spawn flag block after that
+                    }
                     playerInfo.PlayerCache.getCache()[(int)PermType.USE_PERM] = b;
                     return b;
             }
@@ -381,6 +446,27 @@ namespace claims.src.events
                         return checkInnerClaimPerm(PermType.USE_PERM, playerInfo.Guid, plot, pos);
                     }
                     return b;
+                case PlotRelation.FOE:
+                    if (!plot.BorderPlot)
+                    {
+                        b = false;
+                    }
+                    else
+                    {
+                        Alliance playerAlliance = playerInfo.Alliance;
+                        Alliance plotAlliance = plot.getCity().Alliance;
+                        if (ConflictHandler.TryGetConflictWithSides(playerAlliance, plotAlliance, out Conflict conflict))
+                        {
+                            b = conflict.ActiveWarTime;
+                        }
+                        else
+                        {
+                            b = false;
+                        }
+                        //use item - cloth to check for use and spawn flag block after that
+                    }
+                    playerInfo.PlayerCache.getCache()[(int)PermType.ATTACK_ANIMALS_PERM] = b;
+                    return b;
             }
             return false;
         }
@@ -407,6 +493,13 @@ namespace claims.src.events
             if(plot.hasPlotOwner() && plot.getPlotOwner().Friends.Contains(playerInfo))
             {
                 return PlotRelation.COMRADE;
+            }
+            if(plot.hasCity() && plot.getCity().HasAlliance() && playerInfo.HasAlliance())
+            {
+                if(plot.getCity().Alliance.Hostiles.Contains(playerInfo.Alliance))
+                {
+                    return PlotRelation.FOE;
+                }
             }
             return PlotRelation.STRANGER;
         }
@@ -462,6 +555,27 @@ namespace claims.src.events
                         return checkInnerClaimPerm(PermType.BUILD_AND_DESTROY_PERM, playerInfo.Guid, plot, blockSel);
                     }*/
                     return b;
+                case PlotRelation.FOE:
+                    if (!plot.BorderPlot)
+                    {
+                        b = false;
+                    }
+                    else
+                    {
+                        Alliance playerAlliance = playerInfo.Alliance;
+                        Alliance plotAlliance = plot.getCity().Alliance;
+                        if (ConflictHandler.TryGetConflictWithSides(playerAlliance, plotAlliance, out Conflict conflict))
+                        {
+                            b = conflict.ActiveWarTime;
+                        }
+                        else
+                        {
+                            b = false;
+                        }
+                        //use item - cloth to check for use and spawn flag block after that
+                    }
+                    //playerInfo.PlayerCache.getCache()[(int)PermType.BUILD_AND_DESTROY_PERM] = b;
+                    return b;
             }
             return false;
         }
@@ -514,6 +628,27 @@ namespace claims.src.events
                      {
                          return checkInnerClaimPerm(PermType.USE_PERM, playerInfo.Guid, plot, blockSel);
                      }*/
+                    return b;
+                case PlotRelation.FOE:
+                    if (!plot.BorderPlot)
+                    {
+                        b = false;
+                    }
+                    else
+                    {
+                        Alliance playerAlliance = playerInfo.Alliance;
+                        Alliance plotAlliance = plot.getCity().Alliance;
+                        if (ConflictHandler.TryGetConflictWithSides(playerAlliance, plotAlliance, out Conflict conflict))
+                        {
+                            b = conflict.ActiveWarTime;
+                        }
+                        else
+                        {
+                            b = false;
+                        }
+                        //use item - cloth to check for use and spawn flag block after that
+                    }
+                    //playerInfo.PlayerCache.getCache()[(int)PermType.BUILD_AND_DESTROY_PERM] = b;
                     return b;
             }
             return false;
@@ -568,6 +703,27 @@ namespace claims.src.events
                      {
                          return checkInnerClaimPerm(PermType.USE_PERM, playerInfo.Guid, plot, pos);
                      }*/
+                    return b;
+                case PlotRelation.FOE:
+                    if (!plot.BorderPlot)
+                    {
+                        b = false;
+                    }
+                    else
+                    {
+                        Alliance playerAlliance = playerInfo.Alliance;
+                        Alliance plotAlliance = plot.getCity().Alliance;
+                        if (ConflictHandler.TryGetConflictWithSides(playerAlliance, plotAlliance, out Conflict conflict))
+                        {
+                            b = conflict.ActiveWarTime;
+                        }
+                        else
+                        {
+                            b = false;
+                        }
+                        //use item - cloth to check for use and spawn flag block after that
+                    }
+                    //playerInfo.PlayerCache.getCache()[(int)PermType.BUILD_AND_DESTROY_PERM] = b;
                     return b;
             }
             return false;

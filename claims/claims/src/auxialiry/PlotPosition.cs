@@ -16,6 +16,16 @@ namespace claims.src.auxialiry
     {
         public static int plotSize = claims.config.PLOT_SIZE;
         Vec2i pos = new Vec2i();
+        public int X
+        {
+            get { return pos.X; }
+            set { pos.X = value; }
+        }
+        public int Z
+        {
+            get { return pos.Y; }
+            set { pos.Y = value; }
+        }
         public Vec2i getPos()
         {
             return pos;

@@ -13,9 +13,9 @@ using Vintagestory.API.MathTools;
 using Vintagestory.API.Util;
 using Vintagestory.Client.NoObf;
 using Vintagestory.Common;
-using claims.src.gui.playerGui.structures;
 using claims.src.auxialiry;
 using System.ComponentModel;
+using claims.src.gui.playerGui.structures.cellElements;
 
 namespace claims.src.gui.playerGui.GuiElements
 {

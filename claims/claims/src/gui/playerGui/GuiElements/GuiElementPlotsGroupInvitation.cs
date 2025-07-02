@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Cairo;
 using claims.src.auxialiry;
-using claims.src.gui.playerGui.structures;
 using static OpenTK.Graphics.OpenGL.GL;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
@@ -13,6 +12,7 @@ using Vintagestory.API.MathTools;
 using Vintagestory.API.Util;
 using Vintagestory.API.Config;
 using Vintagestory.Client.NoObf;
+using claims.src.gui.playerGui.structures.cellElements;
 
 namespace claims.src.gui.playerGui.GuiElements
 {

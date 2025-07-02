@@ -151,6 +151,10 @@ namespace claims.src.network.handlers
                         claims.clientDataStorage.clientPlayerInfo.ReceivedInvitations.Clear();
                         if (claims.CANCityGui?.IsOpened() ?? false)
                         {
+                            if(claims.CANCityGui.SelectedTab == gui.playerGui.CANClaimsGui.EnumSelectedTab.ConflictInfoPage)
+                            {
+                                claims.CANCityGui.SelectRangeAndFill();
+                            }
                             claims.CANCityGui.BuildMainWindow();
                         }
                         break;

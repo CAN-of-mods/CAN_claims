@@ -3,6 +3,7 @@ using claims.src.clientMapHandling;
 using claims.src.delayed.teleportation;
 using claims.src.events;
 using claims.src.gui.playerGui.structures;
+using claims.src.gui.playerGui.structures.cellElements;
 using claims.src.messages;
 using claims.src.network.packets;
 using claims.src.part;
@@ -341,7 +342,8 @@ namespace claims.src
                                     : "",
                                plot.Type == PlotType.TAVERN
                                    ? plot.GetClientInnerClaimFromDefault(playerInfo)
-                                   : null)));
+                                   : null,
+                               plot.getCity().Alliance?.Guid ?? "")));
                         }
                         if (!alreadySentZonesToPlayers.ContainsKey(playerInfo.GetPartName()))
                         {
@@ -455,7 +457,8 @@ namespace claims.src
                                         : "",
                                    plot.Type == PlotType.TAVERN
                                        ? plot.GetClientInnerClaimFromDefault(playerInfo)
-                                       : null)));
+                                       : null,
+                                   plot.getCity().Alliance?.Guid ?? "")));
                                 }
                             }
                         }

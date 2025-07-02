@@ -41,14 +41,14 @@ namespace claims.src.database
 
         //PLOT
         public static readonly string DELETE_PLOT = "DELETE FROM PLOTS WHERE x=@x AND z=@z";
-        public static readonly string INSERT_PLOT = "INSERT INTO PLOTS (name, x,z,city,ownerofplot,type,price,customtax,perms,plotgroupguid, markednopvp, plotdesc, extraBought)" +
-                                                    " VALUES (@name,@x,@z,@city,@ownerofplot,@type,@price,@customtax,@perms,@plotgroupguid, @markednopvp, @plotdesc, @extraBought)";
-        public static readonly string UPDATE_PLOT = "UPDATE PLOTS SET name=@name, x=@x,z=@z,city=@city, ownerofplot=@ownerofplot, type=@type,price=@price,customtax=@customtax,perms=@perms, plotgroupguid=@plotgroupguid, markednopvp=@markednopvp, plotdesc=@plotdesc, extraBought=@extraBought" +
+        public static readonly string INSERT_PLOT = "INSERT INTO PLOTS (name, x,z,city,ownerofplot,type,price,customtax,perms,plotgroupguid, markednopvp, plotdesc, extraBought, wascaptured)" +
+                                                    " VALUES (@name,@x,@z,@city,@ownerofplot,@type,@price,@customtax,@perms,@plotgroupguid, @markednopvp, @plotdesc, @extraBought, @wascaptured)";
+        public static readonly string UPDATE_PLOT = "UPDATE PLOTS SET name=@name, x=@x,z=@z,city=@city, ownerofplot=@ownerofplot, type=@type,price=@price,customtax=@customtax,perms=@perms, plotgroupguid=@plotgroupguid, markednopvp=@markednopvp, plotdesc=@plotdesc, extraBought=@extraBought, wascaptured=@wascaptured" +
                                                     " where x=@x and z=@z";
 
         //CONFLICT
         public static readonly string DELETE_CONFLICT = "DELETE FROM CONFLICTS WHERE guid=@guid";
-        public static readonly string INSERT_CONFLICT = "INSERT INTO CONFLICTS (name, guid, firstside, secondside, conflictstate, startedby, warranges, minimumdaysbetweenbattles, lastbattledatestart, lastbattledateend, timestampstarted) VALUES (@name,@guid,@firstside,@secondside,@conflictstate, @startedby, @warranges, @minimumdaysbetweenbattles, @lastbattledatestart, @lastbattledateend, @timestampstarted)";
-        public static readonly string UPDATE_CONFLICT = "UPDATE CONFLICTS  SET name=@name, guid=@guid, firstside=@firstside, secondside=@secondside, conflictstate=@conflictstate, startedby=@startedby, warranges=@warranges, minimumdaysbetweenbattles=@minimumdaysbetweenbattles, lastbattledatestart=@lastbattledatestart, lastbattledateend=@lastbattledateend, timestampstarted=@timestampstarted where guid=@guid";
+        public static readonly string INSERT_CONFLICT = "INSERT INTO CONFLICTS (name, guid, firstside, secondside, conflictstate, startedby, warranges, minimumdaysbetweenbattles, lastbattledatestart, lastbattledateend, timestampstarted, firstwarranges, secondwarranges, nextbattledatestart, nextbattledateend) VALUES (@name,@guid,@firstside,@secondside,@conflictstate, @startedby, @warranges, @minimumdaysbetweenbattles, @lastbattledatestart, @lastbattledateend, @timestampstarted, @firstwarranges, @secondwarranges, @nextbattledatestart, @nextbattledateend)";
+        public static readonly string UPDATE_CONFLICT = "UPDATE CONFLICTS  SET name=@name, guid=@guid, firstside=@firstside, secondside=@secondside, conflictstate=@conflictstate, startedby=@startedby, warranges=@warranges, minimumdaysbetweenbattles=@minimumdaysbetweenbattles, lastbattledatestart=@lastbattledatestart, lastbattledateend=@lastbattledateend, timestampstarted=@timestampstarted, firstwarranges=@firstwarranges, secondwarranges=@secondwarranges, nextbattledatestart=@nextbattledatestart, nextbattledateend=@nextbattledateend where guid=@guid";
     }
 }

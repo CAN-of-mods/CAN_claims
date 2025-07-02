@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Cairo;
-using claims.src.gui.playerGui.structures;
 using Vintagestory.API.Client;
 using static claims.src.gui.playerGui.CANClaimsGui;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Config;
 using Vintagestory.Client.NoObf;
+using claims.src.gui.playerGui.structures.cellElements;
 
 namespace claims.src.gui.playerGui.GuiElements
 {

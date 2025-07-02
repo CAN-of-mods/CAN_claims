@@ -6,7 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Cairo;
 using claims.src.auxialiry;
-using claims.src.gui.playerGui.structures;
+using claims.src.gui.playerGui.structures.cellElements;
+using claims.src.part.structure.conflict;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
@@ -90,7 +91,7 @@ namespace claims.src.gui.playerGui.GuiElements
             string cellName = string.Format("{0} x {1}", cell.From, cell.To);
             TextExtents textExtents = Font.GetTextExtents(cellName);
             textUtil.AutobreakAndDrawMultilineTextAt(context, Font, cellName, Bounds.absPaddingX, Bounds.absPaddingY + GuiElement.scaled(10), textExtents.Width + 1.0, EnumTextOrientation.Left);
-            string expDate = TimeFunctions.getDateFromEpochSecondsWithHoursMinutes(cell.TimeStampExpire, true).ToString();
+            string expDate = TimeFunctions.getDateFromEpochSecondsWithHoursMinutes(cell.TimeStampExpire, true);
             textExtents = Font.GetTextExtents(expDate);
             textUtil.AutobreakAndDrawMultilineTextAt(context, CairoFont.WhiteDetailText(), expDate, Bounds.absPaddingX, Bounds.absPaddingY + GuiElement.scaled(36), textExtents.Width + 1.0, EnumTextOrientation.Left);
 
@@ -268,41 +269,83 @@ namespace claims.src.gui.playerGui.GuiElements
                     vec2d.X < Bounds.InnerWidth - GuiElement.scaled(GuiElementMainMenuCell.unscaledRightBoxWidth))
             {
                 ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
-                if (claims.clientDataStorage.clientPlayerInfo.AllianceInfo?.Guid?.Equals(this.cell.Guid) ?? false)
+                if (this.cell.Purpose == LetterPurpose.START_CONFLICT)
                 {
-                    return;
+                    if (claims.clientDataStorage.clientPlayerInfo.AllianceInfo?.Guid?.Equals(this.cell.FromGuid) ?? false)
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/a conflict accept " + this.cell.From, EnumChatType.Macro, "");
+                    }
+                    var cell = claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientConflictLetterCellElements.FirstOrDefault(c => c.From == this.cell.From);
+                    if (cell != null)
+                    {
+                        claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientConflictLetterCellElements.Remove(cell);
+                        claims.CANCityGui.BuildMainWindow();
+                    }
+                    args.Handled = true;
                 }
                 else
                 {
-                    clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/a conflict accept " + this.cell.From, EnumChatType.Macro, "");
+                    if (claims.clientDataStorage.clientPlayerInfo.AllianceInfo?.Guid?.Equals(this.cell.FromGuid) ?? false)
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/a conflict acceptstop " + this.cell.From, EnumChatType.Macro, "");
+                    }
+                    var cell = claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientConflictLetterCellElements.FirstOrDefault(c => c.From == this.cell.From);
+                    if (cell != null)
+                    {
+                        claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientConflictLetterCellElements.Remove(cell);
+                        claims.CANCityGui.BuildMainWindow();
+                    }
+                    //OnMouseDownOnCellMiddle?.Invoke(elementIndex);
+                    args.Handled = true;
                 }
-                var cell = claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientConflictLetterCellElements.FirstOrDefault(c => c.From == this.cell.From);
-                if (cell != null)
-                {
-                    claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientConflictLetterCellElements.Remove(cell);
-                    claims.CANCityGui.BuildMainWindow();
-                }
-                //OnMouseDownOnCellMiddle?.Invoke(elementIndex);
-                args.Handled = true;
             }
             else if (vec2d.X > Bounds.InnerWidth - GuiElement.scaled(GuiElementMainMenuCell.unscaledRightBoxWidth))
             {
                 ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
-                if (claims.clientDataStorage.clientPlayerInfo.AllianceInfo?.Guid?.Equals(this.cell.Guid) ?? false)
+                if (this.cell.Purpose == LetterPurpose.START_CONFLICT)
                 {
-                    clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/a conflict deny " + this.cell.From, EnumChatType.Macro, "");
+                    if (claims.clientDataStorage.clientPlayerInfo.AllianceInfo?.Guid?.Equals(this.cell.FromGuid) ?? false)
+                    {
+                        clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/a conflict revoke " + this.cell.To, EnumChatType.Macro, "");                      
+                    }
+                    else
+                    {
+                        clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/a conflict deny " + this.cell.From, EnumChatType.Macro, "");
+                    }
+                    var cell = claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientConflictLetterCellElements.FirstOrDefault(c => c.Guid == this.cell.Guid);
+                    if (cell != null)
+                    {
+                        claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientConflictLetterCellElements.Remove(cell);
+                        claims.CANCityGui.BuildMainWindow();
+                    }
+                    args.Handled = true;
                 }
-                else 
+                else
                 {
-                    clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/a conflict revoke " + this.cell.To, EnumChatType.Macro, "");
+                    if (claims.clientDataStorage.clientPlayerInfo.AllianceInfo?.Guid?.Equals(this.cell.FromGuid) ?? false)
+                    {
+                        clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/a conflict denystop " + this.cell.To, EnumChatType.Macro, "");
+                    }
+                    else
+                    {
+                        clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/a conflict denystop " + this.cell.From, EnumChatType.Macro, "");
+                    }
+                    var cell = claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientConflictLetterCellElements.FirstOrDefault(c => c.Guid == this.cell.Guid);
+                    if (cell != null)
+                    {
+                        claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientConflictLetterCellElements.Remove(cell);
+                        claims.CANCityGui.BuildMainWindow();
+                    }
+                    args.Handled = true;
                 }
-                var cell = claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientConflictLetterCellElements.FirstOrDefault(c => c.Guid == this.cell.Guid);
-                if (cell != null)
-                {
-                    claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientConflictLetterCellElements.Remove(cell);
-                    claims.CANCityGui.BuildMainWindow();
-                }
-                args.Handled = true;
             }
             else
             {

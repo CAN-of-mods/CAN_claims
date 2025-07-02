@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using claims.src.part.structure.conflict;
 using claims.src.part.structure;
 
-namespace claims.src.gui.playerGui.structures
+namespace claims.src.gui.playerGui.structures.cellElements
 {
     public class ClientConflictLetterCellElement
     {

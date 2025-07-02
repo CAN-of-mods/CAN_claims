@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Cairo;
 using claims.src.auxialiry;
-using claims.src.gui.playerGui.structures;
+using claims.src.gui.playerGui.structures.cellElements;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;

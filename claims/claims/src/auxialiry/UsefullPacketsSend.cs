@@ -14,6 +14,7 @@ using ProtoBuf;
 using claims.src.part.structure.plots;
 using Vintagestory.API.Datastructures;
 using caneconomy.src.interfaces;
+using claims.src.gui.playerGui.structures.cellElements;
 
 namespace claims.src.auxialiry
 {
@@ -268,10 +269,10 @@ namespace claims.src.auxialiry
         public static void AddToQueueCityInfoUpdate(string cityName, params EnumPlayerRelatedInfo[] toUpdate)
         {
             if (cityDelayedInfoCollector.TryGetValue(cityName, out Dictionary<EnumPlayerRelatedInfo, Dictionary<string, List<object>>> cityHashSet))
-            {
+            {               
                 foreach (var it in toUpdate)
                 {
-                    cityHashSet.Add(it, null);
+                    cityHashSet.TryAdd(it, null);
                 }
             }
             else
@@ -337,6 +338,13 @@ namespace claims.src.auxialiry
             else
             {
                 playerDelayedInfoCollector.TryAdd(playerName, toUpdate.ToDictionary(k => k, k => (Dictionary<string, List<object>>)null));
+            }
+        }
+        public static void AddToQueueAllPlayersInfoUpdate(Dictionary<string, object> additionalInfo, EnumPlayerRelatedInfo toUpdate)
+        {
+            foreach(var pl in claims.sapi.World.AllOnlinePlayers)
+            {
+                AddToQueuePlayerInfoUpdate(pl.PlayerName, additionalInfo, toUpdate);
             }
         }
         public static void SendAllCollectedCityUpdatesToCitizens()
@@ -567,6 +575,9 @@ namespace claims.src.auxialiry
                     case EnumPlayerRelatedInfo.CITY_BALANCE:
                         result[pair.Key] = claims.economyHandler.getBalance(city.MoneyAccountName).ToString();
                         break;
+                    case EnumPlayerRelatedInfo.CITY_PLOTS_COLOR:
+                        result[pair.Key] = city.cityColor.ToString();
+                        break;
                     case EnumPlayerRelatedInfo.CITY_CRIMINALS_LIST:
                         result[pair.Key] = JsonConvert.SerializeObject(StringFunctions.getNamesOfCriminals(city));
                         break;
@@ -653,6 +664,14 @@ namespace claims.src.auxialiry
                         if (pair.Value.TryGetValue("value", out var allianceList) && allianceList.Count > 0)
                         {
                             var allianceJson = SerializeAllianceInfo((string)allianceList[0]);
+                            if (allianceJson != null)
+                                result[pair.Key] = allianceJson;
+                        }
+                        break;
+                    case EnumPlayerRelatedInfo.CITY_PLOT_RECOLOR:
+                        if (pair.Value.TryGetValue("value", out var plotToRecolor) && plotToRecolor.Count > 0)
+                        {
+                            var allianceJson = JsonConvert.SerializeObject(plotToRecolor);
                             if (allianceJson != null)
                                 result[pair.Key] = allianceJson;
                         }

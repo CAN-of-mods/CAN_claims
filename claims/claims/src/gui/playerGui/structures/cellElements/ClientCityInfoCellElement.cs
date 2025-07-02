@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace claims.src.gui.playerGui.structures
+namespace claims.src.gui.playerGui.structures.cellElements
 {
     public class ClientCityInfoCellElement
     {

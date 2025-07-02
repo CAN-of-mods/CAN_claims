@@ -30,6 +30,7 @@ using Vintagestory.Server;
 using System.Reflection;
 using Vintagestory.GameContent;
 using Vintagestory.Common;
+using claims.src.gui.playerGui.structures.cellElements;
 
 namespace claims.src.commands
 {
@@ -255,6 +256,9 @@ namespace claims.src.commands
             tree.SetString("name", plotHere.getCity().GetPartName());
             claims.sapi.World.Api.Event.PushEvent("plotclaimed", tree);
             UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid, EnumPlayerRelatedInfo.CLAIMED_PLOTS);
+
+            plotHere.CheckBorderPlotValue();
+
             return SuccessWithParams("claims:plot_has_been_claimed", new object[] { currentPlotPosition.getPos().X, currentPlotPosition.getPos().Y, claims.config.PLOT_CLAIM_PRICE });
         }
         public static TextCommandResult UnclaimCityPlot(TextCommandCallingArgs args)
@@ -301,6 +305,7 @@ namespace claims.src.commands
             claims.dataStorage.setNowEpochZoneTimestampFromPlotPosition(plotHere.getPos());
             claims.serverPlayerMovementListener.markPlotToWasRemoved(plotHere.getPos());
             UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid, EnumPlayerRelatedInfo.CLAIMED_PLOTS);
+            plotHere.CheckBorderPlotValue();
             return SuccessWithParams("claims:plot_has_been_unclaimed", new object[] { currentPlotPosition.getPos().X, currentPlotPosition.getPos().Y });
         }
         public static TextCommandResult ClaimOutpost(TextCommandCallingArgs args)
@@ -357,6 +362,7 @@ namespace claims.src.commands
             tree.SetString("name", plotHere.getCity().GetPartName());
             claims.sapi.World.Api.Event.PushEvent("plotclaimed", tree);
             UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid, EnumPlayerRelatedInfo.CLAIMED_PLOTS);
+            plotHere.CheckBorderPlotValue();
             return SuccessWithParams("claims:plot_has_been_claimed", new object[] { currentPlotPosition.getPos().X, currentPlotPosition.getPos().Y });
         }
         public static TextCommandResult ProcessExtraPlot(TextCommandCallingArgs args)
@@ -416,6 +422,7 @@ namespace claims.src.commands
             tree.SetString("name", plotHere.getCity().GetPartName());
             claims.sapi.World.Api.Event.PushEvent("plotclaimed", tree);
             UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid, EnumPlayerRelatedInfo.CLAIMED_PLOTS);
+            plotHere.CheckBorderPlotValue();
             //return SuccessWithParams("claims:plot_has_been_claimed", new object[] { currentPlotPosition.getPos().X, currentPlotPosition.getPos().Y, claims.config.PLOT_CLAIM_PRICE });
             return SuccessWithParams("claims:plot_has_been_claimed", new object[] { currentPlotPosition.getPos().X, currentPlotPosition.getPos().Y, claims.config.PLOT_CLAIM_PRICE });
         }
@@ -1007,6 +1014,7 @@ namespace claims.src.commands
                     return TextCommandResult.Success("claims:wrong_value");
                 }
                 playerInfo.City.trySetPlotColor(colorValue);
+                UsefullPacketsSend.AddToQueueCityInfoUpdate(playerInfo.City.Guid, EnumPlayerRelatedInfo.CITY_PLOTS_COLOR);
                 return SuccessWithParams("claims:color_was_set_to", new object[] { (string)args.LastArg });
             }
             else

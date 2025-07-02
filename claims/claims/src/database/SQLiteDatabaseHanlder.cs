@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
@@ -176,6 +177,56 @@ namespace claims.src.database
                     command.ExecuteNonQuery();
                 }
 
+                //conflict firstwarranges
+                try
+                {
+                    command.CommandText = "SELECT firstwarranges FROM CONFLICTS LIMIT 1";
+                    command.ExecuteNonQuery();
+
+                }
+                catch
+                {
+                    command.CommandText = "ALTER TABLE CONFLICTS ADD COLUMN firstwarranges TEXT DEFAULT \"\"";
+                    command.ExecuteNonQuery();
+                }
+
+                //conflict secondwarranges
+                try
+                {
+                    command.CommandText = "SELECT secondwarranges FROM CONFLICTS LIMIT 1";
+                    command.ExecuteNonQuery();
+
+                }
+                catch
+                {
+                    command.CommandText = "ALTER TABLE CONFLICTS ADD COLUMN secondwarranges TEXT DEFAULT \"\"";
+                    command.ExecuteNonQuery();
+                }
+                //conflict nextbattledatestart
+                try
+                {
+                    command.CommandText = "SELECT nextbattledatestart FROM CONFLICTS LIMIT 1";
+                    command.ExecuteNonQuery();
+
+                }
+                catch
+                {
+                    command.CommandText = "ALTER TABLE CONFLICTS ADD COLUMN nextbattledatestart TEXT DEFAULT \"0001-01-01T00:00:00\"";
+                    command.ExecuteNonQuery();
+                }
+                //conflict nextbattledateend
+                try
+                {
+                    command.CommandText = "SELECT nextbattledateend FROM CONFLICTS LIMIT 1";
+                    command.ExecuteNonQuery();
+
+                }
+                catch
+                {
+                    command.CommandText = "ALTER TABLE CONFLICTS ADD COLUMN nextbattledateend TEXT DEFAULT \"0001-01-01T00:00:00\"";
+                    command.ExecuteNonQuery();
+                }
+
                 //city hotiles
                 try
                 {
@@ -199,6 +250,19 @@ namespace claims.src.database
                 catch
                 {
                     command.CommandText = "ALTER TABLE CITIES ADD COLUMN comrades TEXT DEFAULT \"\"";
+                    command.ExecuteNonQuery();
+                }
+
+                //wascaptured
+                try
+                {
+                    command.CommandText = "SELECT wascaptured FROM PLOTS LIMIT 1";
+                    command.ExecuteNonQuery();
+
+                }
+                catch
+                {
+                    command.CommandText = "ALTER TABLE PLOTS ADD COLUMN wascaptured INTEGER DEFAULT 0";
                     command.ExecuteNonQuery();
                 }
 
@@ -723,7 +787,8 @@ namespace claims.src.database
                 { "@plotgroupguid", plot.hasPlotGroup() ? plot.getPlotGroup().Guid : "" },
                 { "@markednopvp", plot.MarkedNoPvp },
                 { "@plotdesc",  PlotInfo.getPlotDescByType(plot) },
-                { "@extraBought", plot.extraBought }
+                { "@extraBought", plot.extraBought },
+                { "@wascaptured", plot.WasCaptured }
             };
 
             queryQueue.Enqueue(new QuerryInfo("PLOTS", update ? QuerryType.UPDATE : QuerryType.INSERT, tmpDict));
@@ -791,6 +856,7 @@ namespace claims.src.database
                     break;
             }
             plot.extraBought = it["extraBought"].ToString().Equals("0") ? false : true;
+            plot.extraBought = it["wascaptured"].ToString().Equals("0") ? false : true;
             return true;
         }
 
@@ -1187,10 +1253,14 @@ namespace claims.src.database
                 { "@conflictstate", conflict.State },
                 { "@startedby", conflict.StartedBy.Guid },
                 { "@warranges", JsonConvert.SerializeObject(conflict.WarRanges) },
+                { "@firstwarranges", JsonConvert.SerializeObject(conflict.FirstWarRanges) },
+                { "@secondwarranges", JsonConvert.SerializeObject(conflict.SecondWarRanges) },
                 { "@minimumdaysbetweenbattles", conflict.MinimumDaysBetweenBattles },
                 { "@lastbattledatestart", JsonConvert.SerializeObject(conflict.LastBattleDateStart) },
                 { "@lastbattledateend", JsonConvert.SerializeObject(conflict.LastBattleDateEnd) },
-                { "@timestampstarted", conflict.TimeStampStarted }
+                { "@nextbattledatestart", JsonConvert.SerializeObject(conflict.NextBattleDateStart) },
+                { "@nextbattledateend", JsonConvert.SerializeObject(conflict.NextBattleDateEnd) },
+                { "@timestampstarted", conflict.TimeStampStarted },
             };
 
             queryQueue.Enqueue(new QuerryInfo("CONFLICTS", update ? QuerryType.UPDATE : QuerryType.INSERT, tmpDict));
@@ -1213,10 +1283,19 @@ namespace claims.src.database
             claims.dataStorage.GetAllianceByGUID(it["startedby"].ToString(), out Alliance startedBy);
             tmpConflict.StartedBy = startedBy;
             tmpConflict.WarRanges = JsonConvert.DeserializeObject<List<SelectedWarRange>>(it["warranges"].ToString());
+            tmpConflict.FirstWarRanges = JsonConvert.DeserializeObject<List<SelectedWarRange>>(it["firstwarranges"].ToString());
+            tmpConflict.SecondWarRanges = JsonConvert.DeserializeObject<List<SelectedWarRange>>(it["secondwarranges"].ToString());
+            //tmpConflict.SecondWarRanges = new List<SelectedWarRange>();
             tmpConflict.MinimumDaysBetweenBattles = int.Parse(it["minimumdaysbetweenbattles"].ToString());
             tmpConflict.LastBattleDateStart = JsonConvert.DeserializeObject<DateTime>(it["lastbattledatestart"].ToString());
             tmpConflict.LastBattleDateEnd = JsonConvert.DeserializeObject<DateTime>(it["lastbattledateend"].ToString());
+            tmpConflict.NextBattleDateStart = JsonConvert.DeserializeObject<DateTime>(it["nextbattledatestart"].ToString());
+            tmpConflict.NextBattleDateEnd = JsonConvert.DeserializeObject<DateTime>(it["nextbattledateend"].ToString());
+            
             tmpConflict.TimeStampStarted = long.Parse(it["timestampstarted"].ToString());
+
+            tmpConflict.First.RunningConflicts.Add(tmpConflict);
+            tmpConflict.Second.RunningConflicts.Add(tmpConflict);
 
             claims.dataStorage.TryAddConflict(tmpConflict);
             return true;

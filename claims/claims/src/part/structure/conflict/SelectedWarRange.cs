@@ -13,12 +13,14 @@ namespace claims.src.part.structure.conflict
         public TimeSpan StartTime { get; set; }
         public TimeSpan Duration { get; set; }
         public TimeSpan EndTime => StartTime + Duration;
-        public SelectedWarRange(DayOfWeek startDay, DayOfWeek endDay, TimeSpan startTime, TimeSpan duration)
+        public string SuggestedAllianceGuid { get; set; }
+        public SelectedWarRange(DayOfWeek startDay, DayOfWeek endDay, TimeSpan startTime, TimeSpan duration, string suggestedAllianceGuid)
         {
             StartDay = startDay;
             EndDay = endDay;
             StartTime = startTime;
             Duration = duration;
+            SuggestedAllianceGuid = suggestedAllianceGuid;
         }
     }
 }

@@ -24,6 +24,7 @@ namespace claims.src
         public double NEW_ALLIANCE_COST = 300;
         public double ALLIANCE_RENAME_COST = 50;
         public double ALLIANCE_MAX_FEE = 50;
+        public double ALLIANCE_BASE_CARE = 50;
         //DATABASE
         public string PATH_TO_DB_AND_JSON_FILES = "";
         public string DB_NAME = "claims.db";
@@ -55,6 +56,11 @@ namespace claims.src
         public int MAX_SENT_INVITATIONS_ALLIANCE = 10;
         public int HOUR_TIMEOUT_INVITATION_TO_ALLIANCE = 2;
 
+        public bool NEED_AGREE_FOR_WAR_RANGES = true;
+        public int MIN_WARRANGE_DURATION_MINUTES = 60;
+        public int WARRANGE_PER_ALLIANCE = 2;
+        public int MIN_RANGE_CELL_DURATION_MINUTES = 30;
+
         //PLOTGROUPS
         public int PLOT_GROUP_INVITATION_TIMEOUT = 2;
         public int MAX_PLOTS_GROUP_PER_CITY = 5;
@@ -69,12 +75,20 @@ namespace claims.src
         public float PVP_TIME_END = 6;
         public long MOD_DAY_DURATION_IN_SECONDS = 86400;
         public int SECONDS_ALLIANCE_RENAME_COOLDOWN = 10;
+        public int CHECK_FOR_WAR_TO_START_EVERY_N_SECONDS = 600;
+        public int CHECK_FOR_WAR_TO_START_CALLBACK_EVERY_N_SECONDS = 960;
+        public int FLAG_CAPTURE_DURATION_SECONDS = 60;
+        //WAR
+        public int MAX_AMOUNT_OF_CAPTURE_FLAGS_ACTIVE = 2;
+        public int FLAG_REINFORCEMENT_AMOUNT = 10;
+        public int MINIMUM_DAYS_BETWEEN_BATTLES = 3;
         //PATCHES
         public bool FALLING_BLOCKS_TO_CITY_PLOTS_PATCH = true;
         public bool WATER_FLOW_CITY_PLOTS_PATCH = true;
 
         //DISTANCE
         public int MIN_DISTANCE_FROM_OTHER_CITY_NEW_CITY = 3;
+        public bool CAPTURED_PLOTS_DO_NOT_BLOCK_CLAIMS = true;
 
         //AGREEMENT
         public int AGREEMENT_TIMEOUT_SECONDS = 120;
