@@ -508,9 +508,9 @@ namespace claims.src.commands
                             ConflictHandler.removeConflictLetter(letter);
 
                             UsefullPacketsSend.AddToQueueAllianceInfoUpdate(ourAlliance.Guid, 
-                                new Dictionary<string, object> { { "value", letter.Guid } }, EnumPlayerRelatedInfo.ALLIANCE_LETTER_REMOVE);
+                                new Dictionary<string, object> { { "value", (letter.Guid, letter.Purpose) } }, EnumPlayerRelatedInfo.ALLIANCE_LETTER_REMOVE);
                             UsefullPacketsSend.AddToQueueAllianceInfoUpdate(targetAlliance.Guid, 
-                                new Dictionary<string, object> { { "value", letter.Guid } }, EnumPlayerRelatedInfo.ALLIANCE_LETTER_REMOVE);
+                                new Dictionary<string, object> { { "value", (letter.Guid, letter.Purpose) } }, EnumPlayerRelatedInfo.ALLIANCE_LETTER_REMOVE);
 
                             newConflict.First = ourAlliance;
                             newConflict.Second = targetAlliance;
@@ -632,8 +632,8 @@ namespace claims.src.commands
             {
                 return TextCommandResult.Success(Lang.Get("claims:conflict_letter_doesnt_exist"));
             }
-            UsefullPacketsSend.AddToQueueAllianceInfoUpdate(targetAlliance.Guid, new Dictionary<string, object> { { "value", foundLetter.Guid } }, EnumPlayerRelatedInfo.ALLIANCE_LETTER_REMOVE);
-            UsefullPacketsSend.AddToQueueAllianceInfoUpdate(ourAlliance.Guid, new Dictionary<string, object> { { "value", foundLetter.Guid } }, EnumPlayerRelatedInfo.ALLIANCE_LETTER_REMOVE);
+            UsefullPacketsSend.AddToQueueAllianceInfoUpdate(targetAlliance.Guid, new Dictionary<string, object> { { "value", (foundLetter.Guid, foundLetter.Purpose) } }, EnumPlayerRelatedInfo.ALLIANCE_LETTER_REMOVE);
+            UsefullPacketsSend.AddToQueueAllianceInfoUpdate(ourAlliance.Guid, new Dictionary<string, object> { { "value", (foundLetter.Guid, foundLetter.Purpose) } }, EnumPlayerRelatedInfo.ALLIANCE_LETTER_REMOVE);
             ConflictHandler.removeConflictLetter(foundLetter);
             return TextCommandResult.Success(Lang.Get("claims:conflict_declaration_removed", targetAlliance.getPartNameReplaceUnder()));          
         }
@@ -772,27 +772,11 @@ namespace claims.src.commands
                             PartDemolition.DemolishConflict(conflict);
                             MessageHandler.SendMsgInAlliance(targetAlliance, Lang.Get("claims:conflict_stopped_with", targetAlliance.getPartNameReplaceUnder()));
                             ConflictHandler.removeConflictLetter(letter);
-                            foreach (City ourCity in ourAlliance.Cities)
-                            {
-                                foreach (City targetCity in targetAlliance.Cities)
-                                {
-                                    ourCity.HostileCities.Remove(targetCity);
-                                    ourCity.saveToDatabase();
-                                }
-                            }
-                            foreach (City targetCity in targetAlliance.Cities)
-                            {
-                                foreach (City ourCity in ourAlliance.Cities)
-                                {
-                                    targetCity.HostileCities.Remove(ourCity);
-                                    targetCity.saveToDatabase();
-                                }
-                            }
                         })),
                         new Thread(new ThreadStart(() =>
                         {
                             MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:conflict_stop_denied"));
-                            ConflictHandler.removeConflictLetter(ourAlliance, targetAlliance, LetterPurpose.START_CONFLICT);
+                            ConflictHandler.removeConflictLetter(ourAlliance, targetAlliance, LetterPurpose.END_CONFLICT);
                         })),
                         conflict.Guid
                         )))
@@ -863,8 +847,8 @@ namespace claims.src.commands
             }
 
             letter.OnAccept.Start();
-            UsefullPacketsSend.AddToQueueAllianceInfoUpdate(targetAlliance.Guid, new Dictionary<string, object> { { "value", letter.Guid } }, EnumPlayerRelatedInfo.ALLIANCE_LETTER_REMOVE);
-            UsefullPacketsSend.AddToQueueAllianceInfoUpdate(ourAlliance.Guid, new Dictionary<string, object> { { "value", letter.Guid } }, EnumPlayerRelatedInfo.ALLIANCE_LETTER_REMOVE);
+            UsefullPacketsSend.AddToQueueAllianceInfoUpdate(targetAlliance.Guid, new Dictionary<string, object> { { "value", (letter.Guid, letter.Purpose) } }, EnumPlayerRelatedInfo.ALLIANCE_LETTER_REMOVE);
+            UsefullPacketsSend.AddToQueueAllianceInfoUpdate(ourAlliance.Guid, new Dictionary<string, object> { { "value", (letter.Guid, letter.Purpose) } }, EnumPlayerRelatedInfo.ALLIANCE_LETTER_REMOVE);
 
             UsefullPacketsSend.AddToQueueAllianceInfoUpdate(targetAlliance.Guid, new Dictionary<string, object> { { "value", letter.Guid } }, EnumPlayerRelatedInfo.ALLIANCE_CONFLICT_REMOVE);
             UsefullPacketsSend.AddToQueueAllianceInfoUpdate(ourAlliance.Guid, new Dictionary<string, object> { { "value", letter.Guid } }, EnumPlayerRelatedInfo.ALLIANCE_CONFLICT_REMOVE);
@@ -906,8 +890,8 @@ namespace claims.src.commands
             }
 
             letter.OnDeny.Start();
-            UsefullPacketsSend.AddToQueueAllianceInfoUpdate(targetAlliance.Guid, new Dictionary<string, object> { { "value", letter.Guid } }, EnumPlayerRelatedInfo.ALLIANCE_LETTER_REMOVE);
-            UsefullPacketsSend.AddToQueueAllianceInfoUpdate(ourAlliance.Guid, new Dictionary<string, object> { { "value", letter.Guid } }, EnumPlayerRelatedInfo.ALLIANCE_LETTER_REMOVE);
+            UsefullPacketsSend.AddToQueueAllianceInfoUpdate(targetAlliance.Guid, new Dictionary<string, object> { { "value", (letter.Guid, letter.Purpose) } }, EnumPlayerRelatedInfo.ALLIANCE_LETTER_REMOVE);
+            UsefullPacketsSend.AddToQueueAllianceInfoUpdate(ourAlliance.Guid, new Dictionary<string, object> { { "value", (letter.Guid, letter.Purpose) } }, EnumPlayerRelatedInfo.ALLIANCE_LETTER_REMOVE);
             return TextCommandResult.Success();
         }
     }

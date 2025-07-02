@@ -1191,6 +1191,7 @@ namespace claims.src.database
                 claims.dataStorage.GetAllianceByGUID(str, out Alliance alliance1);
                 alliance.Hostiles.Add(alliance1);
             }
+            //alliance.Hostiles = new List<Alliance>();
             foreach (string str in it["comrades"].ToString().Split(';'))
             {
                 if (str.Length == 0)

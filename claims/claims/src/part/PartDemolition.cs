@@ -175,6 +175,8 @@ namespace claims.src.part
             }
             conflict.First.RunningConflicts.Remove(conflict);
             conflict.Second.RunningConflicts.Remove(conflict);
+            conflict.First.Hostiles.Remove(conflict.Second);
+            conflict.Second.Hostiles.Remove(conflict.First);
             conflict.First.saveToDatabase();
             conflict.Second.saveToDatabase();
             claims.getModInstance().getDatabaseHandler().deleteFromDatabaseConflict(conflict);

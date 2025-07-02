@@ -1,6 +1,7 @@
 ﻿using claims.src.gui.playerGui.structures.cellElements;
 using claims.src.part;
 using claims.src.part.structure;
+using claims.src.part.structure.conflict;
 using claims.src.rights;
 using Newtonsoft.Json;
 using System;
@@ -493,14 +494,15 @@ namespace claims.src.gui.playerGui.structures
 
             if (valueDict.TryGetValue(EnumPlayerRelatedInfo.ALLIANCE_LETTER_REMOVE, out string conflictLetterRemove))
             {
-                HashSet<string> pc = JsonConvert.DeserializeObject<HashSet<string>>(conflictLetterRemove);
+                HashSet<Tuple<string, LetterPurpose>> pc = JsonConvert.DeserializeObject<HashSet<Tuple<string, LetterPurpose>>>(conflictLetterRemove);
                 foreach (var it in pc)
                 {
                     foreach (var it_current in this.CityInfo.ClientConflictLetterCellElements.ToArray())
                     {
-                        if (it_current.Guid.ToString().Equals(it))
+                        if (it_current.Guid.ToString().Equals(it.Item1) && it_current.Purpose.Equals(it.Item2))
                         {
                             this.CityInfo.ClientConflictLetterCellElements.Remove(it_current);
+                            break;
                         }
                     }
                 }
@@ -533,6 +535,7 @@ namespace claims.src.gui.playerGui.structures
                         if (it_current.Guid.ToString().Equals(it))
                         {
                             this.CityInfo.ClientConflictCellElements.Remove(it_current);
+                            break;
                         }
                     }
                 }

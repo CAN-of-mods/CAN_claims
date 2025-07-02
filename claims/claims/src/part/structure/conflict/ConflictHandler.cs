@@ -23,7 +23,8 @@ namespace claims.src.part.structure.conflict
         {
             foreach (var it in conflictLettersList)
             {
-                if (it.From.Equals(from) && it.To.Equals(to) && it.Purpose.Equals(purpose))
+                if ((it.From.Equals(from) && it.To.Equals(to) && it.Purpose.Equals(purpose)) ||
+                    (it.From.Equals(to) && it.To.Equals(from) && it.Purpose.Equals(purpose)))
                 {
                     conflictLettersList.Remove(it);
                     return true;

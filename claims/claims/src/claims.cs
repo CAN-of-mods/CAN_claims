@@ -34,6 +34,7 @@ using claims.src.auxialiry.claimAreas;
 using System;
 using claims.src.beb;
 using claims.src.bb;
+using claims.src.part.structure.conflict;
 
 namespace claims.src
 {
@@ -267,7 +268,7 @@ namespace claims.src
             serverPlayerMovementListener = null;
             config = null;
             economyHandler = null;
-
+            ConflictHandler.clearAll();
         }
 
         public static void ShutDownClient()
