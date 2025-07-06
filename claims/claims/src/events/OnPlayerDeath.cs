@@ -28,7 +28,7 @@ namespace claims.src.events
                     {
                         cell.AddPlayer(playerInfo);
                         byPlayer.SetSpawnPosition(new PlayerSpawnPos(cell.spawnPostion.X, cell.spawnPostion.Y, cell.spawnPostion.Z));
-                        UsefullPacketsSend.AddToQueueCityInfoUpdate(playerInfo.PrisonedIn.getCity().Guid, new Dictionary<string, object> { { "value", new PrisonCellElement(cell.spawnPostion, cell.playerNames) } },
+                        UsefullPacketsSend.AddToQueueCityInfoUpdate(playerInfo.PrisonedIn.City.Guid, new Dictionary<string, object> { { "value", new PrisonCellElement(cell.spawnPostion, cell.playerNames) } },
                             EnumPlayerRelatedInfo.CITY_CELL_PRISON_UPDATE);
                     }
                 }

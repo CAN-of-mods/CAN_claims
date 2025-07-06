@@ -54,6 +54,7 @@ namespace claims.src.messages
                     ((IServerPlayer)player).SendMessage(claims.dataStorage.getModChatGroup().Uid, msg, EnumChatType.Notification);
                 else
                     ((IServerPlayer)player).SendMessage(GlobalConstants.GeneralChatGroup, msg, EnumChatType.Notification);
+                
             }
         }
         public static void sendLocalMsg(Vec3d pos, string msg)
@@ -88,6 +89,18 @@ namespace claims.src.messages
         public static void sendErrorMsg(string msg)
         {
             claims.sapi.Logger.Error(msg);
+        }
+        public static void SendDiscoveryToAlliance(Alliance alliance, string discoveryCode, string text, object[] args)
+        {
+            if (alliance == null)
+            {
+                return;
+            }
+            foreach (IPlayer player in alliance.getOnlineCitizens())
+            {
+                claims.sapi.SendIngameDiscovery(player as IServerPlayer, discoveryCode, text, args);
+                claims.sapi.World.PlaySoundAt(new AssetLocation("game:sounds/effect/deepbell"), player.Entity, null, false, 5f, 0.5f);
+            }
         }
     }
 }

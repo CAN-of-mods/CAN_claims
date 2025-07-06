@@ -120,6 +120,10 @@
     "gui_conflict_cell_started_line": "Started: {0}",
     "gui_send_peace_offer": "Send peace offer to {0} alliance",
     "conflict_already_exists": "Conflict already exists",
+    "leave_alliance_before_that": "Leave alliance before that.",
+    "cannot_leave_during_battle": "Cannot leave alliance during a battle.",
+    "cannot_delete_alliance_during_battle": "Cannot delete alliance during a battle.",
+    "cannot_kick_from_alliance_during_battle": "Cannot kick from alliance during a battle.",
     //INVITATION
     "player_disagreed_with_invitation_to_city": "Player {0} dissagreed with invitation to city {1}.",
     "player_already_invited_to_city": "Player is already invited to the city.",
@@ -401,6 +405,9 @@
     "cantempleblock-gravestone-3": "Gravestone",
     "cantempleblock-gravestone-4": "Gravestone",
     "cantempleblock-gravestone-5": "Gravestone",
-    "block-flagpole": "Flagpole"
+    "block-flagpole": "Flagpole",
+    //DISCOVERY
+    "ingamediscovery-battle-start": "Battle started with {0}",
+    "ingamediscovery-battle-end": "Battle ended with {0}"
 
 }

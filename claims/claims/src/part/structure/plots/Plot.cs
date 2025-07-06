@@ -224,12 +224,12 @@ namespace claims.src.part.structure
                 }
 
                 claims.dataStorage.removePrison(Prison.Guid);
-                if (Prison.getCity() != null)
+                if (Prison.City != null)
                 {
-                    Prison.getCity().getPrisons().Remove(Prison);
-                    Prison.getCity().saveToDatabase();
+                    Prison.City.getPrisons().Remove(Prison);
+                    Prison.City.saveToDatabase();
                 }
-                Prison.getPlot().Type = PlotType.DEFAULT;
+                Prison.Plot.Type = PlotType.DEFAULT;
                 claims.getModInstance().getDatabaseHandler().deleteFromDatabasePrison(Prison);
                 Prison = null;
                 this.saveToDatabase();                

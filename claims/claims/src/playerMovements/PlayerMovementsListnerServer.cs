@@ -190,12 +190,12 @@ namespace claims.src
                 if (playerInfo.isPrisoned())
                 {
                     MessageHandler.sendMsgInCity(
-                    playerInfo.PrisonedIn.getCity(),
+                    playerInfo.PrisonedIn.City,
                     Lang.Get("claims:player_escaped_prison", playerInfo.GetPartName()));
                     MessageHandler.sendMsgToPlayerInfo(playerInfo, Lang.Get("claims:you_escaped_prison"));
                     if(playerInfo.PrisonedIn.TryGetCellInWhichPlayer(playerInfo, out var cell))
                     {
-                        UsefullPacketsSend.AddToQueueCityInfoUpdate(playerInfo.PrisonedIn.getCity().Guid, new Dictionary<string, object> { { "value", new PrisonCellElement(cell.spawnPostion, cell.playerNames) } },
+                        UsefullPacketsSend.AddToQueueCityInfoUpdate(playerInfo.PrisonedIn.City.Guid, new Dictionary<string, object> { { "value", new PrisonCellElement(cell.spawnPostion, cell.playerNames) } },
                             EnumPlayerRelatedInfo.CITY_CELL_PRISON_UPDATE);
                     }
                     playerInfo.PrisonedIn = null;

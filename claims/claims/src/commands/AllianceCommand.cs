@@ -96,6 +96,15 @@ namespace claims.src.commands
             {
                 return TextCommandResult.Error(Lang.Get("claims:alliance_not_a_leader"));
             }
+
+            foreach (var it in alliance.RunningConflicts)
+            {
+                if (it.ActiveWarTime)
+                {
+                    return TextCommandResult.Success(Lang.Get("claims:cannot_delete_alliance_during_battle"));
+                }
+            }
+
             PartDemolition.DemolishAlliance(alliance);
             MessageHandler.sendGlobalMsg(Lang.Get("claims:alliance_was_deleted", alliance.GetPartName()));
             return TextCommandResult.Success();
@@ -121,6 +130,15 @@ namespace claims.src.commands
             {
                 return TextCommandResult.Error(Lang.Get("claims:must_be_a_city_mayor"));
             }
+
+            foreach(var it in alliance.RunningConflicts)
+            {
+                if(it.ActiveWarTime)
+                {
+                    return TextCommandResult.Success(Lang.Get("claims:cannot_leave_during_battle"));
+                }
+            }
+            
 
             alliance.Cities.Remove(city);
             //delete alliance titles
@@ -194,6 +212,14 @@ namespace claims.src.commands
             if (!alliance.Cities.Contains(city))
             {
                 return TextCommandResult.Error(Lang.Get("claims:city_not_in_alliance"));
+            }
+
+            foreach (var it in alliance.RunningConflicts)
+            {
+                if (it.ActiveWarTime)
+                {
+                    return TextCommandResult.Success(Lang.Get("claims:cannot_kick_from_alliance_during_battle"));
+                }
             }
 
             alliance.Cities.Remove(city);

@@ -452,7 +452,7 @@ namespace claims.src.harmony
                 return true;
             }
             claims.dataStorage.getPlot(PlotPosition.fromEntityyPos(player.Entity.ServerPos), out Plot tmpPlot);
-            if (playerInfo.isPrisoned() && playerInfo.PrisonedIn.getPlot().Equals(tmpPlot))
+            if (playerInfo.isPrisoned() && playerInfo.PrisonedIn.Plot.Equals(tmpPlot))
             {
                 if (Settings.blockedCommandsForPrison.Contains(commandName) || (args.Length > 0 && Settings.blockedCommandsForPrison.Contains(args.Split(' ')[0])))
                 {

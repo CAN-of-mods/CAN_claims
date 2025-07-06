@@ -985,10 +985,10 @@ namespace claims.src.database
             Dictionary<string, object> tmpDict = new Dictionary<string, object> {
                 { "@name", prison.GetPartName() },
                 { "@guid", prison.Guid },
-                { "@x", prison.getPlot().getPos().X },
-                { "@z", prison.getPlot().getPos().Y },
+                { "@x", prison.Plot.getPos().X },
+                { "@z", prison.Plot.getPos().Y },
                 { "@prisonCells", prison.SerializeCells() },
-                { "@city", prison.getCity().Guid },
+                { "@city", prison.City.Guid },
             };
 
             queryQueue.Enqueue(new QuerryInfo("PRISONS", update ? QuerryType.UPDATE : QuerryType.INSERT, tmpDict));
@@ -1010,9 +1010,9 @@ namespace claims.src.database
             claims.dataStorage.getPrison(it["guid"].ToString(), out Prison prison);
             prison.DeserializeCells(it["prisonCells"].ToString());
             claims.dataStorage.getCityByGUID(it["city"].ToString(), out City city);
-            prison.setCity(city);
+            prison.City = city;
             claims.dataStorage.getPlot(new PlotPosition(int.Parse(it["x"].ToString()), int.Parse(it["z"].ToString())), out Plot plot);
-            prison.setPlot(plot);
+            prison.Plot = plot;
             return true;
         }
 

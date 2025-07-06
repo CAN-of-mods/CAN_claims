@@ -303,7 +303,6 @@ namespace claims.src.gui.playerGui.GuiElements
                         claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientConflictLetterCellElements.Remove(cell);
                         claims.CANCityGui.BuildMainWindow();
                     }
-                    //OnMouseDownOnCellMiddle?.Invoke(elementIndex);
                     args.Handled = true;
                 }
             }
@@ -349,7 +348,6 @@ namespace claims.src.gui.playerGui.GuiElements
             }
             else
             {
-                //OnMouseDownOnCellLeft?.Invoke(elementIndex);
                 args.Handled = true;
             }
         }

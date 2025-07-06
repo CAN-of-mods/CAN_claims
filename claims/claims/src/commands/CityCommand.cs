@@ -181,6 +181,11 @@ namespace claims.src.commands
                 return TextCommandResult.Error("claims:you_dont_have_right_for_that_command");
             }
 
+            if(city.Alliance == null)
+            {
+                return TextCommandResult.Error("claims:leave_alliance_before_that");
+            }
+          
             AgreementHandler.addNewAgreementOrReplace(new Agreement(
                 new Thread(new ThreadStart(() =>
                 {
@@ -1212,7 +1217,7 @@ namespace claims.src.commands
                 {
                     if(cell_it.getSpawnPosition().Equals(searchPoint))
                     { 
-                        savedPlot = it.getPlot();
+                        savedPlot = it.Plot;
                         it.removePrisonCell(cell_it);
                         found = true;
                         break;

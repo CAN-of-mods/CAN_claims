@@ -112,6 +112,7 @@ namespace claims.src.events
                         it.invMsg, it.Guid));
                 }
             }
+            ReculculateNextBattleTimes();
             claims.sapi.Event.Timer(UsefullPacketsSend.CheckCitisUpdatedAndSend, claims.config.SEND_CITY_UPDATES_EVERY_N_SECONDS);
             claims.sapi.Event.Timer(CheckForWarToStart, claims.config.CHECK_FOR_WAR_TO_START_EVERY_N_SECONDS);
             claims.sapi.Event.RegisterCallback((float dt) =>
@@ -161,7 +162,7 @@ namespace claims.src.events
                 {
                     //if second to conflict date start is lower than configured or negative
                     var secondsToStart = conflict.NextBattleDateStart - DateTime.Now;
-                    if(secondsToStart.Seconds < claims.config.CHECK_FOR_WAR_TO_START_CALLBACK_EVERY_N_SECONDS && conflict.NextBattleDateEnd > DateTime.Now)
+                    if(secondsToStart.TotalSeconds < claims.config.CHECK_FOR_WAR_TO_START_CALLBACK_EVERY_N_SECONDS && conflict.NextBattleDateEnd > DateTime.Now)
                     {
                         if(!claims.dataStorage.WarsTimes.ContainsKey(conflict.Guid) && !startWarCallbacks.TryGetValue(conflict.Guid, out var _))
                         {
@@ -177,9 +178,11 @@ namespace claims.src.events
                                     }
                                     RightsHandler.ClearPlayerCachesAndUpdatePlotSavedRightsForClients(conflict);
                                     MessageHandler.SendMsgInAlliance(conflict.First, Lang.Get("claims:battle_started_with", conflict.Second.GetPartName()));
-                                    MessageHandler.SendMsgInAlliance(conflict.Second, Lang.Get("claims:battle_started_with", conflict.First.GetPartName()));
+                                    MessageHandler.SendMsgInAlliance(conflict.Second, Lang.Get("claims:battle_started_with", conflict.First.GetPartName()));                                  
+                                    MessageHandler.SendDiscoveryToAlliance(conflict.First, "ingamediscovery-battle-start", Lang.Get("claims:ingamediscovery-battle-start", conflict.Second.GetPartName()), new object[] { });
+                                    MessageHandler.SendDiscoveryToAlliance(conflict.Second, "ingamediscovery-battle-start", Lang.Get("claims:ingamediscovery-battle-start", conflict.First.GetPartName()), new object[] { });
                                 }
-                            }, (secondsToStart.Seconds < 0 ? 2 : secondsToStart.Seconds) * 1000);
+                            }, (int)(secondsToStart.TotalSeconds < 0 ? 2 : secondsToStart.TotalSeconds) * 1000);
                             startWarCallbacks[conflict.Guid] = savedLong;
                         }
                     }
@@ -211,8 +214,23 @@ namespace claims.src.events
                             RightsHandler.ClearPlayerCachesAndUpdatePlotSavedRightsForClients(conflict);
                             MessageHandler.SendMsgInAlliance(conflict.First, Lang.Get("claims:battle_ended_with", conflict.Second.GetPartName()));
                             MessageHandler.SendMsgInAlliance(conflict.Second, Lang.Get("claims:battle_ended_with", conflict.First.GetPartName()));
+                            MessageHandler.SendDiscoveryToAlliance(conflict.First, "ingamediscovery-battle-end", Lang.Get("claims:ingamediscovery-battle-end", conflict.Second.GetPartName()), new object[] { });
+                            MessageHandler.SendDiscoveryToAlliance(conflict.Second, "ingamediscovery-battle-end", Lang.Get("claims:ingamediscovery-battle-end", conflict.First.GetPartName()), new object[] { });
                         }
                     }, ((wartime.Value.BattleDateEnd - DateTime.Now).Seconds < 0 ? 2 : (wartime.Value.BattleDateEnd - DateTime.Now).Seconds) * 1000);
+                }
+            }
+        }
+        public static void ReculculateNextBattleTimes()
+        {
+            foreach (var conflict in claims.dataStorage.conflicts)
+            {
+                if (conflict.State == ConflictState.ACTIVE && conflict.WarRanges.Count > 0)
+                {
+                    if(conflict.NextBattleDateEnd < DateTime.Now)
+                    {
+                        conflict.CalculateNextBattleDate();
+                    }
                 }
             }
         }

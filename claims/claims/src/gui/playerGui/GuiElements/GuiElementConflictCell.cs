@@ -125,20 +125,6 @@ namespace claims.src.gui.playerGui.GuiElements
             ImageSurface imageSurface2 = new ImageSurface(Format.Argb32, Bounds.OuterWidthInt, Bounds.OuterHeightInt);
             Context context2 = new Context(imageSurface2);
             Bounds.CalcWorldBounds();
-            /*if (this.cell.Purpose == part.structure.conflict.LetterPurpose.END_CONFLICT)
-            {
-                capi.Gui.Icons.DrawIcon(context2, "claims:peace-dove", (int)(num7 - GuiElement.scaled(unscaledRightBoxWidth) - GuiElement.scaled(10.0)),
-                    (int)(num8 + GuiElement.scaled(15.0)),
-                    (int)GuiElement.scaled(64),
-                    (int)GuiElement.scaled(64), new double[] { 0, 153, 0, 255 });
-            }
-            else
-            {
-                capi.Gui.Icons.DrawIcon(context2, "claims:sword-brandish", (int)(num7 - GuiElement.scaled(unscaledRightBoxWidth) - GuiElement.scaled(10.0)),
-                    (int)(num8 + GuiElement.scaled(15.0)),
-                    (int)GuiElement.scaled(64),
-                    (int)GuiElement.scaled(64), new double[] { 0, 153, 0, 255 });
-            }*/
             generateTexture(imageSurface2, ref normalTexture);
             context2.Dispose();
             imageSurface2.Dispose();
@@ -266,22 +252,6 @@ namespace claims.src.gui.playerGui.GuiElements
             if (vec2d.X > Bounds.InnerWidth - GuiElement.scaled(GuiElementMainMenuCell.unscaledRightBoxWidth) * 2 &&
                     vec2d.X < Bounds.InnerWidth - GuiElement.scaled(GuiElementMainMenuCell.unscaledRightBoxWidth))
             {
-                ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
-                if (claims.clientDataStorage.clientPlayerInfo.AllianceInfo?.Guid?.Equals(this.cell.Guid) ?? false)
-                {
-                    return;
-                }
-                else
-                {
-                   // clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/a conflict accept " + this.cell.From, EnumChatType.Macro, "");
-                }
-                /*var cell = claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientToAllianceInvitations.FirstOrDefault(c => c.AllianceName == this.cell.From);
-                if (cell != null)
-                {
-                    claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientToAllianceInvitations.Remove(cell);
-                    claims.CANCityGui.BuildMainWindow();
-                }*/
-                //OnMouseDownOnCellMiddle?.Invoke(elementIndex);
                 args.Handled = true;
             }
             else if (vec2d.X > Bounds.InnerWidth - GuiElement.scaled(GuiElementMainMenuCell.unscaledRightBoxWidth))
@@ -294,7 +264,6 @@ namespace claims.src.gui.playerGui.GuiElements
             }
             else
             {
-                //OnMouseDownOnCellLeft?.Invoke(elementIndex);
                 args.Handled = true;
                 claims.CANCityGui.selectedString = cell.Guid;
                 claims.CANCityGui.SelectedTab = CANClaimsGui.EnumSelectedTab.ConflictInfoPage;

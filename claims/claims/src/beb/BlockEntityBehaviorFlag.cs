@@ -33,7 +33,6 @@ namespace claims.src.beb
 
         private long? updateRef;
         private long? captureRef;
-        private long? computeRef;
         public string AllianceGuid { get; set; }
         public string CityGuid { get; set; }
         public string ConflictGuid { get; set; }
@@ -66,7 +65,6 @@ namespace claims.src.beb
             base.OnBlockBroken(byPlayer);
             this.renderer?.Dispose();
             if (this.updateRef.HasValue) this.Api.Event.UnregisterGameTickListener(this.updateRef.Value);
-            if (this.computeRef.HasValue) this.Api.Event.UnregisterGameTickListener(this.computeRef.Value);
             if (this.captureRef.HasValue) this.Api.Event.UnregisterGameTickListener(this.captureRef.Value);
             if (this.Banner != null) this.Api.World.SpawnItemEntity(this.Banner, this.Pos.ToVec3d());
         }
@@ -75,7 +73,6 @@ namespace claims.src.beb
             base.OnBlockRemoved();
             this.renderer?.Dispose();
             if (this.updateRef.HasValue) this.Api.Event.UnregisterGameTickListener(this.updateRef.Value);
-            if (this.computeRef.HasValue) this.Api.Event.UnregisterGameTickListener(this.computeRef.Value);
             if (this.captureRef.HasValue) this.Api.Event.UnregisterGameTickListener(this.captureRef.Value);
         }
         public override void OnBlockUnloaded()
@@ -83,7 +80,6 @@ namespace claims.src.beb
             base.OnBlockUnloaded();
             this.renderer?.Dispose();
             if (this.updateRef.HasValue) this.Api.Event.UnregisterGameTickListener(this.updateRef.Value);
-            if (this.computeRef.HasValue) this.Api.Event.UnregisterGameTickListener(this.computeRef.Value);
             if (this.captureRef.HasValue) this.Api.Event.UnregisterGameTickListener(this.captureRef.Value);
         }
         public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc)
@@ -143,7 +139,6 @@ namespace claims.src.beb
                             this.Api.World.BlockAccessor.BreakBlock(this.Pos, null);
                         }, 1000);
                         return;
-                        return;
                     }
                     else
                     {
@@ -177,10 +172,6 @@ namespace claims.src.beb
                         }, 1000);
                         return;
                     }
-                    TimesToBreak = 0;
-                    //ModSystemBlockReinforcement bre = this.Api.ModLoader.GetModSystem<ModSystemBlockReinforcement>(true);
-                    //bre.ClearReinforcement(this.Pos);
-                    warTime.PlotAttacks.Remove(PlotPosition.fromBlockPos(this.Pos));
                 }
             }
         }

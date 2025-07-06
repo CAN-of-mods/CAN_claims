@@ -260,25 +260,7 @@ namespace claims.src.gui.playerGui.GuiElements
             }
 
             api.Render.Render2DTexturePremultipliedAlpha(modcellTexture.TextureId, (int)Bounds.absX, (int)Bounds.absY, Bounds.OuterWidthInt, Bounds.OuterHeightInt);
-            int mouseX = api.Input.MouseX;
-            int mouseY = api.Input.MouseY;
-            Vec2d vec2d = Bounds.PositionInside(mouseX, mouseY);
-            if (vec2d != null)
-            {
-                /* if (this.button.Bounds.PointInside(mouseX, mouseY))
-                 {
-                     this.button.SetActive(true);
-                 }
-                 else
-                 {
-                     this.button.SetActive(false);
-                 }*/
 
-            }
-            else
-            {
-                //this.button.SetActive(false);
-            }
             if (buttons != null)
             {
                 foreach (var it in buttons)

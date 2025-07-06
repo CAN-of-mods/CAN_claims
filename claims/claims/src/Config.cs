@@ -163,6 +163,7 @@ namespace claims.src
         public int[] PLOT_COLORS;
 
         public int SEND_CITY_UPDATES_EVERY_N_SECONDS = 60;
+        public int CHECK_FOR_PACKETS_TO_SEND_EVERY_N_SECONDS = 10;
 
         //INNER CLAIM
         public int MAX_NUMBER_INNER_CLAIM_PER_TAVERN = 3;
@@ -185,6 +186,7 @@ namespace claims.src
         public OrderedDictionary<double, string> COINS_VALUES_TO_CODE = new OrderedDictionary<double, string> { };
         public OrderedDictionary<int, double> ID_TO_COINS_VALUES = new OrderedDictionary<int, double>();
 
+        public bool VERBOSE_LOGGING = true;
         public static void LoadConfig(ICoreAPI api)
         {
             try

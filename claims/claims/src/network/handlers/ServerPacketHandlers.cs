@@ -223,17 +223,15 @@ namespace claims.src.network.handlers
                         usedAllianceRanges.Remove(usedAllianceRanges.Last());
                     }
                     
-                    if (getFirst)
+                    foreach (var it in usedAllianceRanges)
                     {
-                        conflict.WarRanges = usedAllianceRanges;
+                        conflict.WarRanges.Add(it);
                     }
-                    else
-                    {
-                        conflict.WarRanges = usedAllianceRanges;
-                    }
+     
                     conflict.CalculateNextBattleDate();
                     conflict.State = ConflictState.ACTIVE;
                 }
+                ModConfigReady.CheckForWarToStart();
                 conflict.saveToDatabase();
                 ccce.FirstWarRanges = conflict.FirstWarRanges;
                 ccce.SecondWarRanges = conflict.SecondWarRanges;

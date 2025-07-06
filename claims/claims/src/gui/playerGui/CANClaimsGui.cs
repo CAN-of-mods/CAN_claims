@@ -2271,6 +2271,11 @@ namespace claims.src.gui.playerGui
         }
         public void BuildPlotColorSelectorPage(ElementBounds currentBounds, ElementBounds lineBounds)
         {
+            if (claims.clientDataStorage.clientPlayerInfo.CityInfo == null)
+            {
+                SingleComposer.Compose();
+                return;
+            }
             currentBounds = currentBounds.BelowCopy(0, 40);
             var colorSelectTabFont = CairoFont.ButtonText().WithFontSize(20).WithOrientation(EnumTextOrientation.Left);
             TextExtents textExtents = colorSelectTabFont.GetTextExtents("Plots color: ");
@@ -2321,6 +2326,11 @@ namespace claims.src.gui.playerGui
             currentBounds.WithAlignment(EnumDialogArea.LeftTop);
 
             var clientInfo = claims.clientDataStorage.clientPlayerInfo;
+            if (clientInfo.CityInfo == null)
+            {
+                SingleComposer.Compose();
+                return;
+            }
             SingleComposer.AddStaticText(Lang.Get("claims:gui-criminals", clientInfo.CityInfo.Criminals.Count),
                         criminalsTabFont,
                         currentBounds, "criminals");
@@ -2403,6 +2413,11 @@ namespace claims.src.gui.playerGui
         }
         public void BuildSummonPage(ElementBounds currentBounds, ElementBounds lineBounds)
         {
+            if (claims.clientDataStorage.clientPlayerInfo.CityInfo == null)
+            {
+                SingleComposer.Compose();
+                return;
+            }
             var criminalsTabFont = CairoFont.ButtonText().WithFontSize(20).WithOrientation(EnumTextOrientation.Left);
             currentBounds.fixedWidth /= 2;
             currentBounds.WithAlignment(EnumDialogArea.LeftTop);
@@ -2429,7 +2444,11 @@ namespace claims.src.gui.playerGui
             SingleComposer.AddStaticText("Summon points",
                 CairoFont.WhiteMediumText().WithOrientation(EnumTextOrientation.Center),
                 invitationTextBounds);
-
+            if (clientInfo.CityInfo == null)
+            {
+                SingleComposer.Compose();
+                return;
+            }
             this.clippingRansksBounds = insetBounds.ForkContainingChild(3.0, 3.0, 3.0, 3.0);
 
             SingleComposer.BeginChildElements(invitationTextBounds)
@@ -2462,6 +2481,11 @@ namespace claims.src.gui.playerGui
         }
         public void BuildPlotsGroupPage(ElementBounds currentBounds, ElementBounds lineBounds)
         {
+            if (claims.clientDataStorage.clientPlayerInfo.CityInfo == null)
+            {
+                SingleComposer.Compose();
+                return;
+            }
             var criminalsTabFont = CairoFont.ButtonText().WithFontSize(20).WithOrientation(EnumTextOrientation.Left);
             currentBounds.fixedWidth /= 2;
             currentBounds.WithAlignment(EnumDialogArea.LeftTop);
@@ -2564,6 +2588,11 @@ namespace claims.src.gui.playerGui
         }
         public void BuildPlotsGroupInfoPage(ElementBounds currentBounds, ElementBounds lineBounds)
         {
+            if (claims.clientDataStorage.clientPlayerInfo.CityInfo == null)
+            {
+                SingleComposer.Compose();
+                return;
+            }
             PlotsGroupCellElement cell = claims.clientDataStorage.clientPlayerInfo.CityInfo.PlotsGroupCells.FirstOrDefault(gr => gr.Guid.Equals(this.selectedString), null);
             if (cell == null)
             {
@@ -3379,32 +3408,41 @@ namespace claims.src.gui.playerGui
                     int? savedStartIndex = null;
                     DayOfWeek? startDay = null;
                     DayOfWeek? savedStartDay = null;
+                    bool? lastCellState = null;
+                    bool firstGo = true;
                     //try find start of range
-                    foreach (var it in claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientWarRangeCellElements)
+
+                    for (int day = 0; day < 8; day++)
                     {
-                        for (int i = 0; i < 47; i++)
+                        var currDay = claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientWarRangeCellElements[day % 7];
+                        var warRange = currDay.WarRangeArray;
+                        for (int i = 0; i < 48; i++)
                         {
-                            if(!it.WarRangeArray[i] && it.WarRangeArray[i + 1])
+                            //find start of the range
+                            if (warRange[i] && lastCellState.HasValue && !lastCellState.Value)
                             {
-                                startIndex = i + 1;
-                                savedStartIndex = i + 1;
-                                startDay = it.DayOfWeek;
-                                savedStartDay = it.DayOfWeek;
+                                startIndex = i;
+                                savedStartIndex = i;
+                                startDay = (DayOfWeek)(day % 7);
+                                savedStartDay = (DayOfWeek)(day % 7);
                                 goto foundStart;
                             }
+                            lastCellState = warRange[i];
                         }
                     }
+
                     foundStart:
                     if(startIndex == null)
                     {
                         startIndex = 0;
                         startDay = DayOfWeek.Sunday;
                     }
+                    bool firstStart = true;
                     for (int day = 0; day < 8; day++) 
                     {
                         ClientWarRangeCellElement it = claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientWarRangeCellElements[((int)startDay + day) % 7];
 
-                        for (int i = startIndex ?? 0; i < 48; i++)
+                        for (int i = (startIndex.HasValue && firstStart) ? startIndex.Value : 0; i < 48; i++)
                         {
                             if(it.DayOfWeek == savedStartDay)
                             {
@@ -3454,6 +3492,7 @@ namespace claims.src.gui.playerGui
                                     //startDay = null;
                                 }
                             }
+                            firstStart = false;
                         } }
 
                     searchedAll:
@@ -3475,6 +3514,19 @@ namespace claims.src.gui.playerGui
                     });
                 }
             }, currentBounds);
+            /*SingleComposer.AddIconButton("line", (bool t) =>
+            {
+                for (int day = 0; day < 7; day++)
+                {
+                    ClientWarRangeCellElement it = claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientWarRangeCellElements[((int)day) % 7];
+                    for(int i = 0; i < 48; i++)
+                    {
+                        it.WarRangeArray[i] = false;
+                    }
+                    this.BuildMainWindow();
+                }
+                        
+            }, currentBounds.RightCopy());*/
             SingleComposer.AddHoverText("Send updated times.", CairoFont.WhiteDetailText(), 60, currentBounds);
 
             SingleComposer.Compose();
@@ -3500,8 +3552,13 @@ namespace claims.src.gui.playerGui
             {
                 int slotCount = (int)(range.Duration.TotalMinutes / claims.config.MIN_RANGE_CELL_DURATION_MINUTES);
                 int startSlot = (int)(range.StartTime.TotalMinutes / claims.config.MIN_RANGE_CELL_DURATION_MINUTES);
-                for(int i = (int)range.StartDay; i < (int)range.EndDay + 1; i++)
+
+                for(int i = (int)range.StartDay, k = 0; ;i++, k++)
                 {
+                    if(k > 6)
+                    {
+                        break;
+                    }
                     int dayIndex = i % 7;
                     ClientWarRangeCellElement cell = claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientWarRangeCellElements.FirstOrDefault(c => c.DayOfWeek == (DayOfWeek)dayIndex);
                     if (cell == null)

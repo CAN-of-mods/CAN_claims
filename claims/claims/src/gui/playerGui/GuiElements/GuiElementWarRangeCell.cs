@@ -205,59 +205,7 @@ namespace claims.src.gui.playerGui.GuiElements
             {
                 it.OnMouseUpOnElement(api, args);
             }
-            return;
-           
-            Vec2d vec2d = Bounds.PositionInside(mouseX, mouseY);
-            api.Gui.PlaySound("menubutton_press");
-            if (vec2d.X > Bounds.InnerWidth - GuiElement.scaled(GuiElementMainMenuCell.unscaledRightBoxWidth) * 2 &&
-                    vec2d.X < Bounds.InnerWidth - GuiElement.scaled(GuiElementMainMenuCell.unscaledRightBoxWidth))
-            {
-                ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
-                /*if (claims.clientDataStorage.clientPlayerInfo.AllianceInfo?.Guid?.Equals(this.cell.Guid) ?? false)
-                {
-                    return;
-                }
-                else
-                {
-                    // clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/a conflict accept " + this.cell.From, EnumChatType.Macro, "");
-                }*/
-                /*var cell = claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientToAllianceInvitations.FirstOrDefault(c => c.AllianceName == this.cell.From);
-                if (cell != null)
-                {
-                    claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientToAllianceInvitations.Remove(cell);
-                    claims.CANCityGui.BuildMainWindow();
-                }*/
-                //OnMouseDownOnCellMiddle?.Invoke(elementIndex);
-                args.Handled = true;
-            }
-            else if (vec2d.X > Bounds.InnerWidth - GuiElement.scaled(GuiElementMainMenuCell.unscaledRightBoxWidth))
-            {
-               /* ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
-                if (claims.clientDataStorage.clientPlayerInfo.AllianceInfo?.Guid?.Equals(this.cell.Guid) ?? false)
-                {
-                    // clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/a conflict deny " + this.cell.From, EnumChatType.Macro, "");
-                }
-                else
-                {
-                    // clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/a conflict revoke " + this.cell.To, EnumChatType.Macro, "");
-                }
-                var cell = claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientConflictLetterCellElements.FirstOrDefault(c => c.Guid == this.cell.Guid);
-                if (cell != null)
-                {
-                    claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientConflictLetterCellElements.Remove(cell);
-                    claims.CANCityGui.BuildMainWindow();
-                }*/
-                args.Handled = true;
-            }
-            else
-            {
-                //OnMouseDownOnCellLeft?.Invoke(elementIndex);
-                args.Handled = true;
-               /* claims.CANCityGui.selectedString = cell.Guid;
-                claims.CANCityGui.SelectedTab = CANClaimsGui.EnumSelectedTab.ConflictInfoPage;
-                claims.CANCityGui.BuildMainWindow();*/
-            }
-            
+            return;                    
         }
 
         public void OnMouseMoveOnElement(MouseEvent args, int elementIndex)

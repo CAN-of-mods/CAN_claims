@@ -159,14 +159,19 @@ namespace claims.src
                     }
                 }
             }
-            Alliance alliance = playerInfo.Alliance;
-            if(alliance != null)
+            //TODO
+            //REMOVE ALLIANCE ON CITY REMOVE
+            if (playerInfo.hasCity())
             {
-                if (alliance.IsLeader(playerInfo))
+                Alliance alliance = playerInfo.Alliance;
+                if (alliance != null)
                 {
-                    if (PlayerPermissionsByGroups.TryGetValue("LEADER", out HashSet<EnumPlayerPermissions> leaderPerms))
+                    if (alliance.IsLeader(playerInfo))
                     {
-                        playerInfo.PlayerPermissionsHandler.AddPermissions(leaderPerms);
+                        if (PlayerPermissionsByGroups.TryGetValue("LEADER", out HashSet<EnumPlayerPermissions> leaderPerms))
+                        {
+                            playerInfo.PlayerPermissionsHandler.AddPermissions(leaderPerms);
+                        }
                     }
                 }
             }
