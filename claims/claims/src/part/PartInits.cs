@@ -101,8 +101,10 @@ namespace claims.src.part
 
                 }, player as IServerPlayer);
             }
-           
-            claims.economyHandler.newAccount(city.MoneyAccountName, new Dictionary<string, object> { { "lastknownname", city.GetPartName() } });
+            if (caneconomy.caneconomy.config.SELECTED_ECONOMY_HANDLER == "VIRTUAL_MONEY")
+            {
+                claims.economyHandler.newAccount(city.MoneyAccountName, new Dictionary<string, object> { { "lastknownname", city.GetPartName() } });
+            }
             return;
         }      
         public static void initPrison(Plot plot, City city, IServerPlayer creator)
@@ -125,14 +127,52 @@ namespace claims.src.part
             claims.dataStorage.addPrison(plot.Prison);
             plot.Prison.addPrisonCell(new PrisonCellInfo(new Vec3i((int)creator.Entity.ServerPos.X, (int)creator.Entity.ServerPos.Y, (int)creator.Entity.ServerPos.Z)));
             plot.getCity().getPrisons().Add(plot.Prison);
-            plot.Prison.setPlot(plot);
-            plot.Prison.setCity(plot.getCity());
+            plot.Prison.Plot = plot;
+            plot.Prison.City = plot.getCity();
             PlotDescPrison pdp = new PlotDescPrison(plot.Prison.Guid);
             plot.PlotDesc = pdp;
 
             plot.getCity().saveToDatabase();
             plot.saveToDatabase();
             plot.Prison.saveToDatabase();
+        }
+        public static void InitNewAlliance(PlayerInfo creator, string allianceName)
+        {
+            Guid guid;
+            while (true)
+            {
+                guid = Guid.NewGuid();
+                if (claims.dataStorage.AllianceExistsByGUID(guid.ToString()))
+                {
+                    continue;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            Alliance newAlliace = new Alliance(allianceName, guid.ToString());
+            //DataStorage.nameToAllianceDict.TryAdd(newAlliace.getPartName(), newAlliace);
+            claims.dataStorage.addAlliance(newAlliace);
+            newAlliace.Leader = creator;
+            newAlliace.MainCity = creator.City;
+            newAlliace.Cities.Add(creator.City);
+            creator.City.Alliance = newAlliace;
+            newAlliace.TimeStampCreated = TimeFunctions.getEpochSeconds();
+            if (caneconomy.caneconomy.config.SELECTED_ECONOMY_HANDLER == "VIRTUAL_MONEY")
+            {
+                claims.economyHandler.newAccount(newAlliace.MoneyAccountName, new Dictionary<string, object> { { "lastknownname", newAlliace.GetPartName() } });
+            }
+            foreach (var city in newAlliace.Cities)
+            {
+                foreach (var it in city.getCityCitizens())
+                {
+                    RightsHandler.reapplyRights(it);
+                }
+            }
+            UsefullPacketsSend.AddToQueueAllianceInfoUpdate(newAlliace.Guid, new Dictionary<string, object> { { "value", newAlliace.Guid } },  EnumPlayerRelatedInfo.NEW_ALLIANCE_ALL);
+            creator.City.saveToDatabase();
+            newAlliace.saveToDatabase(false);
         }
     }
 }

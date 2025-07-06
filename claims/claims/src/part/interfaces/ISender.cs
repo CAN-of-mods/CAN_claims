@@ -9,7 +9,7 @@ namespace claims.src.part.interfaces
 {
     public interface ISender
     {
-        List<Invitation> getSentInvitations();
+        List<Invitation> GetSentInvitations();
         void deleteSentInvitation(Invitation invitation);
         void addSentInvitation(Invitation invitation);
         int getMaxSentInvitations();

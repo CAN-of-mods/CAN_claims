@@ -25,25 +25,19 @@ namespace claims.src.part
         public Prison PrisonedIn { get; set; }
         public bool AwaitForTeleporation { get; set; }
         public City City { get; private set; }     
+        public Alliance Alliance { get { return City.Alliance; } }
         public HashSet<PlayerInfo> Friends { get; set; }
         public HashSet<Plot> PlayerPlots { get; set; }
         public PermsHandler PermsHandler { get; set; }
         public PlayerCache PlayerCache { get; set; }
         public string MoneyAccountName => Guid;
         public PlayerPermissions PlayerPermissionsHandler { get; set; }
-
         List<Invitation> receivedInvitations = new List<Invitation> ();
-        public List<CityPlotsGroupInvitation> groupInvitations = new List<CityPlotsGroupInvitation> ();
-
-        
-              
-        HashSet<string> cityTitles = new HashSet<string> ();
-        
+        public List<CityPlotsGroupInvitation> groupInvitations = new List<CityPlotsGroupInvitation> ();                  
+        HashSet<string> cityTitles = new HashSet<string> ();       
         public bool showBorders = false;
         public EnumShowPlotMovement showPlotMovement = EnumShowPlotMovement.SHOW_HUD;
-
-        
-        
+        HashSet<string> AllianceTitles { get; set; } = new HashSet<string>();
         public PlayerInfo(string val, string uid) : base(val, uid)
         {
             PermsHandler = new PermsHandler();
@@ -56,7 +50,14 @@ namespace claims.src.part
         /*==============================================================================================*/
         /*==============================================================================================*/
         /*==============================================================================================*/
-
+        public bool HasAlliance()
+        {
+            return hasCity() && City.HasAlliance();
+        }
+        public void ClearAllAllianceTitles()
+        {
+            AllianceTitles.Clear();
+        }
         public void setCity(City city)
         {
             this.City = city;

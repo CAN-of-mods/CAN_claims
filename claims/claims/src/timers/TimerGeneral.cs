@@ -1,6 +1,7 @@
 ﻿using claims.src.auxialiry;
 using claims.src.delayed.cooldowns;
 using claims.src.delayed.teleportation;
+using claims.src.part.structure.conflict;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,7 +52,14 @@ namespace claims.src.timers
             {
                 UsefullPacketsSend.SendAllCollectedCityUpdatesToCitizens();
             }
-            ), 20);
+            ), claims.config.CHECK_FOR_PACKETS_TO_SEND_EVERY_N_SECONDS);
+
+            //Start timer for conflicts handler
+            claims.sapi.Event.Timer((() =>
+            {
+                ConflictHandler.updateConflictLetters();
+            }
+            ), 300);
         }
     }
 }

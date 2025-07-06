@@ -54,6 +54,15 @@ namespace claims.src.auxialiry
             }
             return names;
         }
+        public static List<string> GetPartsNames(IEnumerable<Part> li)
+        {
+            List<string> names = new List<string>();
+            foreach (var it in li)
+            {
+                names.Add(it.GetPartName());
+            }
+            return names;
+        }
         public static List<string> getNamesOfCitiesFromInvitations(string prefix, List<CityPlotsGroupInvitation> li)
         {
             List<string> outList = new();

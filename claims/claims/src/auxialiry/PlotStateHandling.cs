@@ -47,7 +47,8 @@ namespace claims.src.auxialiry
                                : "",
                            plot.Type == PlotType.TAVERN 
                                ? plot.GetClientInnerClaimFromDefault(playerInfo)
-                               : null);
+                               : null,
+                           plot.getCity().Alliance?.Guid ?? "");
                 string serializedPlots = JsonConvert.SerializeObject(new Tuple<Vec2i, SavedPlotInfo>(plot.getPos(), tmpPlot));
 
                 claims.serverChannel.SendPacket(new SavedPlotsPacket()
@@ -79,7 +80,7 @@ namespace claims.src.auxialiry
                            false,
                            false,
                            false,
-                           null, null, null, null);
+                           null, null, null, null, "");
                 string serializedPlots = JsonConvert.SerializeObject(new Tuple<Vec2i, SavedPlotInfo> (new Vec2i(x, z), tmpPlot));
 
                 claims.serverChannel.SendPacket(new SavedPlotsPacket()

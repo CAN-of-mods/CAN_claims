@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Vintagestory.API.MathTools;
 
-namespace claims.src.gui.playerGui.structures
+namespace claims.src.gui.playerGui.structures.cellElements
 {
     public class PrisonCellElement
     {

@@ -1,0 +1,26 @@
+﻿[
+  {
+
+    "ingredientPattern": "_SR,_SR,SSS",
+    "ingredients": {
+      "S": {
+        "type": "item",
+        "code": "game:stick",
+        "quantity": 4
+      },
+      "R": {
+        "type": "item",
+        "code": "game:rope",
+        "toolDurabilityCost": 2
+      }
+    },
+    "name": "canflagpole",
+    "width": 3,
+    "height": 3,
+    "output": {
+      "type": "block",
+      "code": "claims:flagpole",
+      "quantity": 1
+    }
+  }
+]

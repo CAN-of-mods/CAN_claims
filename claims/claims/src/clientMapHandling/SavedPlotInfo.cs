@@ -31,13 +31,15 @@ namespace claims.src.clientMapHandling
         public string groupName;
         [ProtoMember(9)]
         public List<ClientInnerClaim> clientInnerClaims;
+        [ProtoMember(10)]
+        public string AllianceGuid;
 
         public SavedPlotInfo()
         {
 
         }
         public SavedPlotInfo(int price, bool pvPIsOn, bool buildFlag, bool useFlag, bool attackAnimalsFlag,
-            string cityName, string plotName, string groupName, List<ClientInnerClaim> clientInnerClaims)
+            string cityName, string plotName, string groupName, List<ClientInnerClaim> clientInnerClaims, string allianceGuid)
         {
             this.price = price;
             this.PvPIsOn = pvPIsOn;
@@ -48,6 +50,7 @@ namespace claims.src.clientMapHandling
             this.plotName = plotName;
             this.groupName = groupName;
             this.clientInnerClaims = clientInnerClaims;
+            AllianceGuid = allianceGuid;
         }
     }
 }

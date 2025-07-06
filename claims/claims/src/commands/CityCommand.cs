@@ -30,6 +30,7 @@ using Vintagestory.Server;
 using System.Reflection;
 using Vintagestory.GameContent;
 using Vintagestory.Common;
+using claims.src.gui.playerGui.structures.cellElements;
 
 namespace claims.src.commands
 {
@@ -180,6 +181,11 @@ namespace claims.src.commands
                 return TextCommandResult.Error("claims:you_dont_have_right_for_that_command");
             }
 
+            if(city.Alliance == null)
+            {
+                return TextCommandResult.Error("claims:leave_alliance_before_that");
+            }
+          
             AgreementHandler.addNewAgreementOrReplace(new Agreement(
                 new Thread(new ThreadStart(() =>
                 {
@@ -255,6 +261,9 @@ namespace claims.src.commands
             tree.SetString("name", plotHere.getCity().GetPartName());
             claims.sapi.World.Api.Event.PushEvent("plotclaimed", tree);
             UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid, EnumPlayerRelatedInfo.CLAIMED_PLOTS);
+
+            plotHere.CheckBorderPlotValue();
+
             return SuccessWithParams("claims:plot_has_been_claimed", new object[] { currentPlotPosition.getPos().X, currentPlotPosition.getPos().Y, claims.config.PLOT_CLAIM_PRICE });
         }
         public static TextCommandResult UnclaimCityPlot(TextCommandCallingArgs args)
@@ -301,6 +310,7 @@ namespace claims.src.commands
             claims.dataStorage.setNowEpochZoneTimestampFromPlotPosition(plotHere.getPos());
             claims.serverPlayerMovementListener.markPlotToWasRemoved(plotHere.getPos());
             UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid, EnumPlayerRelatedInfo.CLAIMED_PLOTS);
+            plotHere.CheckBorderPlotValue();
             return SuccessWithParams("claims:plot_has_been_unclaimed", new object[] { currentPlotPosition.getPos().X, currentPlotPosition.getPos().Y });
         }
         public static TextCommandResult ClaimOutpost(TextCommandCallingArgs args)
@@ -357,6 +367,7 @@ namespace claims.src.commands
             tree.SetString("name", plotHere.getCity().GetPartName());
             claims.sapi.World.Api.Event.PushEvent("plotclaimed", tree);
             UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid, EnumPlayerRelatedInfo.CLAIMED_PLOTS);
+            plotHere.CheckBorderPlotValue();
             return SuccessWithParams("claims:plot_has_been_claimed", new object[] { currentPlotPosition.getPos().X, currentPlotPosition.getPos().Y });
         }
         public static TextCommandResult ProcessExtraPlot(TextCommandCallingArgs args)
@@ -416,6 +427,7 @@ namespace claims.src.commands
             tree.SetString("name", plotHere.getCity().GetPartName());
             claims.sapi.World.Api.Event.PushEvent("plotclaimed", tree);
             UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid, EnumPlayerRelatedInfo.CLAIMED_PLOTS);
+            plotHere.CheckBorderPlotValue();
             //return SuccessWithParams("claims:plot_has_been_claimed", new object[] { currentPlotPosition.getPos().X, currentPlotPosition.getPos().Y, claims.config.PLOT_CLAIM_PRICE });
             return SuccessWithParams("claims:plot_has_been_claimed", new object[] { currentPlotPosition.getPos().X, currentPlotPosition.getPos().Y, claims.config.PLOT_CLAIM_PRICE });
         }
@@ -623,17 +635,17 @@ namespace claims.src.commands
             }
             if (args.LastArg == null)
             {
-                return TextCommandResult.Success(StringFunctions.getNthPageOf(playerInfo.City.getSentInvitations(), 1));
+                return TextCommandResult.Success(StringFunctions.getNthPageOf(playerInfo.City.GetSentInvitations(), 1));
             }
 
             int page = (int)args.LastArg;
 
-            var sentInvites = playerInfo.City.getSentInvitations();
+            var sentInvites = playerInfo.City.GetSentInvitations();
             if (sentInvites.Count < 1)
             {
                 return TextCommandResult.Success("claims:no_invitations");
             }
-            return TextCommandResult.Success(StringFunctions.getNthPageOf(playerInfo.City.getSentInvitations(), page));
+            return TextCommandResult.Success(StringFunctions.getNthPageOf(playerInfo.City.GetSentInvitations(), page));
         }
         public static TextCommandResult CityJoin(TextCommandCallingArgs args)
         {
@@ -940,6 +952,10 @@ namespace claims.src.commands
             }
 
             city.setMayor(targetPlayer);
+            if(city.HasAlliance())
+            {
+                city.Alliance.Leader = targetPlayer;
+            }
             RightsHandler.reapplyRights(playerInfo);
             RightsHandler.reapplyRights(targetPlayer);
             MessageHandler.sendMsgInCity(city, Lang.Get("claims:player_now_is_a_mayor", targetPlayer.GetPartName()));
@@ -1003,6 +1019,7 @@ namespace claims.src.commands
                     return TextCommandResult.Success("claims:wrong_value");
                 }
                 playerInfo.City.trySetPlotColor(colorValue);
+                UsefullPacketsSend.AddToQueueCityInfoUpdate(playerInfo.City.Guid, EnumPlayerRelatedInfo.CITY_PLOTS_COLOR);
                 return SuccessWithParams("claims:color_was_set_to", new object[] { (string)args.LastArg });
             }
             else
@@ -1200,7 +1217,7 @@ namespace claims.src.commands
                 {
                     if(cell_it.getSpawnPosition().Equals(searchPoint))
                     { 
-                        savedPlot = it.getPlot();
+                        savedPlot = it.Plot;
                         it.removePrisonCell(cell_it);
                         found = true;
                         break;
@@ -1785,6 +1802,9 @@ namespace claims.src.commands
             }
             return tcr;
         }
+        /*==============================================================================================*/
+        /*=====================================PLOTSGROUP===============================================*/
+        /*==============================================================================================*/
         public static TextCommandResult PlotsGroupCreate(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;

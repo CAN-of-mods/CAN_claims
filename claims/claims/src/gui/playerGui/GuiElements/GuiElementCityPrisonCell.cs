@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Cairo;
-using claims.src.gui.playerGui.structures;
 using Vintagestory.API.Client;
 using static claims.src.gui.playerGui.CANClaimsGui;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Config;
 using Vintagestory.Client.NoObf;
+using claims.src.gui.playerGui.structures.cellElements;
 
 namespace claims.src.gui.playerGui.GuiElements
 {
@@ -236,23 +236,6 @@ namespace claims.src.gui.playerGui.GuiElements
             api.Render.Render2DTexturePremultipliedAlpha(modcellTexture.TextureId, (int)Bounds.absX, (int)Bounds.absY, Bounds.OuterWidthInt, Bounds.OuterHeightInt);
             int mouseX = api.Input.MouseX;
             int mouseY = api.Input.MouseY;
-            Vec2d vec2d = Bounds.PositionInside(mouseX, mouseY);
-            if (vec2d != null)
-            {
-                /* if (this.button.Bounds.PointInside(mouseX, mouseY))
-                 {
-                     this.button.SetActive(true);
-                 }
-                 else
-                 {
-                     this.button.SetActive(false);
-                 }*/
-
-            }
-            else
-            {
-                //this.button.SetActive(false);
-            }
             if (buttons != null)
             {
                 foreach (var it in buttons)
@@ -262,7 +245,6 @@ namespace claims.src.gui.playerGui.GuiElements
             }
             richTextElem.RenderInteractiveElements(deltaTime);
             addRankButton.RenderInteractiveElements(deltaTime);
-
         }
 
         public override void Dispose()

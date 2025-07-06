@@ -1,11 +1,18 @@
 ﻿using claims.src.auxialiry;
+using claims.src.gui.playerGui.structures;
+using claims.src.gui.playerGui.structures.cellElements;
 using claims.src.messages;
 using claims.src.network.packets;
 using claims.src.part;
+using claims.src.part.structure.conflict;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Server;
+using Vintagestory.API.Util;
 
 namespace claims.src.events
 {
@@ -38,7 +45,7 @@ namespace claims.src.events
                 claims.dataStorage.addPlayer(playerInfo);
                 playerInfo.TimeStampLasOnline = TimeFunctions.getEpochSeconds();
                 playerInfo.TimeStampFirstJoined = TimeFunctions.getEpochSeconds();
-                MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:new_player_greetings", player.PlayerName));
+                //MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:new_player_greetings", player.PlayerName));
             }
             else
             {
@@ -52,7 +59,41 @@ namespace claims.src.events
             UsefullPacketsSend.sendAllCitiesColorsToPlayer(player);
             UsefullPacketsSend.SendPlayerCityRelatedInfo(player);
             UsefullPacketsSend.SendUpdatedConfigValues(player);
-            if(claims.config.NO_ACCESS_WITH_FOR_NOT_CLAIMED_AREA)
+            if(playerInfo.HasAlliance())
+            {
+                UsefullPacketsSend.AddToQueuePlayerInfoUpdate(playerInfo.Guid, new Dictionary<string, object> { { "value", playerInfo.Alliance.Guid } }, EnumPlayerRelatedInfo.NEW_ALLIANCE_ALL);
+
+                List<ClientConflictLetterCellElement> li = new List<ClientConflictLetterCellElement>();
+                foreach(var it in ConflictHandler.GetAllLettersForAlliance(playerInfo.Alliance))
+                {
+                    li.Add(new ClientConflictLetterCellElement(it.From.GetPartName(), it.From.Guid, it.To.GetPartName(), it.To.Guid,
+                        it.Purpose, it.TimeStampExpire, it.Guid));
+                }
+                if (li.Count > 0)
+                {
+                    UsefullPacketsSend.AddToQueuePlayerInfoUpdate(playerInfo.Guid, new Dictionary<string, object> { { "value", li } }, EnumPlayerRelatedInfo.ALLIANCE_LETTER_ALL);
+                }
+
+                List<ClientConflictCellElement> lic = new List<ClientConflictCellElement>();
+                foreach (var it in ConflictHandler.GetAllConflictsForAlliance(playerInfo.Alliance))
+                {
+                    lic.Add(new ClientConflictCellElement(it.GetPartName(), it.First.GetPartName(), it.Second.GetPartName(),
+                        it.StartedBy.GetPartName(), it.State, it.Guid,
+                        it.MinimumDaysBetweenBattles, it.LastBattleDateStart, it.LastBattleDateEnd, it.NextBattleDateStart, it.NextBattleDateEnd,
+                        it.WarRanges, it.FirstWarRanges, it.SecondWarRanges, it.TimeStampStarted));
+                }
+                if (lic.Count > 0)
+                {
+                    UsefullPacketsSend.AddToQueuePlayerInfoUpdate(playerInfo.Guid, new Dictionary<string, object> { { "value", lic } }, EnumPlayerRelatedInfo.ALLIANCE_CONFLICT_ALL);
+                }
+            }
+
+            Dictionary<string, ClientCityInfoCellElement> CityStatsCashe =
+                ObjectCacheUtil.GetOrCreate<Dictionary<string, ClientCityInfoCellElement>>(claims.sapi,
+                "claims:cityinfocache", () => new Dictionary<string, ClientCityInfoCellElement>());
+            UsefullPacketsSend.AddToQueuePlayerInfoUpdate(playerInfo.Guid, new Dictionary<string, object> { { "value", CityStatsCashe.Values.ToList() } }, EnumPlayerRelatedInfo.CITY_LIST_ALL);
+
+            if (claims.config.NO_ACCESS_WITH_FOR_NOT_CLAIMED_AREA)
             {
                 if (claims.dataStorage.serverClaimAreaHandler.GetAllClaimAreas() != null)
                 {

@@ -32,6 +32,9 @@ using System.Collections;
 using claims.src.blocks;
 using claims.src.auxialiry.claimAreas;
 using System;
+using claims.src.beb;
+using claims.src.bb;
+using claims.src.part.structure.conflict;
 
 namespace claims.src
 {
@@ -91,7 +94,9 @@ namespace claims.src
                                                        "flat-platform", "magnifying-glass", "price-tag",
                                                        "qaitbay-citadel", "large-paint-brush", "prisoner",
                                                        "magic-portal", "dodging", "highlighter",
-                                                       "huts-village"};
+                                                       "huts-village", "vertical-banner", "village", "stairs-goal",
+                                                        "info", "pencil", "soldering-iron", "envelope", "peace-dove",
+                                                        "sword-brandish", "frog-mouth-helm"};
             foreach (var icon in iconList)
             {
                 capi.Gui.Icons.CustomIcons["claims:" + icon] = delegate (Context ctx, int x, int y, float w, float h, double[] rgba)
@@ -107,6 +112,9 @@ namespace claims.src
         {
             base.Start(api);
             api.RegisterBlockClass("CANTempleBlock", typeof(CANTempleBlock));
+            api.RegisterBlockClass("CANCaptureFlagBlock", typeof(CaptureFlagBlock));
+            api.RegisterBlockEntityBehaviorClass("FlagEntity", typeof(BlockEntityBehaviorFlag));
+            api.RegisterBlockBehaviorClass("Flag", typeof(BlockBehaviorFlag));
         }
         public override void StartClientSide(ICoreClientAPI api)
         {
@@ -260,7 +268,7 @@ namespace claims.src
             serverPlayerMovementListener = null;
             config = null;
             economyHandler = null;
-
+            ConflictHandler.clearAll();
         }
 
         public static void ShutDownClient()

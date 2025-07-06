@@ -3,6 +3,7 @@ using claims.src.clientMapHandling;
 using claims.src.delayed.teleportation;
 using claims.src.events;
 using claims.src.gui.playerGui.structures;
+using claims.src.gui.playerGui.structures.cellElements;
 using claims.src.messages;
 using claims.src.network.packets;
 using claims.src.part;
@@ -189,12 +190,12 @@ namespace claims.src
                 if (playerInfo.isPrisoned())
                 {
                     MessageHandler.sendMsgInCity(
-                    playerInfo.PrisonedIn.getCity(),
+                    playerInfo.PrisonedIn.City,
                     Lang.Get("claims:player_escaped_prison", playerInfo.GetPartName()));
                     MessageHandler.sendMsgToPlayerInfo(playerInfo, Lang.Get("claims:you_escaped_prison"));
                     if(playerInfo.PrisonedIn.TryGetCellInWhichPlayer(playerInfo, out var cell))
                     {
-                        UsefullPacketsSend.AddToQueueCityInfoUpdate(playerInfo.PrisonedIn.getCity().Guid, new Dictionary<string, object> { { "value", new PrisonCellElement(cell.spawnPostion, cell.playerNames) } },
+                        UsefullPacketsSend.AddToQueueCityInfoUpdate(playerInfo.PrisonedIn.City.Guid, new Dictionary<string, object> { { "value", new PrisonCellElement(cell.spawnPostion, cell.playerNames) } },
                             EnumPlayerRelatedInfo.CITY_CELL_PRISON_UPDATE);
                     }
                     playerInfo.PrisonedIn = null;
@@ -341,7 +342,8 @@ namespace claims.src
                                     : "",
                                plot.Type == PlotType.TAVERN
                                    ? plot.GetClientInnerClaimFromDefault(playerInfo)
-                                   : null)));
+                                   : null,
+                               plot.getCity().Alliance?.Guid ?? "")));
                         }
                         if (!alreadySentZonesToPlayers.ContainsKey(playerInfo.GetPartName()))
                         {
@@ -455,7 +457,8 @@ namespace claims.src
                                         : "",
                                    plot.Type == PlotType.TAVERN
                                        ? plot.GetClientInnerClaimFromDefault(playerInfo)
-                                       : null)));
+                                       : null,
+                                   plot.getCity().Alliance?.Guid ?? "")));
                                 }
                             }
                         }

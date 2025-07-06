@@ -25,6 +25,8 @@ using claims.src.playerMovements;
 using claims.src.perms.type;
 using claims.src.gui.playerGui.structures;
 using claims.src.auxialiry.claimAreas;
+using claims.src.part.structure.conflict;
+using claims.src.part.structure.war;
 
 namespace claims.src
 {
@@ -67,6 +69,8 @@ namespace claims.src
         //and timestamp for it
         protected Dictionary<Vec2i, ClientSavedZone> ClientSavedPlotsInZones;
         public ClientPlayerInfo clientPlayerInfo { get; set; }
+        public List<Conflict> conflicts { get; } = new List<Conflict>();
+        public Dictionary<string, WarTime> WarsTimes { get; } = new Dictionary<string, WarTime>();
 
         //zone pos and timestamp when we get info about it last time
         //will be used by client when it enters new zone and send to server this timestamps
@@ -239,8 +243,20 @@ namespace claims.src
         /*==============================================================================================*/
         /*=====================================ALLIANCE=================================================*/
         /*==============================================================================================*/
+        public bool AllianceExistsByGUID(string guid)
+        {
+            return guidToAllianceDict.ContainsKey(guid);
+        }
+        public bool GetAllianceByName(string name, out Alliance alliance)
+        {
+            if (nameToAllianceDict.TryGetValue(name, out alliance))
+            {
+                return true;
+            }
+            return false;
+        }
 
-        public bool getAllianceByGUID(string guid, out Alliance alliance)
+        public bool GetAllianceByGUID(string guid, out Alliance alliance)
         {
             if (guidToAllianceDict.TryGetValue(guid, out alliance))
             {
@@ -255,6 +271,10 @@ namespace claims.src
                 return nameToAllianceDict.TryAdd(alliance.GetPartName(), alliance);
             }
             return false;
+        }
+        public List<Alliance> getAllAlliances()
+        {
+            return guidToAllianceDict.Values.ToList();
         }
         /*==============================================================================================*/
         /*=====================================PRISON===================================================*/
@@ -349,7 +369,7 @@ namespace claims.src
         }
 
         /*==============================================================================================*/
-        /*=====================================PLOTSGROUP================================================*/
+        /*=====================================PLOTSGROUP===============================================*/
         /*==============================================================================================*/
         public ConcurrentDictionary<string, CityPlotsGroup> getCityPlotsGroupsDict()
         {
@@ -370,6 +390,39 @@ namespace claims.src
         public bool removePlotsGroup(string guid)
         {
             return guidToCityPlotsGroupDict.TryRemove(guid, out _);
+        }
+
+        /*==============================================================================================*/
+        /*=====================================CONFLICTS================================================*/
+        /*==============================================================================================*/
+        public bool TryAddConflict(Conflict conflict)
+        {
+            if (conflicts.Contains(conflict))
+            {
+                return false;
+            }
+            else
+            {
+                conflicts.Add(conflict);
+                return true;
+            }
+        }
+        public bool TryRemoveConflict(Conflict conflict)
+        {
+            return conflicts.Remove(conflict);
+        }
+        public bool TryGetConflict(string guid, out Conflict conflict)
+        {
+            foreach(var it in conflicts)
+            {
+                if (it.Guid == guid)
+                {
+                    conflict = it;
+                    return true;
+                }
+            }
+            conflict = null;
+            return false;
         }
         /*==============================================================================================*/
         /*=====================================INNER CLAIMS=============================================*/
@@ -555,7 +608,21 @@ namespace claims.src
             clientSavedZone = null;
             return ClientSavedPlotsInZones.TryGetValue(vec, out clientSavedZone);
         }
-        
+        public List<Vec2i> GetCitySavedPlotInfos(string cityName)
+        {
+            List<Vec2i> li = new List<Vec2i>();
+            foreach(var zone in ClientSavedPlotsInZones)
+            {
+                foreach(var pl in zone.Value.savedPlots)
+                {
+                    if(pl.Value.cityName.Equals(cityName))
+                    {
+                        li.Add(pl.Key);
+                    }    
+                }
+            }
+            return li;
+        }
         
         public bool nameForCityOrVillageIsTaken(string name)
         {
@@ -590,7 +657,7 @@ namespace claims.src
                 return false;
             }
             return true;
-        }
+        }       
         public bool plotHasDistantEnoughFromOtherForNewCity(Vec2i pos)
         {
             foreach (City city in getCitiesList())
@@ -617,6 +684,10 @@ namespace claims.src
 
                 foreach (Plot plotInner in city.getCityPlots())
                 {
+                    if (claims.config.CAPTURED_PLOTS_DO_NOT_BLOCK_CLAIMS && plotInner.WasCaptured)
+                    {
+                        continue;
+                    }
                     if (MathClaims.distanceBetween(plotInner.getPos(), plot.getPos()) < claims.config.MIN_DISTANCE_FROM_OTHER_CITY_NEW_CITY)
                     {
                         return false;

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Vintagestory.API.MathTools;
 
-namespace claims.src.gui.playerGui.structures
+namespace claims.src.gui.playerGui.structures.cellElements
 {
     public class SummonCellElement
     {
@@ -13,8 +13,8 @@ namespace claims.src.gui.playerGui.structures
         public string Name { get; set; }
         public SummonCellElement(Vec3i spawnPosition, string name)
         {
-            this.SpawnPosition = spawnPosition;
-            this.Name = name;
+            SpawnPosition = spawnPosition;
+            Name = name;
         }
     }
 }

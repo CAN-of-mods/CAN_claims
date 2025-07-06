@@ -1,6 +1,8 @@
 ﻿using claims.src.auxialiry;
 using claims.src.messages;
 using claims.src.part;
+using claims.src.part.structure;
+using claims.src.part.structure.conflict;
 using claims.src.rights;
 using Newtonsoft.Json;
 using System;
@@ -73,7 +75,8 @@ namespace claims.src
                     }
                 },
 
-                { "CITY_ASSISTANT", new HashSet<EnumPlayerPermissions>
+                { 
+                    "CITY_ASSISTANT", new HashSet<EnumPlayerPermissions>
                     {
                         EnumPlayerPermissions.CITY_CLAIM_PLOT,
                         EnumPlayerPermissions.CITY_UNCLAIM_PLOT,
@@ -83,6 +86,18 @@ namespace claims.src
                         EnumPlayerPermissions.CITY_SEE_BALANCE
                     }
                 },
+                {
+                    "LEADER", new HashSet<EnumPlayerPermissions>
+                    {
+                        EnumPlayerPermissions.ALLIANCE_ACCEPT_CONFLICT,
+                        EnumPlayerPermissions.ALLIANCE_DECLARE_CONFLICT,
+                        EnumPlayerPermissions.ALLIANCE_REVOKE_CONFLICT,
+                        EnumPlayerPermissions.ALLIANCE_DENY_CONFLICT,
+                        EnumPlayerPermissions.ALLIANCE_OFFER_STOP_CONFLICT,
+                        EnumPlayerPermissions.ALLIANCE_ACCEPT_STOP_CONFLICT,
+                        EnumPlayerPermissions.ALLIANCE_DENY_STOP_CONFLICT
+                    }
+                }
 
             };
             return outDict;
@@ -141,6 +156,22 @@ namespace claims.src
                     if (PlayerPermissionsByGroups.TryGetValue("CITY_" + str, out HashSet<EnumPlayerPermissions> titlePerms))
                     {
                         playerInfo.PlayerPermissionsHandler.AddPermissions(titlePerms);
+                    }
+                }
+            }
+            //TODO
+            //REMOVE ALLIANCE ON CITY REMOVE
+            if (playerInfo.hasCity())
+            {
+                Alliance alliance = playerInfo.Alliance;
+                if (alliance != null)
+                {
+                    if (alliance.IsLeader(playerInfo))
+                    {
+                        if (PlayerPermissionsByGroups.TryGetValue("LEADER", out HashSet<EnumPlayerPermissions> leaderPerms))
+                        {
+                            playerInfo.PlayerPermissionsHandler.AddPermissions(leaderPerms);
+                        }
                     }
                 }
             }
@@ -229,6 +260,91 @@ namespace claims.src
         public static void clearAll()
         {
             //rightsByGroupDict.Clear();
+        }
+        public static void ClearPlayerCachesAndUpdatePlotSavedRightsForClients(Conflict conflict)
+        {
+            foreach (var city in conflict.First.Cities)
+            {
+                foreach (var pl in city.getCityCitizens())
+                {
+                    RightsHandler.reapplyRights(pl);
+                }
+            }
+
+            foreach (var city in conflict.Second.Cities)
+            {
+                foreach (var pl in city.getCityCitizens())
+                {
+                    RightsHandler.reapplyRights(pl);
+                }
+            }
+
+            foreach (var it in conflict.First.Cities)
+            {
+                foreach (var plot in it.getCityPlots())
+                {
+                    claims.dataStorage.clearCacheForPlayersInPlot(plot);
+                    claims.dataStorage.setNowEpochZoneTimestampFromPlotPosition(plot.getPos());
+                    claims.serverPlayerMovementListener.markPlotToWasReUpdated(plot.getPos());
+                }
+            }
+
+            foreach (var it in conflict.Second.Cities)
+            {
+                foreach (var plot in it.getCityPlots())
+                {
+                    claims.dataStorage.clearCacheForPlayersInPlot(plot);
+                    claims.dataStorage.setNowEpochZoneTimestampFromPlotPosition(plot.getPos());
+                    claims.serverPlayerMovementListener.markPlotToWasReUpdated(plot.getPos());
+                }
+            }
+        }
+        public static void SetAllianciesHostile(Alliance first, Alliance second, Conflict conflict)
+        {
+            first.RunningConflicts.Add(conflict);
+            second.RunningConflicts.Add(conflict);
+            foreach (City ourCity in first.Cities)
+            {
+                foreach (City targetCity in second.Cities)
+                {
+                    ourCity.HostileCities.Add(targetCity);
+                    ourCity.saveToDatabase();
+                }
+            }
+            foreach (City targetCity in second.Cities)
+            {
+                foreach (City ourCity in first.Cities)
+                {
+                    targetCity.HostileCities.Add(ourCity);
+                    targetCity.saveToDatabase();
+                }
+            }
+            first.Hostiles.Add(second);
+            second.Hostiles.Add(first);
+        }
+        public static void AddCityHostilesInAlliance(City city, Alliance alliance)
+        {
+            foreach(var runConflict in alliance.RunningConflicts)
+            {
+                Alliance foeAlliance = runConflict.First == alliance ? runConflict.Second : runConflict.First;
+                foreach (City targetCity in foeAlliance.Cities)
+                {
+                    targetCity.HostileCities.Add(city);
+                    city.HostileCities.Add(targetCity);
+                }
+            }
+        }
+        public static void RemoveCityHostilesInAlliance(City city, Alliance alliance)
+        {
+            foreach (var runConflict in alliance.RunningConflicts)
+            {
+                Alliance foeAlliance = runConflict.First == alliance ? runConflict.Second : runConflict.First;
+                foreach (City targetCity in foeAlliance.Cities)
+                {
+                    targetCity.HostileCities.Remove(city);
+                    city.HostileCities.Remove(targetCity);
+                }
+            }
         }
     }
 }

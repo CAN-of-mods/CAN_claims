@@ -18,6 +18,9 @@ namespace claims.src.database
             "perm TEXT,"+
             "plotgroups TEXT," +
             "prisons TEXT," +
+            "alliance TEXT," +
+            "hostiles TEXT," +
+            "comrades TEXT," +
             "defaultplotcost INTEGER," +
             "invMsg TEXT," +
             "opencity INTEGER," +
@@ -39,6 +42,7 @@ namespace claims.src.database
             "comrades TEXT," +
             "city TEXT," +
             "citytitles TEXT,"+
+            "alliancetitles TEXT," +
             "title TEXT," +
             "aftername TEXT," +
             "perms TEXT," +
@@ -60,6 +64,7 @@ namespace claims.src.database
             "markednopvp INTEGER," +
             "plotdesc TEXT," +
             "extraBought INTEGER," +
+            "wascaptured INTEGER," +
             "PRIMARY KEY(x, z)" +
             ");";
 
@@ -98,6 +103,7 @@ namespace claims.src.database
            "CREATE TABLE IF NOT EXISTS ALLIANCIES(" +
            "name TEXT," +
            "guid TEXT PRIMARY KEY NOT NULL," +
+           "timestampcreated INTEGER DEFAULT 0," +
            "maincity TEXT," +
            "cities TEXT," +
            "hostiles TEXT," +
@@ -105,5 +111,24 @@ namespace claims.src.database
            "alliancefee INTEGER," +
            "neutral INTEGER" +
            ");";
+
+        public static string conflictsTable =
+             "CREATE TABLE IF NOT EXISTS CONFLICTS(" +
+             "name TEXT," +
+             "guid TEXT PRIMARY KEY NOT NULL," +
+             "firstside TEXT," +
+             "secondside TEXT," +
+             "conflictstate INTEGER," +
+             "startedby TEXT," +
+             "warranges TEXT," +
+             "firstwarranges TEXT," +
+             "secondwarranges TEXT," +
+             "minimumdaysbetweenbattles INTEGER," +
+             "lastbattledatestart TEXT," +
+             "lastbattledateend TEXT," +
+             "nextbattledatestart TEXT," +
+             "nextbattledateend TEXT," +
+             "timestampstarted INTEGER DEFAULT 0" +
+             ");";
     }
 }

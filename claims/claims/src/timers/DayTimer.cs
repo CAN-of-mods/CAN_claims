@@ -2,6 +2,7 @@
 using claims.src.messages;
 using claims.src.part;
 using claims.src.part.structure;
+using claims.src.part.structure.conflict;
 using claims.src.part.structure.plots;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,7 @@ namespace claims.src.timers
         public static Dictionary<City, List<Plot>> citiesPlots = new();
         public static Dictionary<PlayerInfo, decimal> playerSumFee = new();
         public static List<City> toDeleteCities = new();
+        static List<Alliance> toDeleteAlliancies = new List<Alliance>();
 
         public void Run(bool scheduleNewDayAfter)
         {
@@ -39,10 +41,14 @@ namespace claims.src.timers
             MessageHandler.sendDebugMsg("[claims] DayTimer::from cities" + StringFunctions.concatStringsWithDelim(citiesPlots.Keys.ToArray(), ','));
             //All players processed
             processCitiesFee();
+            ProcessAlliancesFee();
+
             //All cities
             processCitiesCare();
 
             citiesPlots.Clear();
+
+            ProcessAlliancesCare();
 
             MessageHandler.sendGlobalMsg("New day here.");
             MessageHandler.sendDebugMsg("[claims] DayTimer::new day here");
@@ -58,7 +64,6 @@ namespace claims.src.timers
                 }), (int)TimeFunctions.getSecondsBeforeNextDayStart() * 1000);
             }
         }
-
         public static void processCitiesCare()
         {
             foreach (City city in claims.dataStorage.getCitiesList())
@@ -130,8 +135,24 @@ namespace claims.src.timers
                 sumToPay, city.GetPartName(), claims.economyHandler.getBalance(city.MoneyAccountName), city.DebtBalance));
             city.saveToDatabase();
         }
-        
-       
+        public static void ProcessAllianceCare(Alliance alliance)
+        {
+            double toPay = claims.config.ALLIANCE_BASE_CARE;
+
+            if (alliance.Neutral)
+            {
+                toPay += claims.config.NEUTRAL_ALLANCE_PAYMENT;
+            }
+
+            if (claims.economyHandler.getBalance(alliance.MoneyAccountName) < (decimal)toPay)
+            {
+                toDeleteAlliancies.Add(alliance);
+            }
+            else
+            {
+                claims.economyHandler.withdraw(alliance.MoneyAccountName, (decimal)claims.config.ALLIANCE_BASE_CARE);
+            }
+        } 
         public static void processCitiesFee()
         {
             foreach(City city in citiesPlots.Keys)
@@ -281,6 +302,39 @@ namespace claims.src.timers
 
             playerSumFee.Clear();
         }
+        public static void ProcessAlliancesFee()
+        {
+            foreach (Alliance alliance in claims.dataStorage.getAllAlliances())
+            {
+                if (alliance.AllianceFee > 0)
+                {
+                    foreach (City city in alliance.Cities.ToArray())
+                    {
+                        if (claims.economyHandler.getBalance(city.MoneyAccountName) < alliance.AllianceFee)
+                        {
+                            alliance.Cities.Remove(city);
+                            MessageHandler.SendMsgInAlliance(alliance, Lang.Get("claims:city_kicked_from_alliance_no_fee", city.getPartNameReplaceUnder()));
+                        }
+                        else
+                        {
+                            claims.economyHandler.depositFromAToB(city.MoneyAccountName, alliance.MoneyAccountName, alliance.AllianceFee);
+                        }
+                    }
+                }
+            }
+        }
+        public static void ProcessAlliancesCare()
+        {
+            foreach (Alliance alliance in claims.dataStorage.getAllAlliances())
+            {
+                ProcessAllianceCare(alliance);
+            }
 
+            foreach (Alliance alliance in toDeleteAlliancies)
+            {
+                PartDemolition.DemolishAlliance(alliance);
+            }
+            toDeleteAlliancies.Clear();
+        }
     }
 }

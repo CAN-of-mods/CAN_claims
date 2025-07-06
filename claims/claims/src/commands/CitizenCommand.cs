@@ -28,6 +28,8 @@ namespace claims.src.commands
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
 
+            //claims.sapi.SendIngameDiscovery(player as IServerPlayer, "ingamediscovery-battle-start", Lang.Get("claims:ingamediscovery-battle-start"), new object[] { 1, 2 });
+            //claims.sapi.World.PlaySoundAt(new AssetLocation("game:sounds/effect/deepbell"), player.Entity, null, false, 5f, 0.5f);
             claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
           
             string name = Filter.filterName((string)args.LastArg);

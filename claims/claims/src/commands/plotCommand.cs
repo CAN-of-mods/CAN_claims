@@ -494,7 +494,7 @@ namespace claims.src.commands
             }
             if (!plotHere.getCity().getPlayerInfos().Contains(playerInfo) && (!plotHere.hasPlotOwner() || !plotHere.getPlotOwner().Equals(playerInfo)))
             {
-                tcr.StatusMessage = "claims:no_city_here";
+                tcr.StatusMessage = "claims:have_to_be_owner_or_mayor";
                 return false;
             }
             return true;

@@ -1,12 +1,19 @@
-﻿using claims.src.part;
+﻿using claims.src.gui.playerGui.structures.cellElements;
+using claims.src.part;
+using claims.src.part.structure;
+using claims.src.part.structure.conflict;
 using claims.src.rights;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security;
 using System.Text;
 using System.Threading.Tasks;
+using Vintagestory.API.Client;
 using Vintagestory.API.Datastructures;
+using Vintagestory.API.MathTools;
+using static claims.src.gui.playerGui.CANClaimsGui;
 
 namespace claims.src.gui.playerGui.structures
 {
@@ -19,12 +26,67 @@ namespace claims.src.gui.playerGui.structures
         public EnumShowPlotMovement ShowPlotMovement { get; set; } = EnumShowPlotMovement.SHOW_NONE;
         public PlayerPermissions PlayerPermissions { get; set; }
         public CurrentPlotInfo CurrentPlotInfo { get; set; }
+        public AllianceInfo AllianceInfo { get; set; }
+        public List<ClientCityInfoCellElement> AllCitiesList { get; set; } = new List<ClientCityInfoCellElement>();
+        private Dictionary<EnumPlayerRelatedInfo, Action<string>> AcceptChangeHandlers = new();
         public ClientPlayerInfo()
         {
             CityInfo = null;
             ShowPlotMovement = EnumShowPlotMovement.SHOW_HUD;
             PlayerPermissions = new PlayerPermissions();
             CurrentPlotInfo = new CurrentPlotInfo();
+
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.MAYOR_NAME, OnMayorName);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_NAME, OnCityName);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_CREATED_TIMESTAMP, OnCityCreatedTimestamp);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_MEMBERS, OnCityMembers);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.MAX_COUNT_PLOTS, OnMaxCountPlots);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CLAIMED_PLOTS, OnClaimedPlots);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.PLAYER_PREFIX, OnPlayerPrefix);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.PLAYER_AFTER_NAME, OnPlayerAfterName);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.PLAYER_CITY_TITLES, OnPlayerCityTitles);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.SHOW_PLOT_MOVEMENT, OnShowPlotMovement);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_INVITE_ADD, OnCityInviteAdd);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_INVITE_REMOVE, OnCityInviteRemove);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.PLAYER_PERMISSIONS, OnPlayerPermissions);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.FRIENDS, OnPlayerFriends);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_POSSIBLE_RANKS, OnCityPossibleRanks);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_CITIZENS_RANKS, OnCityCitizensRanks);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_CITIZEN_RANK_ADDED, OnCityCitizenRankAdded);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_CITIZEN_RANK_REMOVED, OnCityCitizenRankRemoved);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_PLOTS_COLOR, OnCityCityPlotsColor);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_BALANCE, OnCityCityBalance);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_CRIMINAL_ADDED, OnCityCityCriminalAdded);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_CRIMINAL_REMOVED, OnCityCityCriminalRemoved);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_CRIMINALS_LIST, OnCityCityCriminalsList);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_PRISON_CELL_ALL, OnCityCityPrisonCellAll);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_ADD_PRISON_CELL, OnCityCityPrisonCellAdd);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_REMOVE_PRISON_CELL, OnCityCityPrisonCellRemoved);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_CELL_PRISON_UPDATE, OnCityCityPrisonCellUpdate);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_SUMMON_POINT_ALL, OnCityCitySummonPointAll);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_SUMMON_POINT_ADD, OnCityCitySummonPointAdd);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_SUMMON_POINT_REMOVE, OnCityCitySummonPointRemove);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_SUMMON_POINT_UPDATE, OnCityCitySummonPointUpdate);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_PLOTS_GROUPS_ALL, OnCityCitySummonPlotsgroupAll);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_PLOTS_GROUPS_REMOVE, OnCityCitySummonPlotsgroupRemove);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_PLOTS_GROUPS_ADD, OnCityCitySummonPlotsgroupAdd);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_PLOTS_GROUPS_UPDATE, OnCityCitySummonPlotsgroupUpdate);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.TO_PLOTS_GROUP_INVITE_ADD, OnCityCitySummonPlotsgroupInviteAdd);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.TO_PLOTS_GROUP_INVITE_REMOVE, OnCityCitySummonPlotsgroupInviteRemove);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.NEW_ALLIANCE_ALL, OnAllianceNewAll);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.OWN_ALLIANCE_REMOVE, OnAllianceRemove);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_LIST_ALL, OnCityListAll);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_LIST_UPDATE, OnCityListUpdate);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.ALLIANCE_NAME, OnAllianceName);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.TO_ALLIANCE_INVITE_ADD, OnAllianceInviteAdd);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.ALLIANCE_LETTER_ADD, OnAllianceLetterAdd);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.ALLIANCE_LETTER_REMOVE, OnAllianceLetterRemove);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.ALLIANCE_LETTER_ALL, OnAllianceLetterAll);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.ALLIANCE_CONFLICT_ADD, OnAllianceConflictAdd);;
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.ALLIANCE_CONFLICT_REMOVE, OnAllianceConflictRemove);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.ALLIANCE_CONFLICT_ALL, OnAllianceConflictAll);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_PLOT_RECOLOR, OnCityPlotRecolor);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.ALLIANCE_CONFLICT_WARRANGES_UPDATED, OnAllianceConflictWarrangesUpdated);
         }
         public ClientPlayerInfo(string cityName, string mayorName, long timeStampCreated, HashSet<string> citizens, int maxCountPlots, int countPlots, string prefix,
             string afterName, HashSet<string> cityTitles, EnumShowPlotMovement showPlotMovement, int PlotColor, double cityBalance, HashSet<string> criminals)
@@ -84,332 +146,461 @@ namespace claims.src.gui.playerGui.structures
             return new ClientPlayerInfo(cityInfo, friends, receivedInvitations, (EnumShowPlotMovement)showInt);
         }
 
+
         public void AcceptChangedValues(Dictionary<EnumPlayerRelatedInfo, string> valueDict)
         {
-            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.MAYOR_NAME, out string mayor))
+            foreach (var pair in valueDict)
             {
-                this.CityInfo.MayorName = mayor;
-            }
-
-            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_NAME, out string cityName))
-            {
-                this.CityInfo.Name = cityName;
-            }
-
-            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_CREATED_TIMESTAMP, out string created))
-            {
-                long.TryParse(created, out long longStamp);
-                CityInfo.TimeStampCreated = longStamp;
-            }
-
-            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_MEMBERS, out string cityMembers))
-            {
-                CityInfo.PlayersNames = JsonConvert.DeserializeObject<HashSet<string>>(cityMembers);
-            }
-
-            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.MAX_COUNT_PLOTS, out string maxPlotCount))
-            {
-                int.TryParse(maxPlotCount, out int maxPlot);
-                CityInfo.MaxCountPlots = maxPlot;
-            }
-
-            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CLAIMED_PLOTS, out string claimedPlots))
-            {
-                int.TryParse(claimedPlots, out int claimed);
-                CityInfo.CountPlots = claimed;
-            }
-
-            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.PLAYER_PREFIX, out string prefix))
-            {
-                CityInfo.Prefix = prefix;
-            }
-
-            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.PLAYER_AFTER_NAME, out string afterName))
-            {
-                CityInfo.AfterName = afterName;
-            }
-            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.PLAYER_CITY_TITLES, out string titles))
-            {
-                CityInfo.CityTitles = JsonConvert.DeserializeObject<HashSet<string>>(titles);
-            }
-            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.SHOW_PLOT_MOVEMENT, out string showMovement))
-            {
-                int.TryParse(showMovement, out int showInt);
-                ShowPlotMovement = (EnumShowPlotMovement)showInt;
-            }
-
-            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_INVITE_ADD, out string inviteAddNew))
-            {
-                this.ReceivedInvitations.Add(JsonConvert.DeserializeObject<ClientToCityInvitation>(inviteAddNew));
-            }
-
-            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_INVITE_REMOVE, out string inviteRemove))
-            {
-                var invitationToReemove = this.ReceivedInvitations.Where(invitation => invitation.CityName == inviteRemove).FirstOrDefault();
-                if (invitationToReemove != null)
+                if(AcceptChangeHandlers.TryGetValue(pair.Key, out Action<string> handler))
                 {
-                    this.ReceivedInvitations.Remove(invitationToReemove);
+                    handler(pair.Value);
                 }
             }
-
-            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.PLAYER_PERMISSIONS, out string permissionsSet))
+        }
+        private void OnMayorName(string val)
+        {
+            this.CityInfo.MayorName = val;
+        }
+        private void OnCityName(string val)
+        {
+            this.CityInfo.Name = val;
+        }
+        private void OnCityCreatedTimestamp(string val)
+        {
+            long.TryParse(val, out long longStamp);
+            CityInfo.TimeStampCreated = longStamp;
+        }
+        private void OnCityMembers(string val)
+        {
+            CityInfo.PlayersNames = JsonConvert.DeserializeObject<HashSet<string>>(val);
+        }
+        private void OnMaxCountPlots(string val)
+        {
+            int.TryParse(val, out int maxPlot);
+            CityInfo.MaxCountPlots = maxPlot;
+        }
+        private void OnClaimedPlots(string val)
+        {
+            int.TryParse(val, out int claimed);
+            CityInfo.CountPlots = claimed;
+        }
+        private void OnPlayerPrefix(string val)
+        {
+            CityInfo.Prefix = val;
+        }
+        private void OnPlayerAfterName(string val)
+        {
+            CityInfo.AfterName = val;
+        }
+        private void OnPlayerCityTitles(string val)
+        {
+            CityInfo.CityTitles = JsonConvert.DeserializeObject<HashSet<string>>(val);
+        }
+        private void OnShowPlotMovement(string val)
+        {
+            int.TryParse(val, out int showInt);
+            ShowPlotMovement = (EnumShowPlotMovement)showInt;
+        }
+        private void OnCityInviteAdd(string val)
+        {
+            this.ReceivedInvitations.Add(JsonConvert.DeserializeObject<ClientToCityInvitation>(val));
+        }
+        private void OnCityInviteRemove(string val)
+        {
+            var invitationToReemove = this.ReceivedInvitations.Where(invitation => invitation.CityName == val).FirstOrDefault();
+            if (invitationToReemove != null)
             {
-                PlayerPermissions.ClearPermissions();
-                PlayerPermissions.AddPermissions(JsonConvert.DeserializeObject<HashSet<EnumPlayerPermissions>>(permissionsSet));
+                this.ReceivedInvitations.Remove(invitationToReemove);
             }
-            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.FRIENDS, out string friends))
+        }
+        private void OnPlayerPermissions(string val)
+        {
+            PlayerPermissions.ClearPermissions();
+            PlayerPermissions.AddPermissions(JsonConvert.DeserializeObject<HashSet<EnumPlayerPermissions>>(val));
+        }
+        private void OnPlayerFriends(string val)
+        {
+            Friends = JsonConvert.DeserializeObject<List<string>>(val).ToHashSet();
+        }
+        private void OnCityPossibleRanks(string val)
+        {
+            CityInfo.PossibleCityRanks = JsonConvert.DeserializeObject<List<string>>(val).ToHashSet();
+        }
+        private void OnCityCitizensRanks(string val)
+        {
+            Dictionary<string, List<string>> di = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(val);
+            foreach (var it in di)
             {
-                Friends = JsonConvert.DeserializeObject<List<string>>(friends).ToHashSet();
-            }
-
-            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_POSSIBLE_RANKS, out string cityPossibleRanks))
-            {
-                CityInfo.PossibleCityRanks = JsonConvert.DeserializeObject<List<string>>(cityPossibleRanks).ToHashSet();
-            }
-
-            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_CITIZENS_RANKS, out string citizenRaks))
-            {
-                Dictionary<string, List<string>> di = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(citizenRaks);
-                foreach(var it in di)
+                var foundCell = CityInfo.CitizensRanks.FirstOrDefault(cell => cell.RankName == it.Key);
+                if (foundCell != null)
                 {
-                    var foundCell = CityInfo.CitizensRanks.FirstOrDefault(cell => cell.RankName == it.Key);
-                    if(foundCell != null) 
+                    foundCell.CitizensRanks = it.Value;
+                }
+                else
+                {
+                    CityInfo.CitizensRanks.Add(new RankCellElement(it.Key, it.Value));
+                }
+            }
+        }
+        private void OnCityCitizenRankAdded(string val)
+        {
+            Dictionary<string, List<string>> di = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(val);
+            foreach (var it in di)
+            {
+                var foundCell = CityInfo.CitizensRanks.FirstOrDefault(cell => cell.RankName == it.Key);
+                if (foundCell != null)
+                {
+                    foundCell.CitizensRanks = it.Value;
+                }
+                else
+                {
+                    CityInfo.CitizensRanks.Add(new RankCellElement(it.Key, it.Value));
+                }
+            }
+        }
+        private void OnCityCitizenRankRemoved(string val)
+        {
+            Dictionary<string, List<string>> di = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(val);
+            foreach (var it in di)
+            {
+                var foundCell = CityInfo.CitizensRanks.FirstOrDefault(cell => cell.RankName == it.Key);
+                if (foundCell != null)
+                {
+                    foundCell.CitizensRanks = it.Value;
+                }
+                else
+                {
+                    CityInfo.CitizensRanks.Add(new RankCellElement(it.Key, it.Value));
+                }
+            }
+        }
+        private void OnCityCityPlotsColor(string val)
+        {
+            CityInfo.PlotsColor = int.Parse(val);
+            claims.clientDataStorage.ClientSetCityPlotsColor(claims.clientDataStorage.clientPlayerInfo.CityInfo.Name, CityInfo.PlotsColor);
+            if (claims.clientDataStorage.clientPlayerInfo?.CityInfo != null)
+            {
+                foreach (var it in claims.clientDataStorage.GetCitySavedPlotInfos(claims.clientDataStorage.clientPlayerInfo.CityInfo.Name))
+                {
+                    claims.clientModInstance.plotsMapLayer.OnResChunkPixels(it, claims.clientDataStorage.ClientGetCityColor(claims.clientDataStorage.clientPlayerInfo?.CityInfo.Name ?? ""), claims.clientDataStorage.clientPlayerInfo?.CityInfo.Name);
+                }
+            }
+        }
+        private void OnCityCityBalance(string val)
+        {
+            CityInfo.CityBalance = (double)decimal.Parse(val);
+        }
+        private void OnCityCityCriminalAdded(string val)
+        {
+            HashSet<string> hs = JsonConvert.DeserializeObject<HashSet<string>>(val);
+            foreach (var it in hs)
+            {
+                CityInfo.Criminals.Add(it);
+            }
+        }
+        private void OnCityCityCriminalRemoved(string val)
+        {
+            HashSet<string> hs = JsonConvert.DeserializeObject<HashSet<string>>(val);
+            foreach (var it in hs)
+            {
+                CityInfo.Criminals.Remove(it);
+            }
+        }
+        private void OnCityCityCriminalsList(string val)
+        {
+            HashSet<string> hs = JsonConvert.DeserializeObject<HashSet<string>>(val);
+            CityInfo.Criminals = hs;
+        }
+        private void OnCityCityPrisonCellAll(string val)
+        {
+            HashSet<PrisonCellElement> pc = JsonConvert.DeserializeObject<HashSet<PrisonCellElement>>(val);
+            CityInfo.PrisonCells = pc.ToList();
+        }
+        private void OnCityCityPrisonCellAdd(string val)
+        {
+            HashSet<PrisonCellElement> pc = JsonConvert.DeserializeObject<HashSet<PrisonCellElement>>(val);
+            foreach (var it in pc)
+            {
+                CityInfo.PrisonCells.Add(it);
+            }
+        }
+        private void OnCityCityPrisonCellRemoved(string val)
+        {
+            HashSet<PrisonCellElement> pc = JsonConvert.DeserializeObject<HashSet<PrisonCellElement>>(val);
+            foreach (var it in pc)
+            {
+                CityInfo.PrisonCells.Add(it);
+            }
+        }
+        private void OnCityCityPrisonCellUpdate(string val)
+        {
+            HashSet<PrisonCellElement> pc = JsonConvert.DeserializeObject<HashSet<PrisonCellElement>>(val);
+            foreach (var it in pc)
+            {
+                foreach (var it_current in CityInfo.PrisonCells.ToArray())
+                {
+                    if (it_current.SpawnPosition.Equals(it.SpawnPosition))
                     {
-                        foundCell.CitizensRanks = it.Value;
-                    }
-                    else
-                    {
-                        CityInfo.CitizensRanks.Add(new RankCellElement(it.Key, it.Value));
-                    }
-                }
-            }
-
-            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_CITIZEN_RANK_ADDED, out string citizenRaksAdded))
-            {
-                Dictionary<string, List<string>> di = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(citizenRaksAdded);
-                foreach (var it in di)
-                {
-                    var foundCell = CityInfo.CitizensRanks.FirstOrDefault(cell => cell.RankName == it.Key);
-                    if (foundCell != null)
-                    {
-                        foundCell.CitizensRanks = it.Value;
-                    }
-                    else
-                    {
-                        CityInfo.CitizensRanks.Add(new RankCellElement(it.Key, it.Value));
-                    }
-                }
-            }
-
-            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_CITIZEN_RANK_REMOVED, out string citizenRaksRemoved))
-            {
-                Dictionary<string, List<string>> di = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(citizenRaksRemoved);
-                foreach (var it in di)
-                {
-                    var foundCell = CityInfo.CitizensRanks.FirstOrDefault(cell => cell.RankName == it.Key);
-                    if (foundCell != null)
-                    {
-                        foundCell.CitizensRanks = it.Value;
-                    }
-                    else
-                    {
-                        CityInfo.CitizensRanks.Add(new RankCellElement(it.Key, it.Value));
-                    }
-                }
-            }
-            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_PLOTS_COLOR, out string cityPlotsColor))
-            {
-                CityInfo.PlotsColor = int.Parse(cityPlotsColor);
-            }
-
-            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_BALANCE, out string cityBalance))
-            {
-                CityInfo.CityBalance = (double)decimal.Parse(cityBalance);
-            }
-
-            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_CRIMINAL_ADDED, out string criminalAdded))
-            {
-                HashSet<string> hs = JsonConvert.DeserializeObject<HashSet<string>>(criminalAdded);
-                foreach (var it in hs)
-                {
-                    CityInfo.Criminals.Add(it);
-                }
-            }
-
-            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_CRIMINAL_REMOVED, out string criminalRemoved))
-            {
-                HashSet<string> hs = JsonConvert.DeserializeObject<HashSet<string>>(criminalRemoved);
-                foreach (var it in hs)
-                {
-                    CityInfo.Criminals.Remove(it);
-                }
-            }
-
-            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_CRIMINALS_LIST, out string criminalsList))
-            {
-                
-                HashSet<string> hs = JsonConvert.DeserializeObject<HashSet<string>>(criminalsList);
-                CityInfo.Criminals = hs;              
-            }
-
-            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_PRISON_CELL_ALL, out string prisonCellList))
-            {
-                HashSet<PrisonCellElement> pc = JsonConvert.DeserializeObject<HashSet<PrisonCellElement>>(prisonCellList);
-                CityInfo.PrisonCells = pc.ToList();
-            }
-
-            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_ADD_PRISON_CELL, out string prisonCellAdd))
-            {
-                HashSet<PrisonCellElement> pc = JsonConvert.DeserializeObject<HashSet<PrisonCellElement>>(prisonCellAdd);
-                foreach(var it in pc)
-                {
-                    CityInfo.PrisonCells.Add(it);
-                }
-            }
-
-            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_REMOVE_PRISON_CELL, out string prisonCellRemove))
-            {
-                HashSet<PrisonCellElement> pc = JsonConvert.DeserializeObject<HashSet<PrisonCellElement>>(prisonCellRemove);
-                foreach(var it in pc)
-                {
-                    CityInfo.PrisonCells.Remove(it);
-                }
-            }
-
-            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_CELL_PRISON_UPDATE, out string prisonCelUpdate))
-            {
-                HashSet<PrisonCellElement> pc = JsonConvert.DeserializeObject<HashSet<PrisonCellElement>>(prisonCelUpdate);
-                foreach (var it in pc)
-                {
-                    foreach(var it_current in CityInfo.PrisonCells.ToArray())
-                    {
-                        if(it_current.SpawnPosition.Equals(it.SpawnPosition))
-                        {
-                            CityInfo.PrisonCells.Remove(it_current);
-                            CityInfo.PrisonCells.Add(it);
-                            break;
-                        }
+                        CityInfo.PrisonCells.Remove(it_current);
+                        CityInfo.PrisonCells.Add(it);
+                        break;
                     }
                 }
             }
-
-            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_SUMMON_POINT_ALL, out string summonCellsAll))
+        }
+        private void OnCityCitySummonPointAll(string val)
+        {
+            HashSet<SummonCellElement> pc = JsonConvert.DeserializeObject<HashSet<SummonCellElement>>(val);
+            CityInfo.SummonCells = pc.ToList();
+        }
+        private void OnCityCitySummonPointAdd(string val)
+        {
+            HashSet<SummonCellElement> pc = JsonConvert.DeserializeObject<HashSet<SummonCellElement>>(val);
+            foreach (var it in pc)
             {
-                HashSet<SummonCellElement> pc = JsonConvert.DeserializeObject<HashSet<SummonCellElement>>(summonCellsAll);
-                CityInfo.SummonCells = pc.ToList();
+                CityInfo.SummonCells.Add(it);
             }
-
-            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_SUMMON_POINT_ADD, out string summonPlotAdd))
+        }
+        private void OnCityCitySummonPointRemove(string val)
+        {
+            HashSet<SummonCellElement> pc = JsonConvert.DeserializeObject<HashSet<SummonCellElement>>(val);
+            foreach (var it in pc)
             {
-                HashSet<SummonCellElement> pc = JsonConvert.DeserializeObject<HashSet<SummonCellElement>>(summonPlotAdd);
-                foreach (var it in pc)
+                foreach (var it_current in CityInfo.SummonCells.ToArray())
                 {
-                    CityInfo.SummonCells.Add(it);
-                }
-            }
-
-            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_SUMMON_POINT_REMOVE, out string summonPlotRemove))
-            {
-                HashSet<SummonCellElement> pc = JsonConvert.DeserializeObject<HashSet<SummonCellElement>>(summonPlotRemove);
-                foreach (var it in pc)
-                {
-                    foreach (var it_current in CityInfo.SummonCells.ToArray())
+                    if (it_current.SpawnPosition.Equals(it.SpawnPosition))
                     {
-                        if (it_current.SpawnPosition.Equals(it.SpawnPosition))
-                        {
-                            CityInfo.SummonCells.Remove(it_current);
-                            break;
-                        }
+                        CityInfo.SummonCells.Remove(it_current);
+                        break;
                     }
                 }
             }
-
-            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_SUMMON_POINT_UPDATE, out string summonPlotUpdate))
+        }
+        private void OnCityCitySummonPointUpdate(string val)
+        {
+            HashSet<SummonCellElement> pc = JsonConvert.DeserializeObject<HashSet<SummonCellElement>>(val);
+            foreach (var it in pc)
             {
-                HashSet<SummonCellElement> pc = JsonConvert.DeserializeObject<HashSet<SummonCellElement>>(summonPlotUpdate);
-                foreach (var it in pc)
+                foreach (var it_current in CityInfo.SummonCells.ToArray())
                 {
-                    foreach (var it_current in CityInfo.SummonCells.ToArray())
+                    if (it_current.SpawnPosition.Equals(it.SpawnPosition))
                     {
-                        if (it_current.SpawnPosition.Equals(it.SpawnPosition))
-                        {
-                            CityInfo.SummonCells.Remove(it_current);
-                            CityInfo.SummonCells.Add(it);
-                            break;
-                        }
+                        CityInfo.SummonCells.Remove(it_current);
+                        CityInfo.SummonCells.Add(it);
+                        break;
                     }
                 }
             }
-
-            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_PLOTS_GROUPS_ALL, out string plotsgroupCellsAll))
+        }
+        private void OnCityCitySummonPlotsgroupAll(string val)
+        {
+            HashSet<PlotsGroupCellElement> pc = JsonConvert.DeserializeObject<HashSet<PlotsGroupCellElement>>(val);
+            CityInfo.PlotsGroupCells = pc.ToList();
+        }
+        private void OnCityCitySummonPlotsgroupRemove(string val)
+        {
+            HashSet<PlotsGroupCellElement> pc = JsonConvert.DeserializeObject<HashSet<PlotsGroupCellElement>>(val);
+            foreach (var it in pc)
             {
-                HashSet<PlotsGroupCellElement> pc = JsonConvert.DeserializeObject<HashSet<PlotsGroupCellElement>>(plotsgroupCellsAll);
-                CityInfo.PlotsGroupCells = pc.ToList();
-            }
-
-            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_PLOTS_GROUPS_REMOVE, out string cityplotsgroupRemove))
-            {
-                HashSet<PlotsGroupCellElement> pc = JsonConvert.DeserializeObject<HashSet<PlotsGroupCellElement>>(cityplotsgroupRemove);
-                foreach (var it in pc)
+                foreach (var it_current in CityInfo.PlotsGroupCells.ToArray())
                 {
-                    foreach (var it_current in CityInfo.PlotsGroupCells.ToArray())
+                    if (it_current.Guid.Equals(it.Guid))
                     {
-                        if (it_current.Guid.Equals(it.Guid))
-                        {
-                            CityInfo.PlotsGroupCells.Remove(it_current);
-                            break;
-                        }
+                        CityInfo.PlotsGroupCells.Remove(it_current);
+                        break;
                     }
                 }
             }
-
-            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_PLOTS_GROUPS_ADD, out string cityplotsgroupAdd))
+        }
+        private void OnCityCitySummonPlotsgroupAdd(string val)
+        {
+            HashSet<PlotsGroupCellElement> pc = JsonConvert.DeserializeObject<HashSet<PlotsGroupCellElement>>(val);
+            foreach (var it in pc)
             {
-                HashSet<PlotsGroupCellElement> pc = JsonConvert.DeserializeObject<HashSet<PlotsGroupCellElement>>(cityplotsgroupAdd);
-                foreach (var it in pc)
-                {
-                    CityInfo.PlotsGroupCells.Add(it);
-                }
+                CityInfo.PlotsGroupCells.Add(it);
             }
-
-            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.CITY_PLOTS_GROUPS_UPDATE, out string cityplotsgroupUpdate))
+        }
+        private void OnCityCitySummonPlotsgroupUpdate(string val)
+        {
+            HashSet<PlotsGroupCellElement> pc = JsonConvert.DeserializeObject<HashSet<PlotsGroupCellElement>>(val);
+            foreach (var it in pc)
             {
-                HashSet<PlotsGroupCellElement> pc = JsonConvert.DeserializeObject<HashSet<PlotsGroupCellElement>>(cityplotsgroupUpdate);
-                foreach (var it in pc)
+                foreach (var it_current in CityInfo.PlotsGroupCells.ToArray())
                 {
-                    foreach (var it_current in CityInfo.PlotsGroupCells.ToArray())
+                    if (it_current.Guid.Equals(it.Guid))
                     {
-                        if (it_current.Guid.Equals(it.Guid))
-                        {
-                            CityInfo.PlotsGroupCells.Remove(it_current);
-                            CityInfo.PlotsGroupCells.Add(it);
-                        }
+                        CityInfo.PlotsGroupCells.Remove(it_current);
+                        CityInfo.PlotsGroupCells.Add(it);
                     }
                 }
             }
-
-            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.TO_PLOTS_GROUP_INVITE_ADD, out string toPlotsGroupInviteAdd))
+        }
+        private void OnCityCitySummonPlotsgroupInviteAdd(string val)
+        {
+            HashSet<ClientToPlotsGroupInvitation> pc = JsonConvert.DeserializeObject<HashSet<ClientToPlotsGroupInvitation>>(val);
+            foreach (var it in pc)
             {
-                HashSet<ClientToPlotsGroupInvitation> pc = JsonConvert.DeserializeObject<HashSet<ClientToPlotsGroupInvitation>>(toPlotsGroupInviteAdd);
-                foreach (var it in pc)
+                this.ReceivedPlotsGroupInvitations.Add(it);
+            }
+        }
+        private void OnCityCitySummonPlotsgroupInviteRemove(string val)
+        {
+            HashSet<ClientToPlotsGroupInvitation> pc = JsonConvert.DeserializeObject<HashSet<ClientToPlotsGroupInvitation>>(val);
+            foreach (var it in pc)
+            {
+                foreach (var it_current in this.ReceivedPlotsGroupInvitations.ToArray())
                 {
-                    this.ReceivedPlotsGroupInvitations.Add(it);
+                    if (it_current.CityName.Equals(it.CityName))
+                    {
+                        this.ReceivedPlotsGroupInvitations.Remove(it_current);
+                        this.ReceivedPlotsGroupInvitations.Add(it);
+                    }
                 }
             }
-
-            if (valueDict.TryGetValue(EnumPlayerRelatedInfo.TO_PLOTS_GROUP_INVITE_REMOVE, out string toPlotsGroupInviteRemove))
+        }
+        private void OnAllianceNewAll(string val)
+        {
+            AllianceInfo ai = JsonConvert.DeserializeObject<AllianceInfo>(val);
+            claims.clientDataStorage.clientPlayerInfo.AllianceInfo = ai;
+        }
+        private void OnAllianceRemove(string val)
+        {
+            claims.clientDataStorage.clientPlayerInfo.AllianceInfo = null;
+        }
+        private void OnCityListAll(string val)
+        {
+            List<ClientCityInfoCellElement> ai = JsonConvert.DeserializeObject<List<ClientCityInfoCellElement>>(val);
+            claims.clientDataStorage.clientPlayerInfo.AllCitiesList = ai;
+        }
+        private void OnCityListUpdate(string val)
+        {
+            List<ClientCityInfoCellElement> ai = JsonConvert.DeserializeObject<List<ClientCityInfoCellElement>>(val);
+            foreach (var it in ai)
             {
-                HashSet<ClientToPlotsGroupInvitation> pc = JsonConvert.DeserializeObject<HashSet<ClientToPlotsGroupInvitation>>(toPlotsGroupInviteRemove);
-                foreach (var it in pc)
+                var existing = AllCitiesList.FirstOrDefault(c => c.Guid == it.Guid);
+                if (existing != null)
                 {
-                    foreach (var it_current in this.ReceivedPlotsGroupInvitations.ToArray())
+                    existing.CitizensAmount = it.CitizensAmount;
+                    existing.MayorName = it.MayorName;
+                    existing.ClaimedPlotsAmount = it.ClaimedPlotsAmount;
+                    existing.AllianceName = it.AllianceName;
+                    existing.TimeStampCreated = it.TimeStampCreated;
+                    existing.Name = it.Name;
+                    existing.Open = it.Open;
+                    existing.InvMsg = it.InvMsg;
+                }
+                else
+                {
+                    AllCitiesList.Add(it);
+                }
+            }
+        }
+        private void OnAllianceName(string val)
+        {
+            Tuple<string, string> tup = JsonConvert.DeserializeObject<Tuple<string, string>>(val);
+            claims.clientDataStorage.clientPlayerInfo.AllianceInfo.Name = tup.Item2;
+        }
+        private void OnAllianceInviteAdd(string val)
+        {
+            HashSet<ClientToAllianceInvitationCellElement> pc = JsonConvert.DeserializeObject<HashSet<ClientToAllianceInvitationCellElement>>(val);
+            foreach (var it in pc)
+            {
+                this.CityInfo.ClientToAllianceInvitations.Add(it);
+            }
+        }
+        private void OnAllianceLetterAdd(string val)
+        {
+            HashSet<ClientConflictLetterCellElement> pc = JsonConvert.DeserializeObject<HashSet<ClientConflictLetterCellElement>>(val);
+            foreach (var it in pc)
+            {
+                this.CityInfo.ClientConflictLetterCellElements.Add(it);
+            }
+        }
+        private void OnAllianceLetterRemove(string val)
+        {
+            HashSet<Tuple<string, LetterPurpose>> pc = JsonConvert.DeserializeObject<HashSet<Tuple<string, LetterPurpose>>>(val);
+            foreach (var it in pc)
+            {
+                foreach (var it_current in this.CityInfo.ClientConflictLetterCellElements.ToArray())
+                {
+                    if (it_current.Guid.ToString().Equals(it.Item1) && it_current.Purpose.Equals(it.Item2))
                     {
-                        if (it_current.CityName.Equals(it.CityName))
-                        {
-                            this.ReceivedPlotsGroupInvitations.Remove(it_current);
-                            this.ReceivedPlotsGroupInvitations.Add(it);
-                        }
+                        this.CityInfo.ClientConflictLetterCellElements.Remove(it_current);
+                        break;
                     }
+                }
+            }
+        }
+        private void OnAllianceConflictAdd(string val)
+        {
+            HashSet<ClientConflictCellElement> pc = JsonConvert.DeserializeObject<HashSet<ClientConflictCellElement>>(val);
+            foreach (var it in pc)
+            {
+                this.CityInfo.ClientConflictCellElements.Add(it);
+            }
+        }
+        private void OnAllianceLetterAll(string val)
+        {
+            HashSet<string> pc = JsonConvert.DeserializeObject<HashSet<string>>(val);
+            foreach (var it in pc)
+            {
+                foreach (var it_current in this.CityInfo.ClientConflictCellElements.ToArray())
+                {
+                    if (it_current.Guid.ToString().Equals(it))
+                    {
+                        this.CityInfo.ClientConflictCellElements.Remove(it_current);
+                        break;
+                    }
+                }
+            }
+        }
+        private void OnAllianceConflictRemove(string val)
+        {
+            HashSet<string> pc = JsonConvert.DeserializeObject<HashSet<string>>(val);
+            foreach (var it in pc)
+            {
+                foreach (var it_current in this.CityInfo.ClientConflictCellElements.ToArray())
+                {
+                    if (it_current.Guid.ToString().Equals(it))
+                    {
+                        this.CityInfo.ClientConflictCellElements.Remove(it_current);
+                        break;
+                    }
+                }
+            }
+        }
+        private void OnAllianceConflictAll(string val)
+        {
+            HashSet<ClientConflictCellElement> pc = JsonConvert.DeserializeObject<HashSet<ClientConflictCellElement>>(val);
+            foreach (var it in pc)
+            {
+                this.CityInfo.ClientConflictCellElements.Add(it);
+            }
+        }
+        private void OnCityPlotRecolor(string val)
+        {
+            HashSet<Vec2i> pc = JsonConvert.DeserializeObject<HashSet<Vec2i>>(val);
+            foreach (var it in pc)
+            {
+                if (claims.clientDataStorage.getSavedPlot(it, out var plot))
+                {
+                    claims.clientModInstance.plotsMapLayer.OnResChunkPixels(it, claims.clientDataStorage.ClientGetCityColor(plot.cityName), plot.cityName);
+                }
+            }
+        }
+        private void OnAllianceConflictWarrangesUpdated(string val)
+        {
+            HashSet<ClientConflictCellElement> pc = JsonConvert.DeserializeObject<HashSet<ClientConflictCellElement>>(val);
+            foreach (var it in pc)
+            {
+                ClientConflictCellElement cell = this.CityInfo.ClientConflictCellElements.FirstOrDefault(c => c.Guid == it.Guid);
+                if (cell != null)
+                {
+                    cell.WarRanges = it.WarRanges;
+                    cell.FirstWarRanges = it.FirstWarRanges;
+                    cell.SecondWarRanges = it.SecondWarRanges;
+                    cell.NextBattleDateEnd = it.NextBattleDateEnd;
+                    cell.NextBattleDateStart = it.NextBattleDateStart;
                 }
             }
         }

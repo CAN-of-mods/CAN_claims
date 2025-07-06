@@ -2,9 +2,11 @@
 using claims.src.clientMapHandling;
 using claims.src.events;
 using claims.src.gui.playerGui.structures;
+using claims.src.gui.playerGui.structures.cellElements;
 using claims.src.network.packets;
 using claims.src.part;
 using claims.src.part.structure;
+using claims.src.part.structure.conflict;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -12,6 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Vintagestory.API.Common;
+using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
 
 namespace claims.src.network.handlers
@@ -84,7 +87,8 @@ namespace claims.src.network.handlers
                                             : "",
                                         plot.Type == PlotType.TAVERN
                                             ? plot.GetClientInnerClaimFromDefault(playerInfo)
-                                            : null)));
+                                            : null,
+                                        plot.getCity().Alliance?.Guid ?? "")));
                             }
                             preparedData.Add(new Tuple<Vec2i, long, List<KeyValuePair<Vec2i, SavedPlotInfo>>>
                             (zoneVec, savedTimestamp, preparedSavedPlots));
@@ -143,7 +147,155 @@ namespace claims.src.network.handlers
                     }
                 }
             });
+            claims.serverChannel.SetMessageHandler<PlayerGuiRelatedInfoPacket>((player, packet) =>
+            {
+                claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+                if (playerInfo == null)
+                {
+                    return;
+                }
+                if (!playerInfo.HasAlliance())
+                {
+                    return;
+                }
+                Alliance alliance = playerInfo.Alliance;
+                if(!alliance.IsLeader(playerInfo))
+                {
+                    return;
+                }
+                Dictionary<EnumPlayerRelatedInfo, string> collector = packet.playerGuiRelatedInfoDictionary;
+                if(!collector.TryGetValue(EnumPlayerRelatedInfo.CLIENT_CONFLICT_SUGGESTED_WARRANGE, out var clientConflictString))
+                {
+                    return;
+                }
+                ClientConflictCellElement ccce = JsonConvert.DeserializeObject<ClientConflictCellElement>(clientConflictString);
+                if(ccce == null)
+                {
+                    return;
+                }
+                
+                if (!ConflictHandler.TryGetConflictByGuid(ccce.Guid, out var conflict))
+                {
+                    return;
+                }
 
+                bool getFirst = true;
+                if(conflict.First.Equals(alliance))
+                {
+                    conflict.FirstWarRanges = ccce.FirstWarRanges;
+                }
+                else
+                {
+                    conflict.SecondWarRanges = ccce.SecondWarRanges;
+                    getFirst = false;
+                }
+
+                if (claims.config.NEED_AGREE_FOR_WAR_RANGES)
+                {
+                    var commonRanges = FindCommonRanges(conflict.FirstWarRanges, conflict.SecondWarRanges);
+                    if(commonRanges.Count > 0)
+                    {
+                        conflict.WarRanges = commonRanges;
+                        ccce.WarRanges = commonRanges;
+                        conflict.FirstWarRanges.Clear();
+                        conflict.SecondWarRanges.Clear();
+                        conflict.CalculateNextBattleDate();
+                        conflict.State = ConflictState.ACTIVE;
+                    }
+                }
+                else
+                {
+                    //remove all ranges for this alliance
+                    string usedAllianceGuid = getFirst ? conflict.First.Guid : conflict.Second.Guid;
+                    //if()
+                    foreach(var it in conflict.WarRanges.ToArray())
+                    {
+                        if(it.SuggestedAllianceGuid.Equals(usedAllianceGuid))
+                        {
+                            conflict.WarRanges.Remove(it);
+                        }
+                    }
+
+                    //allow only n war ranges for alliance
+                    List<SelectedWarRange> usedAllianceRanges = getFirst ? ccce.FirstWarRanges : ccce.SecondWarRanges;
+                    while(usedAllianceRanges.Count() > claims.config.WARRANGE_PER_ALLIANCE && usedAllianceRanges.Count() > 0)
+                    {
+                        usedAllianceRanges.Remove(usedAllianceRanges.Last());
+                    }
+                    
+                    foreach (var it in usedAllianceRanges)
+                    {
+                        conflict.WarRanges.Add(it);
+                    }
+     
+                    conflict.CalculateNextBattleDate();
+                    conflict.State = ConflictState.ACTIVE;
+                }
+                ModConfigReady.CheckForWarToStart();
+                conflict.saveToDatabase();
+                ccce.FirstWarRanges = conflict.FirstWarRanges;
+                ccce.SecondWarRanges = conflict.SecondWarRanges;
+                ccce.WarRanges = conflict.WarRanges;
+                ccce.NextBattleDateEnd = conflict.NextBattleDateEnd;
+                ccce.NextBattleDateStart = conflict.NextBattleDateStart;
+                ccce.State = conflict.State;
+                UsefullPacketsSend.AddToQueueAllianceInfoUpdate(conflict.First.Guid, new Dictionary<string, object> { { "value", ccce } } , EnumPlayerRelatedInfo.ALLIANCE_CONFLICT_WARRANGES_UPDATED);
+                UsefullPacketsSend.AddToQueueAllianceInfoUpdate(conflict.Second.Guid, new Dictionary<string, object> { { "value", ccce } }, EnumPlayerRelatedInfo.ALLIANCE_CONFLICT_WARRANGES_UPDATED);
+            });
+        }
+        public static List<SelectedWarRange> FindCommonRanges(List<SelectedWarRange> first, List<SelectedWarRange> second)
+        {
+            List<SelectedWarRange> common = new List<SelectedWarRange>();
+            foreach (var firstRange in first)
+            {
+                int startFirst = GetMinutes(firstRange.StartDay, firstRange.StartTime);
+                int endFirst = GetMinutes(firstRange.EndDay, firstRange.EndTime);
+                foreach (var secondRange in second)
+                {
+                    int startSecond = GetMinutes(secondRange.StartDay, secondRange.StartTime);
+                    int endSecond = GetMinutes(secondRange.EndDay, secondRange.EndTime);
+
+                    int start = Math.Max(startFirst, startSecond);
+                    int end = Math.Min(endFirst, endSecond);
+
+                    int diff = end - start;
+
+                    if (diff >= claims.config.MIN_WARRANGE_DURATION_MINUTES)
+                    {
+                        common.Add(new SelectedWarRange
+                        (
+                            (DayOfWeek)(start / (24 * 60)),
+                            (DayOfWeek)(end / (24 * 60)),
+                            TimeSpan.FromMinutes(start % (24 * 60)),
+                            TimeSpan.FromMinutes(diff),
+                            firstRange.SuggestedAllianceGuid
+                        ));
+                        //found common range
+                        /*TimeSpan startTime = TimeSpan.FromMinutes(start % (24 * 60));
+                        TimeSpan endTime = TimeSpan.FromMinutes(end % (24 * 60));
+                        DayOfWeek startDay = (DayOfWeek)(start / (24 * 60));
+                        DayOfWeek endDay = (DayOfWeek)(end / (24 * 60));
+                        common.Add(new SelectedWarRange(startDay, endDay, startTime, endTime - startTime, firstRange.SuggestedAllianceGuid));*/
+                    }
+                }
+            }
+            return common;
+        }
+        public static int GetMinutes(DayOfWeek day, TimeSpan time)
+        {
+            return (int)day * 24 * 60 + (int)time.TotalMinutes;
+        }
+        public static int GetWarRangesAmountFromAlliacne(Alliance alliance, List<SelectedWarRange> ranges)
+        {
+            int result = 0;
+            foreach(var it in ranges)
+            {
+                if(it.SuggestedAllianceGuid.Equals(alliance.Guid))
+                {
+                    result++;
+                }
+            }
+            return result;
         }
     }
 }

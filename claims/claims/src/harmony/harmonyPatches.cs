@@ -452,7 +452,7 @@ namespace claims.src.harmony
                 return true;
             }
             claims.dataStorage.getPlot(PlotPosition.fromEntityyPos(player.Entity.ServerPos), out Plot tmpPlot);
-            if (playerInfo.isPrisoned() && playerInfo.PrisonedIn.getPlot().Equals(tmpPlot))
+            if (playerInfo.isPrisoned() && playerInfo.PrisonedIn.Plot.Equals(tmpPlot))
             {
                 if (Settings.blockedCommandsForPrison.Contains(commandName) || (args.Length > 0 && Settings.blockedCommandsForPrison.Contains(args.Split(' ')[0])))
                 {
@@ -710,13 +710,9 @@ namespace claims.src.harmony
                             var f = inst;
                             var serv = typeof(ServerSystem).GetField("server", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(inst) as ServerMain;
                             ConnectedClient client = serv.Clients[plr.ClientId];
-                            serv.ServerUdpNetwork.physicsManager.UpdateTrackedEntitiesStates(new Dictionary<int, ConnectedClient>
-                            {
-                                {
-                                    client.Id,
+                            serv.ServerUdpNetwork.physicsManager.UpdateTrackedEntitiesStates(
                                     client
-                                }
-                            });
+                              );
                             
                             claims.sapi.World.RegisterCallback((dt) => { Particles.PlayerRespawnParticles(plr.Entity.Pos.XYZ); }, 1000);
                         }));

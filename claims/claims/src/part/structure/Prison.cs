@@ -11,15 +11,11 @@ namespace claims.src.part.structure
     public class Prison : Part
     {
         List<PrisonCellInfo> prisonCells { get; set; } = new List<PrisonCellInfo>();
-        City city;
-        Plot plot;
+        public City City { get; set; }
+        public Plot Plot { get; set; }
         public Prison(string val, string guid) : base(val, guid)
         {
-        }
-        public void setPlot(Plot plot)
-        {
-            this.plot = plot;
-        }        
+        } 
         public Vec3i getRandomRespawnPoint()
         {
             return prisonCells[claims.dataStorage.r.Next() % prisonCells.Count].getSpawnPosition();
@@ -33,18 +29,6 @@ namespace claims.src.part.structure
             }
             cell = prisonCells[claims.dataStorage.r.Next() % prisonCells.Count];
             return true;
-        }
-        public Plot getPlot()
-        {
-            return plot;
-        }
-        public void setCity(City city)
-        {
-            this.city = city;   
-        }
-        public City getCity()
-        {
-            return city;
         }
         public void addPrisonCell(PrisonCellInfo prisonCellInfo)
         {

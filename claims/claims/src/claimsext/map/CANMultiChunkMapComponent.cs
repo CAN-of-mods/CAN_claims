@@ -99,13 +99,13 @@ namespace claims.src.claimsext.map
                 Texture = new LoadedTexture(capi, 0, num, num);
                 capi.Render.LoadOrUpdateTextureFromRgba(emptyPixels, linearMag: false, 0, ref Texture);
             }
-            //Texture.
             capi.Render.LoadOrUpdateTextureFromRgba(pixels, linearMag: false, 0, ref tmpTexture);
             //GL.Enable((EnableCap)3042);
 
             //GL.BlendFunc(BlendingFactor.One, BlendingFactor.Zero);
             //GL.BlendEquation(BlendEquationMode.FuncSubtract);
             //capi.Render.GlToggleBlend(blend: false);
+            //tmpTexture?.Dispose();
             capi.Render.GLDisableDepthTest();
             capi.Render.RenderTextureIntoTexture(tmpTexture, 0f, 0f, chunksize, chunksize, Texture, chunksize * dx, chunksize * dz, -1);
             capi.Render.BindTexture2d(Texture.TextureId);
@@ -119,7 +119,6 @@ namespace claims.src.claimsext.map
             {
                 throw new ArgumentOutOfRangeException("dx/dz must be within [0," + (ChunkLen - 1) + "]");
             }
-
             chunkSet[dx, dz] = false;
         }
 
@@ -137,6 +136,7 @@ namespace claims.src.claimsext.map
         public void ActuallyDispose()
         {
             Texture.Dispose();
+            tmpTexture.Dispose();
         }
 
         public bool IsVisible(HashSet<Vec2i> curVisibleChunks)

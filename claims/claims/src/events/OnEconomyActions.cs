@@ -174,6 +174,54 @@ namespace claims.src.events
                         return;
                     }
                 }
+                else if (signText.StartsWith(Lang.Get("claims:economy_chest_bank_alliance_sign_prefix")))
+                {
+                    //City bank can be created only in city claimed plot
+                    claims.dataStorage.getPlot(PlotPosition.fromXZ(chestPos.X, chestPos.Z), out Plot plot);
+                    if (plot == null)
+                    {
+                        return;
+                    }
+                    City city = plot.getCity();
+                    if (city == null)
+                    {
+                        MessageHandler.sendMsgToPlayer(player as IServerPlayer, Lang.Get("claims:economy_there_is_no_city_in_this_plot"));
+                        return;
+                    }
+
+                    if (signText.Substring(Lang.Get("claims:economy_chest_bank_alliance_sign_prefix").Length) != city.Alliance.GetPartName().Replace("_", " "))
+                    {
+                        MessageHandler.sendMsgToPlayer(player as IServerPlayer, Lang.Get("claims:economy_different_alliance"));
+                        return;
+                    }
+                    Alliance alliance = playerInfo.Alliance;
+
+                    if (alliance != null && city.Alliance.Equals(alliance) && playerInfo.Alliance.IsLeader(playerInfo))
+                    {
+                        if ((claims.economyHandler as RealMoneyEconomyHandler).TryGetRealBankInfo(alliance.MoneyAccountName, out RealBankInfo tmpVecAlliance))
+                        {
+                            Vec3i RBIchestCoords = tmpVecAlliance.getChestCoors();
+                            if (tmpVecAlliance != null && (RBIchestCoords.X == chestPos.X &&
+                                                           RBIchestCoords.Z == chestPos.Z &&
+                                                           RBIchestCoords.Y == chestPos.Y))
+                            {
+                                MessageHandler.sendMsgToPlayer(player as IServerPlayer, Lang.Get("claims:economy_chest_bank_already_set_here"));
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            if (claims.economyHandler.accountExist(alliance.MoneyAccountName))
+                            {
+                                claims.economyHandler.deleteAccount(alliance.MoneyAccountName);
+                                MessageHandler.sendMsgToPlayer(player as IServerPlayer, Lang.Get("claims:economy_alliance_chest_bank_removed"));
+                            }
+                            claims.economyHandler.newAccount(alliance.MoneyAccountName, new Dictionary<string, object> { { "chestPos", new Vec3i(chestPos.X, chestPos.Y, chestPos.Z) } });
+                            MessageHandler.sendMsgToPlayer(player as IServerPlayer, Lang.Get("claims:economy_alliance_chest_bank_created"));
+                            return;
+                        }
+                    }
+                }
                 else
                 {
                     MessageHandler.sendMsgToPlayer(player as IServerPlayer, Lang.Get("claims:economy_help_creation"));

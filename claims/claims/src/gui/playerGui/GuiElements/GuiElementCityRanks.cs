@@ -1,6 +1,5 @@
 ﻿using Cairo;
 using claims.src.auxialiry;
-using claims.src.gui.playerGui.structures;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -18,6 +17,7 @@ using System.Reflection.Emit;
 using static claims.src.gui.playerGui.CANClaimsGui;
 using System.Reflection;
 using Vintagestory.Client.NoObf;
+using claims.src.gui.playerGui.structures.cellElements;
 
 namespace claims.src.gui.playerGui.GuiElements
 {
@@ -260,25 +260,7 @@ namespace claims.src.gui.playerGui.GuiElements
             }
 
             api.Render.Render2DTexturePremultipliedAlpha(modcellTexture.TextureId, (int)Bounds.absX, (int)Bounds.absY, Bounds.OuterWidthInt, Bounds.OuterHeightInt);
-            int mouseX = api.Input.MouseX;
-            int mouseY = api.Input.MouseY;
-            Vec2d vec2d = Bounds.PositionInside(mouseX, mouseY);
-            if (vec2d != null)
-            {
-                /* if (this.button.Bounds.PointInside(mouseX, mouseY))
-                 {
-                     this.button.SetActive(true);
-                 }
-                 else
-                 {
-                     this.button.SetActive(false);
-                 }*/
 
-            }
-            else
-            {
-                //this.button.SetActive(false);
-            }
             if (buttons != null)
             {
                 foreach (var it in buttons)

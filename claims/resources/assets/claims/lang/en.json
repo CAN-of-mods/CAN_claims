@@ -82,6 +82,48 @@
     "inviterecieved": "Received",
     "cities_list": "Cities list: {0}",
     "city_name_changed_to": "City's name was changed to {0}",
+    //ALLIANCE
+    "alliance_was_deleted": "Alliance {0} was deleted.",
+    "alliance_fee_too_high": "Fee is too high, maximum is {0}.",
+    "alliane_fee_set_to": "Alliance fee set to {0}.",
+    "capital_changed_to": "{0} is now capital of {0}.",
+    "new_alliance_created": "{0} created new alliance {1}.",
+    "gui-new-alliance-cost": "New alliance: {0}",
+    "gui-leader-name": "Leader: {0}",
+    "gui-alliance-cities-list": "Cities: {0}",
+    "gui-new-alliance-button": "Create new alliance",
+    "gui-enter-new-alliance-name": "Name for a new alliance",
+    "gui-enter-alliance-name": "Enter name of the alliance",
+    "not_main_city_to_kick": "Main city cannot be kicked.",
+    "gui-alliance-prefix": "Prefix: {0}",
+    "gui-enter-alliance-prefix": "Enter a new prefix:",
+    "our_city_left_alliance": "Our city left alliance",
+    "must_not_be_leader": "Main city cannot leave alliance",
+    "city_left_alliance": "City {0} left alliance",
+    "conflict_created_with": "Conflict created with {0}",
+    "no_conflict_found": "No conflict found",
+    "conflict_declaration_removed": "Conflict declaration with {0} was removed",
+    "end_conflict_letter_exist": "End conflict letter already exists",
+    "conflict_stopped_with": "Conflict stopped with {0}",
+    "conflict_stop_denied": "Conflict stop denied",
+    "conflict_letters_list": "Conflict letters",
+    "conflict_letter_sent": "Conflict letter was sent",
+    "conflict_list": "Conflicts",
+    "name_of_alliance_to_send_conflict_letter": "Name of an alliance to send a letter",
+    "gui_minimum_days_between_battles": "Minimum pause days: {0}",
+    "gui_conflict_start_date": "Started: {0}",
+    "gui_last_start_end_battle": "Last start/end battle: {0}/{1}",
+    "gui_next_start_end_battle": "Next start/end battle: {0}/{1}",
+    "target_alliance_is_neutral": "Target alliance is neutral.",
+    "our_alliance_is_neutral": "Our alliance is neutral.",
+    "gui_conflict_cell_first_line": "{0} x {1}",
+    "gui_conflict_cell_started_line": "Started: {0}",
+    "gui_send_peace_offer": "Send peace offer to {0} alliance",
+    "conflict_already_exists": "Conflict already exists",
+    "leave_alliance_before_that": "Leave alliance before that.",
+    "cannot_leave_during_battle": "Cannot leave alliance during a battle.",
+    "cannot_delete_alliance_during_battle": "Cannot delete alliance during a battle.",
+    "cannot_kick_from_alliance_during_battle": "Cannot kick from alliance during a battle.",
     //INVITATION
     "player_disagreed_with_invitation_to_city": "Player {0} dissagreed with invitation to city {1}.",
     "player_already_invited_to_city": "Player is already invited to the city.",
@@ -94,6 +136,9 @@
     "city_already_has_invitation": "Invitation for the city was already sent.",
     "city_invite_player": "Invite player",
     "city_invite_unplayer": "Uninvite player",
+    "your_city_was_invited_to_alliance": "Your city was invited to alliance {0}",
+    "invitation_to_alliance_was_sent": "Invitation to city {0} was sent",
+    "city_joined_alliance": "City joined alliance {0}",
     //PLOTSGROUP
     "you_were_invited_to_group": "You were invited by city {0} by {1}.",
     "need_group_name": "Need group name.",
@@ -182,13 +227,16 @@
     //AGREEMENT
     "agreement_timeout": "Agreement timeout",
     "help_agreement_new_city": "For new city creation type: /{0}",
+    "help_agreement_new_alliance": "For new alliance creation type: /{0}",
     "no_agreements_awaits": "No agreement in the list.",
     "help_agreement_delete_city": "To remove city: /{0}",
 
     //MOD
-    "mod_default_mark": "[C&N] ",
+    "mod_default_mark": "[claims] ",
 
-
+    //BATTLE
+    "battle_started_with": "Battle started with alliance {0}.",
+    "battle_ended_with": "Battle ended with alliance {0}.",
     //TELEPORTATION
     "teleportation_canceled": "Teleporation has been canceled",
 
@@ -268,12 +316,16 @@
     "economy_player_chest_bank_created": "Player's bank chest has been created.",
     "economy_chest_bank_city_sign_prefix": "[city]",
     "economy_chest_bank_player_sign_prefix": "[player]",
+    "economy_chest_bank_alliance_sign_prefix": "[alliance]",
     "economy_help_creation": "[TYPE]NA_ME",
     "economy_virtual_city_balance": "City balance: {0}",
+    "economy_virtual_alliance_balance": "Alliance balance: {0}",
     "economy_virtual_city_withdrawn": "Withdrawn {0} from city account.",
+    "economy_virtual_alliance_withdrawn": "Withdrawn {0} from alliance account.",
     "economy_virtual_city_not_enough_money": "Not enough money.",
     "economy_virtual_city_withdraw_error": "Unexpected error during city balance withdraw, missing account?",
     "economy_virtual_city_deposited": "{0} added to city account.",
+    "economy_virtual_alliance_deposited": "{0} added to alliance account.",
     "economy_virtual_city_deposit_error": "Unexpected error during city deposit, missing account, no currency in the hand?",
     "economy_money_transaction_error": "Transaction failed.",
     "economy_no_city": "No city.",
@@ -298,6 +350,7 @@
     "gui-set-name-button": "Set name",
     "gui-strip-rank-from-player": "Strip player {0} of {1} rank?",
     "gui-leave-city-confirm-button": "Leave city?",
+    "gui-leave-alliance-confirm-button": "Leave alliance?",
     "gui-group-members": "Members: {0}",
     "gui-invite-button": "Invite",
     "gui-kick-button": "Kick",
@@ -314,6 +367,7 @@
     "gui-mayor-name": "Mayor: {0}",
     "gui-date-created": "Created: {0}",
     "gui-claimed-max-plots": "Plots: {0}/{1}",
+    "gui-claimed-plots": "Plots: {0}",
     "gui-city-population": "Population: {0}",
     "gui-city-titles": "Titles: {0}",
 
@@ -335,12 +389,14 @@
     "gui-plot-permissions": "Permissions",
     "gui-agree-city-creation": "Create city {0}?",
     "gui-city-balance": "Balance: {0}",
+    "gui-alliance-balance": "Balance: {0}",
     "gui-criminals": "Criminals: {0}",
     "gui-enter-summon-point-name": "Enter summon point name: ",
     "gui-set-button": "Set",
     "game:tabname-Claims": "Claims",
-    "gui-teleportation-cost": "Summon: ",
+    "gui-teleportation-cost": "Summon: {0}",
     "gui-no-plotsgroup-invites": "No plot groups invites",
+    "gui-create-button": "Create",
 
     //blocks
     "cantempleblock-desc": "Place to set city respawn point in temple plot.",
@@ -348,6 +404,10 @@
     "cantempleblock-gravestone-2": "Gravestone",
     "cantempleblock-gravestone-3": "Gravestone",
     "cantempleblock-gravestone-4": "Gravestone",
-    "cantempleblock-gravestone-5": "Gravestone"
+    "cantempleblock-gravestone-5": "Gravestone",
+    "block-flagpole": "Flagpole",
+    //DISCOVERY
+    "ingamediscovery-battle-start": "Battle started with {0}",
+    "ingamediscovery-battle-end": "Battle ended with {0}"
 
 }

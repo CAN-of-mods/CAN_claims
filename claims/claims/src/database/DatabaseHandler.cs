@@ -1,5 +1,6 @@
 ﻿using claims.src.part;
 using claims.src.part.structure;
+using claims.src.part.structure.conflict;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -65,6 +66,12 @@ namespace claims.src.database
         abstract public bool loadAllAlliancies();
         abstract public bool loadDummyAlliancies();
 
+        //CONFLICT
+        abstract public bool loadConflicts();
+        abstract public bool loadConflict(DataRow it);
+        abstract public bool deleteFromDatabaseConflict(Conflict conflict);
+        abstract public bool saveConflict(Conflict conflict, bool update = true);
+
         //General
         public bool loadEveryThing()
         {
@@ -74,11 +81,14 @@ namespace claims.src.database
                && loadDummyPlots()
                && loadDummyPrisons()
                && loadDummyCityPlotGroups()
+               && loadDummyAlliancies()
                && loadAllPlayersInfo()
                && loadAllPlots()
                && loadAllCityPlotGroups()
                && loadAllCitis()        
-               && loadAllPrisons();              
+               && loadAllPrisons()
+               && loadAllAlliancies()
+               && loadConflicts();              
         }
         abstract public bool saveEveryThing();
 

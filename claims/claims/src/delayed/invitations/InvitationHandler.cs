@@ -41,7 +41,7 @@ namespace claims.src.delayed.invitations
                     return false;
                 }
             }
-            if (invitation.getSender().getSentInvitations().Count >= invitation.getSender().getMaxSentInvitations())
+            if (invitation.getSender().GetSentInvitations().Count >= invitation.getSender().getMaxSentInvitations())
             {
                 return false;
             }
@@ -60,7 +60,7 @@ namespace claims.src.delayed.invitations
             {
                 if (it.getSender().Equals(sender) && it.getReceiver().Equals(receiver))
                 {
-                    it.getSender().getSentInvitations().Remove(it);
+                    it.getSender().GetSentInvitations().Remove(it);
                     it.getReceiver().getReceivedInvitations().Remove(it);
                     invites.Remove(it);
                     return true;

@@ -56,7 +56,7 @@ namespace claims.src.auxialiry
             DateTime datTime = dateTimeOffSet.DateTime;
             return datTime.ToString("dd/MM/yyyy");
         }
-        public static string getDateFromEpochSecondsWithHoursMinutes(long date, bool toLocal = false)
+        public static string getDateFromEpochSecondsWithHoursMinutes(long date, bool toLocal = true)
         {
             DateTimeOffset dateTimeOffSet = DateTimeOffset.FromUnixTimeSeconds(date);
             if (toLocal)
