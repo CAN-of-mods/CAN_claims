@@ -74,7 +74,7 @@ namespace claims.src.network.handlers
                             //no such zone, reset it
                             else
                             {
-                                ClientSavedZone newZone = new ClientSavedZone(tup.Item3.ToDictionary(x => x.Key, x => x.Value));
+                                ClientSavedZone newZone = new ClientSavedZone(tup.Item3.GroupBy(x => x.Key).ToDictionary(x => x.Key, x => x.Last().Value));
                                 newZone.timestamp = tup.Item2;
                                 claims.clientDataStorage.addClientSavedZone(tup.Item1, newZone);
                                 claims.clientModInstance.plotsMapLayer.generateFromZoneSavedPlotsOnMap(tup.Item1);
