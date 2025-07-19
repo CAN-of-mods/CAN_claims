@@ -36,8 +36,7 @@ namespace claims.src.events
             }
 
             claims.dataStorage.addToPlayerChatDict(player.PlayerUID, ClaimsChatType.NONE);
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
-
+            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);            
             //NEW PLAYERINFO
             if (playerInfo == null)
             {
@@ -53,7 +52,7 @@ namespace claims.src.events
             }
             
             RightsHandler.reapplyRights(playerInfo);
-            playerInfo.PlayerCache.Reset();
+            //playerInfo.PlayerCache.Reset();
             playerInfo.saveToDatabase();
 
             UsefullPacketsSend.sendAllCitiesColorsToPlayer(player);
@@ -105,6 +104,7 @@ namespace claims.src.events
                     }, (IServerPlayer)player);
                 }
             }
+            
         }
         public static void processExistedPlayerInfoOnLogin(PlayerInfo playerInfo, IServerPlayer player)
         {

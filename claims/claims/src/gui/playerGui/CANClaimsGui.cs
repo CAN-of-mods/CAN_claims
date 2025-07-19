@@ -199,7 +199,7 @@ namespace claims.src.gui.playerGui
         }
         public void OnColorPicked(int index)
         {
-            selectedColor = Settings.colors[index];
+            selectedColor = claims.config.PLOT_COLORS[index];
         }
         public void BuildUpperWindow()
         {
@@ -541,6 +541,41 @@ namespace claims.src.gui.playerGui
                 }, strangerUseBounds, "stranger-use");
                 Composers["canclaimsgui-upper"].GetSwitch("stranger-use").SetValue(claims.clientDataStorage.clientPlayerInfo.CurrentPlotInfo.PermsHandler.getPerm(perms.PermGroup.STRANGER, perms.type.PermType.USE_PERM));
                 Composers["canclaimsgui-upper"].AddHoverText("stranger", CairoFont.WhiteDetailText(), 60, strangerUseBounds);
+
+                ///ATTACK ANIMALS SWITCHES
+                ///
+                ElementBounds attackAnimalsTextBounds = useTextBounds.BelowCopy(0, 15);
+                Composers["canclaimsgui-upper"].AddStaticText("Attack animals", CairoFont.WhiteDetailText(), attackAnimalsTextBounds);
+                bgBounds.WithChildren(attackAnimalsTextBounds);
+
+                ElementBounds friendAttackBounds = attackAnimalsTextBounds.RightCopy(0, 0);
+                Composers["canclaimsgui-upper"].AddSwitch((t) =>
+                {
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
+                    clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/plot set p friend attack " + (t ? "on" : "off"), EnumChatType.Macro, "");
+                }, friendAttackBounds, "friend-attack");
+
+                Composers["canclaimsgui-upper"].GetSwitch("friend-attack").SetValue(claims.clientDataStorage.clientPlayerInfo.CurrentPlotInfo.PermsHandler.getPerm(perms.PermGroup.COMRADE, perms.type.PermType.ATTACK_ANIMALS_PERM));
+                Composers["canclaimsgui-upper"].AddHoverText("friend", CairoFont.WhiteDetailText(), 60, friendAttackBounds);
+
+
+
+                ElementBounds citizenAttackBounds = friendAttackBounds.RightCopy(5, 0);
+                Composers["canclaimsgui-upper"].AddSwitch((t) =>
+                {
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
+                    clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/plot set p citizen attack " + (t ? "on" : "off"), EnumChatType.Macro, "");
+                }, citizenAttackBounds, "citizen-attack");
+                Composers["canclaimsgui-upper"].GetSwitch("citizen-attack").SetValue(claims.clientDataStorage.clientPlayerInfo.CurrentPlotInfo.PermsHandler.getPerm(perms.PermGroup.CITIZEN, perms.type.PermType.ATTACK_ANIMALS_PERM));
+                Composers["canclaimsgui-upper"].AddHoverText("citizen", CairoFont.WhiteDetailText(), 60, citizenAttackBounds);
+                ElementBounds strangerAttackBounds = citizenAttackBounds.RightCopy(5, 0);
+                Composers["canclaimsgui-upper"].AddSwitch((t) =>
+                {
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
+                    clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/plot set p stranger attack " + (t ? "on" : "off"), EnumChatType.Macro, "");
+                }, strangerAttackBounds, "stranger-attack");
+                Composers["canclaimsgui-upper"].GetSwitch("stranger-attack").SetValue(claims.clientDataStorage.clientPlayerInfo.CurrentPlotInfo.PermsHandler.getPerm(perms.PermGroup.STRANGER, perms.type.PermType.ATTACK_ANIMALS_PERM));
+                Composers["canclaimsgui-upper"].AddHoverText("stranger", CairoFont.WhiteDetailText(), 60, strangerAttackBounds);
             }
             else if (CreateNewCityState == EnumUpperWindowSelectedState.ADD_FRIEND_NEED_NAME)
             {

@@ -10,6 +10,7 @@ namespace claims.src.rights
     public class PlayerCache
     {
         PlotPosition lastChunk;
+        public PlotPosition LastChunk { get { return lastChunk; } }
         bool?[] playerCache = new bool?[3];
         public PlayerCache()
         {

@@ -185,6 +185,7 @@ namespace claims.src.blocks
                 }
 
                 plot.getCity().AddTempleRespawnPoint(plot, blockPos);
+                plot.getCity().saveToDatabase();
                 foreach (var pl in world.GetPlayersAround(blockPos.ToVec3d(), 10, 10))
                 {
                     world.PlaySoundAt(new AssetLocation("game:sounds/block/heavymetal-hit"), pl, null, true, 32f, 1f);

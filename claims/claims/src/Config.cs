@@ -32,6 +32,9 @@ namespace claims.src
         public string DAILY_BACKUP_FILE_NAME = "backup_daily_claims.db";
         public string HOURLY_BACKUP_FILE_NAME = "backup_hourly_claims.db";
         public string PERMS_FILE_NAME = "claims_permissions.json";
+        public HashSet<string> DAYTIME_MAKE_BACKUP = new HashSet<string>();
+        public string BACKUP_FOLDER_NAME_IN_DATA_FOLDER = "claims_backups";
+        public string FULL_BACKUP_FOLDER = "";
         //CHAT
         public bool USE_MOD_CHAT_WINDOW = true;
         public string CHAT_WINDOW_NAME = "claims";
@@ -100,7 +103,7 @@ namespace claims.src
         public bool PLAYER_MOVEMENT_CANCEL_TELEPORTATION = true;
 
         //PRISON
-        public HashSet<string> BLOCKED_COMMANDS_PRISON = new HashSet<string> { "summon" };
+        public HashSet<string> BLOCKED_COMMANDS_PRISON = new HashSet<string> ();
         public double RANSOM_FOR_NO_CITIZEN = 2;
         public double RANSOM_FOR_CITIZEN = 10;
         public double RANSOM_FOR_MAYOR = 20;
@@ -108,8 +111,7 @@ namespace claims.src
         public double RANSOM_FOR_CHIEF = 5;
 
         //DEFENCE
-        public HashSet<string> PROTECTED_MOB_TYPES = new HashSet<string>{"Bighorn lamb",
-            "Bighorn ewe", "Bighorn ram", "Rooster", "Chick", "Hen", "Sow", "Boar", "Piglet" };
+        public HashSet<string> PROTECTED_MOB_TYPES = new HashSet<string>();
 
         //PLOTS COST
         public double DEFAULT_PLOT_COST = 1;
@@ -147,18 +149,17 @@ namespace claims.src
         public int PLOT_SIZE = 16;
         public int MAP_ZONE_SIZE = 512;
         public HashSet<string> BLOCKED_NAMES = new HashSet<string> { };
-        public HashSet<string> CITY_PLOTS_COLOR_AVAILABLE_COLORS_GUI = new HashSet<string> { "white", "blue", "red", "orange", "black", "aqua", "yellow", "cyan", "pink", "gold", "indigo", "ivory", "lime", "green", "red", "purple", "silver",
-        "violet"};
+        public HashSet<string> CITY_PLOTS_COLOR_AVAILABLE_COLORS_GUI = new HashSet<string>();
         public bool NO_ACCESS_WITH_FOR_NOT_CLAIMED_AREA = false;
         public HashSet<int> POSSIBLE_BROKEN_BLOCKS_IN_WILDERNESS = new HashSet<int>();
         public HashSet<int> POSSIBLE_BUILD_BLOCKS_IN_WILDERNESS = new HashSet<int>();
         public HashSet<int> POSSIBLE_USED_BLOCKS_IN_WILDERNESS = new HashSet<int>();
         public HashSet<int> POSSIBLE_BUILD_ITEMS_IN_WILDERNESS = new HashSet<int>();
 
-        public HashSet<string> BLOCK_CODES_CAN_BE_BROKEN_IN_WILDERNESS = new HashSet<string> { "game:ladder-wood-*", "game:woodbucket", "game:water-*-*", "game:firepit-construct*" };
-        public HashSet<string> BLOCK_CODES_CAN_BE_BUILD_IN_WILDERNESS = new HashSet<string> { "game:ladder-wood-north" };
+        public HashSet<string> BLOCK_CODES_CAN_BE_BROKEN_IN_WILDERNESS = new HashSet<string>();
+        public HashSet<string> BLOCK_CODES_CAN_BE_BUILD_IN_WILDERNESS = new HashSet<string> ();
         public HashSet<string> BLOCK_CODES_CAN_BE_USED_IN_WILDERNESS = new HashSet<string> { };
-        public HashSet<string> ITEMS_CODES_CAN_BE_BUILD_IN_WILDERNESS = new HashSet<string> { "game:drygrass", "game:agedfirewood", "game:firewood" };
+        public HashSet<string> ITEMS_CODES_CAN_BE_BUILD_IN_WILDERNESS = new HashSet<string> ();
 
         public int[] PLOT_COLORS;
 
@@ -187,6 +188,19 @@ namespace claims.src
         public OrderedDictionary<int, double> ID_TO_COINS_VALUES = new OrderedDictionary<int, double>();
 
         public bool VERBOSE_LOGGING = true;
+        public static void AddDefaultValues()
+        {
+            claims.config.DAYTIME_MAKE_BACKUP = new HashSet<string> { "6:00", "12:00", "18:00", "0:00" };
+            claims.config.PROTECTED_MOB_TYPES = new HashSet<string>{"Bighorn lamb",
+            "Bighorn ewe", "Bighorn ram", "Rooster", "Chick", "Hen", "Sow", "Boar", "Piglet" };
+            claims.config.CITY_PLOTS_COLOR_AVAILABLE_COLORS_GUI = new HashSet<string> { "white", "blue", "red", "orange", "black", "aqua", "yellow", "cyan", "pink", "gold", "indigo", "ivory", "lime", "green", "red", "purple", "silver",
+        "violet"};
+            claims.config.BLOCK_CODES_CAN_BE_BROKEN_IN_WILDERNESS = new HashSet<string> { "game:ladder-wood-*", "game:woodbucket", "game:water-*-*", "game:firepit-construct*" };
+            claims.config.BLOCK_CODES_CAN_BE_BUILD_IN_WILDERNESS = new HashSet<string> { "game:ladder-wood-north" };
+            claims.config.ITEMS_CODES_CAN_BE_BUILD_IN_WILDERNESS = new HashSet<string> { "game:drygrass", "game:agedfirewood", "game:firewood" };
+            claims.config.BLOCKED_COMMANDS_PRISON = new HashSet<string> { "summon" };
+
+        }
         public static void LoadConfig(ICoreAPI api)
         {
             try
@@ -200,6 +214,7 @@ namespace claims.src
                 else
                 {
                     claims.config = new Config();
+                    AddDefaultValues();
                     api.StoreModConfig<Config>(claims.config, "claims.json");
                 }
             }
@@ -208,6 +223,7 @@ namespace claims.src
                 if (claims.config == null)
                 {
                     claims.config = new Config();
+                    AddDefaultValues();
                     api.StoreModConfig<Config>(claims.config, "claims.json");
                     return;
                 }

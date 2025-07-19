@@ -19,7 +19,7 @@ namespace claims.src.auxialiry
         public static HashSet<string> protectedAnimals;
         public static SortedDictionary<int, CityLevelInfo> cityLevelsDict;
         public static SortedDictionary<int, AllianceLevelInfo> AllianceLevelsDict;
-        public static int[] colors;
+        public static int[] colors = new int[0];
         public static void loadAll()
         {
             blockedNames = new HashSet<string>();

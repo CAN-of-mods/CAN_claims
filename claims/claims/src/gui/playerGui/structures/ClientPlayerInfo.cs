@@ -6,6 +6,7 @@ using claims.src.rights;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Security;
 using System.Text;
@@ -276,7 +277,7 @@ namespace claims.src.gui.playerGui.structures
         }
         private void OnCityCityPlotsColor(string val)
         {
-            CityInfo.PlotsColor = int.Parse(val);
+            CityInfo.PlotsColor = int.Parse(val, CultureInfo.InvariantCulture);
             claims.clientDataStorage.ClientSetCityPlotsColor(claims.clientDataStorage.clientPlayerInfo.CityInfo.Name, CityInfo.PlotsColor);
             if (claims.clientDataStorage.clientPlayerInfo?.CityInfo != null)
             {
@@ -288,7 +289,7 @@ namespace claims.src.gui.playerGui.structures
         }
         private void OnCityCityBalance(string val)
         {
-            CityInfo.CityBalance = (double)decimal.Parse(val);
+            CityInfo.CityBalance = (double)decimal.Parse(val, CultureInfo.InvariantCulture);
         }
         private void OnCityCityCriminalAdded(string val)
         {

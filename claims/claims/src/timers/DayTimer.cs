@@ -52,7 +52,6 @@ namespace claims.src.timers
 
             MessageHandler.sendGlobalMsg("New day here.");
             MessageHandler.sendDebugMsg("[claims] DayTimer::new day here");
-            claims.getModInstance().getDatabaseHandler().makeBackup(claims.config.DAILY_BACKUP_FILE_NAME);
             if (scheduleNewDayAfter)
             {
                 claims.sapi.Event.RegisterCallback((dt =>

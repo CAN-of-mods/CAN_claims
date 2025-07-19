@@ -473,7 +473,9 @@ namespace claims.src
         }      
         public bool removePlotFromZoneSet(Plot plot)
         {
-            if (this.PlotZones.TryGetValue(plot.plotPosition.getPos(), out ServerZoneInfo plotZone))
+            var tmpPos = plot.getPos();
+            var tmpVec = new Vec2i(tmpPos.X / claims.config.ZONE_PLOTS_LENGTH, tmpPos.Y / claims.config.ZONE_PLOTS_LENGTH);
+            if (this.PlotZones.TryGetValue(tmpVec, out ServerZoneInfo plotZone))
             {
                 plotZone.timestamp = TimeFunctions.getEpochSeconds();
                 return plotZone.zonePlots.Remove(plot);
