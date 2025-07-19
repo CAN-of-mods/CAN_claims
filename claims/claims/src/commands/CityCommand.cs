@@ -181,7 +181,7 @@ namespace claims.src.commands
                 return TextCommandResult.Error("claims:you_dont_have_right_for_that_command");
             }
 
-            if(city.Alliance == null)
+            if(city.Alliance != null)
             {
                 return TextCommandResult.Error("claims:leave_alliance_before_that");
             }
@@ -1584,7 +1584,7 @@ namespace claims.src.commands
                 EnumPlayerRelatedInfo.CITY_SUMMON_POINT_ADD);
             tcr.StatusMessage = "claims:summon_point_set_to";
             tcr.MessageParams = new object[] { player.Entity.ServerPos.XYZ.ToString() };
-
+            plotHere.saveToDatabase();
             tcr.Status = EnumCommandStatus.Success;
             return tcr;
         }
@@ -1642,6 +1642,7 @@ namespace claims.src.commands
                 new Dictionary<string, object> { { "value", new SummonCellElement((plotHere.PlotDesc as PlotDescSummon).SummonPoint.AsVec3i.Clone(),
                     (plotHere.PlotDesc as PlotDescSummon).Name) } },
                 EnumPlayerRelatedInfo.CITY_SUMMON_POINT_UPDATE);
+            plotHere.saveToDatabase();
             return tcr;
         }
         public static TextCommandResult CitySummonSetNameByCoords(TextCommandCallingArgs args)
@@ -1696,6 +1697,7 @@ namespace claims.src.commands
                 new Dictionary<string, object> { { "value", new SummonCellElement((plotHere.PlotDesc as PlotDescSummon).SummonPoint.AsVec3i.Clone(),
                     (plotHere.PlotDesc as PlotDescSummon).Name) } },
                 EnumPlayerRelatedInfo.CITY_SUMMON_POINT_UPDATE);
+            plotHere.saveToDatabase();
             return tcr;
         }
         public static bool helperFunctionSummon(IServerPlayer player, TextCommandResult tcr, out City city, out PlayerInfo playerInfo)
@@ -1927,6 +1929,16 @@ namespace claims.src.commands
             city.getCityPlotsGroups().Remove(searchedGroup);
             claims.dataStorage.removePlotsGroup(searchedGroup.Guid);
             city.saveToDatabase();
+            foreach(var plot in city.getCityPlots())
+            {
+                if(plot.hasCityPlotsGroup() && plot.getPlotGroup().Equals(searchedGroup))
+                {
+                    plot.setPlotGroup(null);
+                    claims.dataStorage.setNowEpochZoneTimestampFromPlotPosition(plot.getPos());
+                    claims.serverPlayerMovementListener.markPlotToWasReUpdated(plot.getPos());
+                    claims.dataStorage.clearCacheForPlayersInPlot(plot);
+                }
+            }
             claims.getModInstance().getDatabaseHandler().deleteFromDatabaseCityPlotGroup(searchedGroup);
             tcr.Status = EnumCommandStatus.Success;
             UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid,
@@ -2324,6 +2336,10 @@ namespace claims.src.commands
                 return tcr;
             }
             plot.setPlotGroup(null);
+            claims.dataStorage.setNowEpochZoneTimestampFromPlotPosition(plot.getPos());
+            claims.serverPlayerMovementListener.markPlotToWasReUpdated(plot.getPos());
+            claims.dataStorage.clearCacheForPlayersInPlot(plot);
+            UsefullPacketsSend.SendCurrentPlotUpdate(player, plot);
             plot.saveToDatabase();
 
             tcr.Status = EnumCommandStatus.Success;

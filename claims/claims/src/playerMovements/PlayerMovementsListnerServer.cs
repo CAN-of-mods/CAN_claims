@@ -179,8 +179,16 @@ namespace claims.src
 
             PlotPosition to = new PlotPosition(tov);
             IServerPlayer pl = claims.sapi.World.PlayerByUid(playerInfo.Guid) as IServerPlayer;
-            playerInfo.PlayerCache.Reset();
-            playerInfo.PlayerCache.setPlotPosition(PlotPosition.fromXZ((int)pl.Entity.ServerPos.X, (int)pl.Entity.ServerPos.Z));
+            
+            if (playerInfo.PlayerCache.LastChunk == null)
+            {
+                events.OnBlockAction.InitPlayerCache((IServerPlayer)pl);
+            }
+            else
+            {
+                playerInfo.PlayerCache.setPlotPosition(PlotPosition.fromXZ((int)pl.Entity.ServerPos.X, (int)pl.Entity.ServerPos.Z));
+                playerInfo.PlayerCache.Reset();
+            }
 
             claims.dataStorage.getPlot(to, out Plot toPlot);
 
@@ -288,10 +296,15 @@ namespace claims.src
                     //old plot
                     tree.SetInt("xChO", playerCurrentPos.X / PlotPosition.plotSize);
                     tree.SetInt("zChO", playerCurrentPos.Z / PlotPosition.plotSize);
-
-                    playerInfo.PlayerCache.Reset();
-                    playerInfo.PlayerCache.setPlotPosition(PlotPosition.fromXZ(playerCurrentPos.X, playerCurrentPos.Z));
-
+                    if (playerInfo.PlayerCache.LastChunk == null)
+                    {
+                        //events.OnBlockAction.InitPlayerCache((IServerPlayer)it);
+                    }
+                    else
+                    {
+                        playerInfo.PlayerCache.Reset();
+                        playerInfo.PlayerCache.setPlotPosition(PlotPosition.fromXZ(playerCurrentPos.X, playerCurrentPos.Z));
+                    }
                     claims.sapi.World.Api.Event.PushEvent("claimsPlayerChangePlot", tree);
                 }
             }
@@ -447,6 +460,7 @@ namespace claims.src
                                 tmpPlotPosition.setXY(it);
                                 if (claims.dataStorage.getPlot(tmpPlotPosition, out Plot plot))
                                 {
+                                    
                                     updatePlotsForPlayer.Add(new Tuple<Vec2i, SavedPlotInfo>(plot.getPos(), new SavedPlotInfo((int)plot.Price, plot.getPermsHandler().pvpFlag,
                                     pl.WorldData.CurrentGameMode == EnumGameMode.Creative || OnBlockAction.canBlockDestroyWithOutCacheUpdate(playerInfo, plot),
                                     pl.WorldData.CurrentGameMode == EnumGameMode.Creative || OnBlockAction.canBlockUseWithOutCacheUpdate(playerInfo, plot),

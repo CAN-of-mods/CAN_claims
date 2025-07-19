@@ -37,7 +37,6 @@ namespace claims.src.timers
                 }
                 player.saveToDatabase();
             }
-            claims.getModInstance().getDatabaseHandler().makeBackup(claims.config.HOURLY_BACKUP_FILE_NAME);
 
             claims.sapi.Event.RegisterCallback((dt =>
             {

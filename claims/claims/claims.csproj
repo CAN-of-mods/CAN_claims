@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+	  <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <OutputPath>bin\$(Configuration)\Mods\mod</OutputPath>
   </PropertyGroup>
 
@@ -88,6 +89,10 @@
   <Content Remove="..\resources\assets\claims\lang\sv-se.json" />
   <Content Remove="..\resources\assets\claims\lang\uk.json" />
   <Content Remove="..\resources\assets\claims\lang\zh-cn.json" />
+</ItemGroup>
+
+<ItemGroup>
+  <PackageReference Include="Quartz" Version="3.14.0" />
 </ItemGroup>
 
 </Project>

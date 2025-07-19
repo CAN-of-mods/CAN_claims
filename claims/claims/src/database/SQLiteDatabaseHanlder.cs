@@ -1,4 +1,5 @@
 ﻿using claims.src.auxialiry;
+using claims.src.auxialiry.converters;
 using claims.src.messages;
 using claims.src.part;
 using claims.src.part.structure;
@@ -689,9 +690,11 @@ namespace claims.src.database
                 MessageHandler.sendDebugMsg("loadCity::exc no color" + city.GetPartName());
             }
             string rPoints = it["templerespawnpoints"].ToString();
+            var settings = new JsonSerializerSettings();
+            settings.Converters.Add(new Veс2iVec3iConverter());
             if (rPoints.Length != 0)
             {
-                foreach (var rPoint in JsonConvert.DeserializeObject<Dictionary<Vec2i, Vec3i>>(rPoints))
+                foreach (var rPoint in JsonConvert.DeserializeObject<Dictionary<Vec2i, Vec3i>>(rPoints, settings))
                 {
                     city.AddTempleRespawnPoint(rPoint.Key, rPoint.Value);
                 }
@@ -948,21 +951,27 @@ namespace claims.src.database
         public override bool makeBackup(string fileName)
         {
             string cs;
-            if (claims.config.PATH_TO_DB_AND_JSON_FILES.Length == 0)
+            if (claims.config.FULL_BACKUP_FOLDER.Length == 0)
             {
+                string folderPath = @"" + Path.Combine(GamePaths.DataPath, claims.config.BACKUP_FOLDER_NAME_IN_DATA_FOLDER);
+                if(!Directory.Exists(folderPath))
+                {
+                    Directory.CreateDirectory(folderPath);
+                }
+
                 if (Environment.OSVersion.Platform == PlatformID.Win32NT)
                 {
-                    cs = @"" + Path.Combine(GamePaths.ModConfig, fileName);
+                    cs = @"" + Path.Combine(folderPath, fileName);
                 }
                 else
                 {
-                    cs = @"" + Path.Combine(GamePaths.ModConfig, fileName);
+                    cs = @"" + Path.Combine(folderPath, fileName);
                 }
 
             }
             else
             {
-                cs = claims.config.PATH_TO_DB_AND_JSON_FILES + "/" + fileName;
+                cs = Path.Combine(claims.config.PATH_TO_DB_AND_JSON_FILES, fileName);
             }
             try
             {

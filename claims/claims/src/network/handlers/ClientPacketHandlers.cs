@@ -35,17 +35,23 @@ namespace claims.src.network.handlers
                                 claims.clientModInstance.plotsMapLayer.OnResChunkPixels(plot.Key, claims.clientDataStorage.ClientGetCityColor(plot.Value.cityName), plot.Value.cityName);
                             }
                         }
+                        //TODO
+                        claims.clientModInstance.pmlc.saveActiveZonesToDb();
                         break;
                     case PacketsContentEnum.ADD_SINGLE_PLOT:
                         Tuple<Vec2i, SavedPlotInfo> savedPlotTuple = JsonConvert.DeserializeObject<Tuple<Vec2i, SavedPlotInfo>>(packet.data);
                         claims.clientDataStorage.addClientSavedPlots(savedPlotTuple.Item1, savedPlotTuple.Item2);
                         claims.clientModInstance.plotsMapLayer.OnResChunkPixels(savedPlotTuple.Item1, claims.clientDataStorage.ClientGetCityColor(savedPlotTuple.Item2.cityName), savedPlotTuple.Item2.cityName);
+                        //TODO
+                        claims.clientModInstance.pmlc.saveActiveZonesToDb();
                         break;
                     case PacketsContentEnum.REMOVE_SINGLE_PLOT:
                         //try to send saved plot as null without creating object
                         Tuple<Vec2i, SavedPlotInfo> savedPlotTupleRemove = JsonConvert.DeserializeObject<Tuple<Vec2i, SavedPlotInfo>>(packet.data);
                         claims.clientDataStorage.removeClientSavedPlots(savedPlotTupleRemove.Item1);
                         claims.clientModInstance.plotsMapLayer.OnResChunkPixels(savedPlotTupleRemove.Item1, 0, "");
+                        //TODO
+                        claims.clientModInstance.pmlc.saveActiveZonesToDb();
                         break;
                     case PacketsContentEnum.ALL_CITY_COLORS:
                         Dictionary<string, int> colors = JsonConvert.DeserializeObject<Dictionary<string, int>>(packet.data);
@@ -61,7 +67,7 @@ namespace claims.src.network.handlers
                             if (claims.clientDataStorage.getClientSavedZone(tup.Item1, out var savedZone))
                             {
                                 claims.clientModInstance.plotsMapLayer.clearZoneSavedPlotsFromMap(tup.Item1);
-                                savedZone.savedPlots = tup.Item3.ToDictionary(x => x.Key, x => x.Value);
+                                savedZone.savedPlots = tup.Item3.GroupBy(x => x.Key).ToDictionary(keySelector: x => x.Key, x => x.Last().Value);
                                 savedZone.timestamp = tup.Item2;
                                 claims.clientModInstance.plotsMapLayer.generateFromZoneSavedPlotsOnMap(tup.Item1);
                             }
@@ -74,6 +80,8 @@ namespace claims.src.network.handlers
                                 claims.clientModInstance.plotsMapLayer.generateFromZoneSavedPlotsOnMap(tup.Item1);
                             }
                         }
+                        //TODO
+                        claims.clientModInstance.pmlc.saveActiveZonesToDb();
                         break;
                     case PacketsContentEnum.SERVER_REMOVE_COLLECTED_PLOTS:
                         HashSet<Vec2i> plotsToRemove = JsonConvert.DeserializeObject<HashSet<Vec2i>>(packet.data);
@@ -82,6 +90,8 @@ namespace claims.src.network.handlers
                             claims.clientDataStorage.removeClientSavedPlots(savedPlot);
                             claims.clientModInstance.plotsMapLayer.OnResChunkPixels(savedPlot, 0, "");
                         }
+                        //TODO
+                        claims.clientModInstance.pmlc.saveActiveZonesToDb();
                         break;
                     case PacketsContentEnum.SERVER_UPDATE_COLLECTED_PLOTS:
                         List<Tuple<Vec2i, SavedPlotInfo>> plotsToUpdate = JsonConvert.DeserializeObject<List<Tuple<Vec2i, SavedPlotInfo>>>(packet.data);
@@ -89,6 +99,8 @@ namespace claims.src.network.handlers
                         {
                             claims.clientDataStorage.addClientSavedPlots(savedPlot.Item1, savedPlot.Item2);
                         }
+                        //TODO
+                        claims.clientModInstance.pmlc.saveActiveZonesToDb();
                         break;
                     case PacketsContentEnum.OWN_CITY_DELETED:
                         claims.clientDataStorage.clientPlayerInfo.CityInfo = null;

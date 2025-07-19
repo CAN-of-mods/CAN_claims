@@ -27,6 +27,7 @@ namespace claims.src.network.handlers
             {
                 if (packet.type == PacketsContentEnum.CLIENT_INFORM_ZONES_TIMESTAMPS)
                 {
+                    //if player is logging in plot where they have permissions
                     claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
                     if (playerInfo == null)
                     {

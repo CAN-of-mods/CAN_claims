@@ -130,7 +130,6 @@ namespace claims.src.events
             bool b;
             switch (getPlotRelationForPlayerInfo(playerInfo, currentPosPlayer, plot))
             {
-
                 case PlotRelation.PLOT_OWNER:
                 case PlotRelation.MANAGABLE_OWNER:
                     playerInfo.PlayerCache.getCache()[(int)PermType.BUILD_AND_DESTROY_PERM] = true;
@@ -486,14 +485,14 @@ namespace claims.src.events
             {
                 return PlotRelation.PLOT_OWNER;
             }
-            if(plot.hasCity() && plot.getCity().getCityCitizens().Contains(playerInfo))
-            {
-                return PlotRelation.CITIZEN;
-            }
-            if(plot.hasPlotOwner() && plot.getPlotOwner().Friends.Contains(playerInfo))
+            if (plot.hasPlotOwner() && plot.getPlotOwner().Friends.Contains(playerInfo))
             {
                 return PlotRelation.COMRADE;
             }
+            if (plot.hasCity() && plot.getCity().getCityCitizens().Contains(playerInfo))
+            {
+                return PlotRelation.CITIZEN;
+            }          
             if(plot.hasCity() && plot.getCity().HasAlliance() && playerInfo.HasAlliance())
             {
                 if(plot.getCity().Alliance.Hostiles.Contains(playerInfo.Alliance))
@@ -519,11 +518,11 @@ namespace claims.src.events
 
                 case PlotRelation.PLOT_OWNER:
                 case PlotRelation.MANAGABLE_OWNER:
-                    playerInfo.PlayerCache.getCache()[(int)PermType.BUILD_AND_DESTROY_PERM] = true;
+                    //playerInfo.PlayerCache.getCache()[(int)PermType.BUILD_AND_DESTROY_PERM] = true;
                     return true;
                 case PlotRelation.CITIZEN:
                     b = plot.getPermsHandler().getPerm(PermGroup.CITIZEN, PermType.BUILD_AND_DESTROY_PERM);
-                    playerInfo.PlayerCache.getCache()[(int)PermType.BUILD_AND_DESTROY_PERM] = b;
+                    //playerInfo.PlayerCache.getCache()[(int)PermType.BUILD_AND_DESTROY_PERM] = b;
                     /*if (!b && plot.getType() == PlotType.TAVERN)
                     {
                         return checkInnerClaimPerm(PermType.BUILD_AND_DESTROY_PERM, playerInfo.Guid, plot, blockSel);
@@ -533,7 +532,7 @@ namespace claims.src.events
                     b = plot.getPermsHandler().getPerm(PermGroup.STRANGER, PermType.BUILD_AND_DESTROY_PERM);
                     //todo
                     // MessageHandler.sendDebugMsg(byPlayer.PlayerName + " " + " for stranger in plot " + plot.getPos().ToString() + " value is " + b.ToString());
-                    playerInfo.PlayerCache.getCache()[(int)PermType.BUILD_AND_DESTROY_PERM] = b;
+                    //playerInfo.PlayerCache.getCache()[(int)PermType.BUILD_AND_DESTROY_PERM] = b;
                     /* if (!b && plot.getType() == PlotType.TAVERN)
                      {
                          return checkInnerClaimPerm(PermType.BUILD_AND_DESTROY_PERM, playerInfo.Guid, plot, blockSel);
@@ -541,7 +540,7 @@ namespace claims.src.events
                     return b;
                 case PlotRelation.GROUP_MEMBER:
                     b = plot.getPlotGroup().PermsHandler.getPerm(PermGroup.CITIZEN, PermType.BUILD_AND_DESTROY_PERM);
-                    playerInfo.PlayerCache.getCache()[(int)PermType.BUILD_AND_DESTROY_PERM] = b;
+                   // playerInfo.PlayerCache.getCache()[(int)PermType.BUILD_AND_DESTROY_PERM] = b;
                     /* if (!b && plot.getType() == PlotType.TAVERN)
                      {
                          return checkInnerClaimPerm(PermType.BUILD_AND_DESTROY_PERM, playerInfo.Guid, plot, blockSel);
@@ -549,7 +548,7 @@ namespace claims.src.events
                     return b;
                 case PlotRelation.COMRADE:
                     b = plot.getPermsHandler().getPerm(PermGroup.COMRADE, PermType.BUILD_AND_DESTROY_PERM);
-                    playerInfo.PlayerCache.getCache()[(int)PermType.BUILD_AND_DESTROY_PERM] = b;
+                    //playerInfo.PlayerCache.getCache()[(int)PermType.BUILD_AND_DESTROY_PERM] = b;
                     /*if (!b && plot.getType() == PlotType.TAVERN)
                     {
                         return checkInnerClaimPerm(PermType.BUILD_AND_DESTROY_PERM, playerInfo.Guid, plot, blockSel);
@@ -595,11 +594,11 @@ namespace claims.src.events
 
                 case PlotRelation.PLOT_OWNER:
                 case PlotRelation.MANAGABLE_OWNER:
-                    playerInfo.PlayerCache.getCache()[(int)PermType.USE_PERM] = true;
+                   //playerInfo.PlayerCache.getCache()[(int)PermType.USE_PERM] = true;
                     return true;
                 case PlotRelation.CITIZEN:
                     b = plot.getPermsHandler().getPerm(PermGroup.CITIZEN, PermType.USE_PERM);
-                    playerInfo.PlayerCache.getCache()[(int)PermType.USE_PERM] = b;
+                   // playerInfo.PlayerCache.getCache()[(int)PermType.USE_PERM] = b;
                     /* if (!b && plot.getType() == PlotType.TAVERN)
                      {
                          return checkInnerClaimPerm(PermType.USE_PERM, playerInfo.Guid, plot, blockSel);
@@ -607,7 +606,7 @@ namespace claims.src.events
                     return b;
                 case PlotRelation.STRANGER:
                     b = plot.getPermsHandler().getPerm(PermGroup.STRANGER, PermType.USE_PERM);
-                    playerInfo.PlayerCache.getCache()[(int)PermType.USE_PERM] = b;
+                    //playerInfo.PlayerCache.getCache()[(int)PermType.USE_PERM] = b;
                     /*if (!b && plot.getType() == PlotType.TAVERN)
                     {
                         return checkInnerClaimPerm(PermType.USE_PERM, playerInfo.Guid, plot, blockSel);
@@ -615,7 +614,7 @@ namespace claims.src.events
                     return b;
                 case PlotRelation.GROUP_MEMBER:
                     b = plot.getPlotGroup().PermsHandler.getPerm(PermGroup.CITIZEN, PermType.USE_PERM);
-                    playerInfo.PlayerCache.getCache()[(int)PermType.USE_PERM] = b;
+                    //playerInfo.PlayerCache.getCache()[(int)PermType.USE_PERM] = b;
                     /* if (!b && plot.getType() == PlotType.TAVERN)
                      {
                          return checkInnerClaimPerm(PermType.USE_PERM, playerInfo.Guid, plot, blockSel);
@@ -623,7 +622,7 @@ namespace claims.src.events
                     return b;
                 case PlotRelation.COMRADE:
                     b = plot.getPermsHandler().getPerm(PermGroup.COMRADE, PermType.USE_PERM);
-                    playerInfo.PlayerCache.getCache()[(int)PermType.USE_PERM] = b;
+                    //playerInfo.PlayerCache.getCache()[(int)PermType.USE_PERM] = b;
                     /* if (!b && plot.getType() == PlotType.TAVERN)
                      {
                          return checkInnerClaimPerm(PermType.USE_PERM, playerInfo.Guid, plot, blockSel);
@@ -674,7 +673,7 @@ namespace claims.src.events
                     return true;
                 case PlotRelation.CITIZEN:
                     b = plot.getPermsHandler().getPerm(PermGroup.CITIZEN, PermType.ATTACK_ANIMALS_PERM);
-                    playerInfo.PlayerCache.getCache()[(int)PermType.ATTACK_ANIMALS_PERM] = b;
+                    //playerInfo.PlayerCache.getCache()[(int)PermType.ATTACK_ANIMALS_PERM] = b;
                     /*if (!b && plot.getType() == PlotType.TAVERN)
                     {
                         return checkInnerClaimPerm(PermType.USE_PERM, playerInfo.Guid, plot, pos);
@@ -682,7 +681,7 @@ namespace claims.src.events
                     return b;
                 case PlotRelation.STRANGER:
                     b = plot.getPermsHandler().getPerm(PermGroup.STRANGER, PermType.ATTACK_ANIMALS_PERM);
-                    playerInfo.PlayerCache.getCache()[(int)PermType.ATTACK_ANIMALS_PERM] = b;
+                    //playerInfo.PlayerCache.getCache()[(int)PermType.ATTACK_ANIMALS_PERM] = b;
                     /* if (!b && plot.getType() == PlotType.TAVERN)
                      {
                          return checkInnerClaimPerm(PermType.USE_PERM, playerInfo.Guid, plot, pos);
@@ -690,7 +689,7 @@ namespace claims.src.events
                     return b;
                 case PlotRelation.GROUP_MEMBER:
                     b = plot.getPlotGroup().PermsHandler.getPerm(PermGroup.CITIZEN, PermType.ATTACK_ANIMALS_PERM);
-                    playerInfo.PlayerCache.getCache()[(int)PermType.ATTACK_ANIMALS_PERM] = b;
+                    //playerInfo.PlayerCache.getCache()[(int)PermType.ATTACK_ANIMALS_PERM] = b;
                     /*if (!b && plot.getType() == PlotType.TAVERN)
                     {
                         return checkInnerClaimPerm(PermType.USE_PERM, playerInfo.Guid, plot, pos);
@@ -698,7 +697,7 @@ namespace claims.src.events
                     return b;
                 case PlotRelation.COMRADE:
                     b = plot.getPermsHandler().getPerm(PermGroup.COMRADE, PermType.ATTACK_ANIMALS_PERM);
-                    playerInfo.PlayerCache.getCache()[(int)PermType.ATTACK_ANIMALS_PERM] = b;
+                    //playerInfo.PlayerCache.getCache()[(int)PermType.ATTACK_ANIMALS_PERM] = b;
                     /* if (!b && plot.getType() == PlotType.TAVERN)
                      {
                          return checkInnerClaimPerm(PermType.USE_PERM, playerInfo.Guid, plot, pos);
@@ -727,6 +726,13 @@ namespace claims.src.events
                     return b;
             }
             return false;
+        }
+        public static void InitPlayerCache(IServerPlayer byPlayer)
+        {
+            canBlockDestroy(byPlayer, new BlockSelection(byPlayer.Entity.Pos.AsBlockPos, BlockFacing.NORTH, null), out var _);
+            canBlockUse(byPlayer, new BlockSelection(byPlayer.Entity.Pos.AsBlockPos, BlockFacing.NORTH, null));
+            claims.dataStorage.getPlayerByUid(byPlayer.PlayerUID, out var player);
+            player.PlayerCache.setPlotPosition(PlotPosition.fromEntityyPos(byPlayer.Entity.Pos));
         }
     }
 }
