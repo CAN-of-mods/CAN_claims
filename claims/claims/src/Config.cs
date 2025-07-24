@@ -11,6 +11,7 @@ namespace claims.src
         public double NEW_CITY_COST = 150;
         public double CITY_NAME_CHANGE_COST = 20;
         public bool DELETE_CITIZEN_FROM_CITY_IF_DOESN_PAY_FEE = true;
+        public bool DELETE_CITY_IF_DOESN_PAY_FEE = false;
 
         public double CITY_BASE_CARE = 2;
         public double CITY_MAX_DEBT = 1000;

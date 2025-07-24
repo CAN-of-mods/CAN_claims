@@ -1,6 +1,7 @@
 ﻿using claims.src.auxialiry;
 using claims.src.delayed.invitations;
 using claims.src.gui.playerGui.structures;
+using claims.src.messages;
 using claims.src.network.packets;
 using claims.src.part.structure;
 using claims.src.part.structure.conflict;
@@ -19,7 +20,7 @@ namespace claims.src.part
 {
     public class PartDemolition
     {
-        public static void demolishCity (City city)
+        public static void demolishCity (City city, string reason)
         {
             foreach(var plot in city.getCityPlots())
             {
@@ -48,6 +49,7 @@ namespace claims.src.part
             claims.dataStorage.removeCityByGUID(city.Guid);
             //DataStorage.nameToCityDict.TryRemove(city.getPartName(), out _);
             claims.getModInstance().getDatabaseHandler().deleteFromDatabaseCity(city);
+            MessageHandler.sendDebugMsg(string.Format("City {0} was deleted, ", city.GetPartName()) + reason);
         }
       
         public static void demolishCityPlots(City city)

@@ -191,7 +191,7 @@ namespace claims.src.commands
                 {
                     MessageHandler.sendGlobalMsg(Lang.Get("claims:city_has_been_demolished", city.getPartNameReplaceUnder(), playerInfo.getPartNameReplaceUnder()));
 
-                    PartDemolition.demolishCity(city);
+                    PartDemolition.demolishCity(city, string.Format("Deleted by player {0}", player.PlayerName));
                 })), player.PlayerUID));
             return SuccessWithParams("claims:help_agreement_delete_city", new object[] { claims.config.AGREEMENT_COMMAND });
         }

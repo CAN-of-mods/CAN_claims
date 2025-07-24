@@ -18,7 +18,7 @@ namespace claims.src.timers
     {
         public static Dictionary<City, List<Plot>> citiesPlots = new();
         public static Dictionary<PlayerInfo, decimal> playerSumFee = new();
-        public static List<City> toDeleteCities = new();
+        public static List<(City, string)> toDeleteCities = new();
         static List<Alliance> toDeleteAlliancies = new List<Alliance>();
 
         public void Run(bool scheduleNewDayAfter)
@@ -75,8 +75,10 @@ namespace claims.src.timers
                 processCityCare(city);
             }
             //DELETE CITIES WHICH WERE MARKED
-            foreach (City city in toDeleteCities)
-                PartDemolition.demolishCity(city);
+            foreach (var city in toDeleteCities)
+            {
+                PartDemolition.demolishCity(city.Item1, city.Item2);
+            }
 
             toDeleteCities.Clear();
         }
@@ -107,14 +109,15 @@ namespace claims.src.timers
             {
                 city.DebtBalance += (double)sumToPay;
 
-                //0=> WE DON'T DELETE CITIES, JUST SINK THEM DEEPER IN DEBT
-                if (claims.config.CITY_MAX_DEBT != 0)
+                if (claims.config.DELETE_CITY_IF_DOESN_PAY_FEE)
                 {
                     if (city.DebtBalance > claims.config.CITY_MAX_DEBT)
                     {
-                        toDeleteCities.Add(city);
+                        toDeleteCities.Add((city, string.Format("City debt is too high - {0}", city.DebtBalance)));
                     }
                 }
+                UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid, gui.playerGui.structures.EnumPlayerRelatedInfo.CITY_DEBT);
+                UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid, gui.playerGui.structures.EnumPlayerRelatedInfo.CITY_BALANCE);
             }
             else
             {
@@ -126,8 +129,10 @@ namespace claims.src.timers
                 {
                     if (city.DebtBalance > 0)
                     {
-                        city.DebtBalance = 0;
+                        city.DebtBalance = 0;                        
                     }
+                    UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid, gui.playerGui.structures.EnumPlayerRelatedInfo.CITY_DEBT);
+                    UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid, gui.playerGui.structures.EnumPlayerRelatedInfo.CITY_BALANCE);
                 }
             }
             claims.sapi.Logger.Debug(string.Format("[claims] processCityCare, withdrew {0} from city {1} account. Balance after is {2}, debt is {3}.",

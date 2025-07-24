@@ -15,6 +15,7 @@ using claims.src.part.structure.plots;
 using Vintagestory.API.Datastructures;
 using caneconomy.src.interfaces;
 using claims.src.gui.playerGui.structures.cellElements;
+using System.Globalization;
 
 namespace claims.src.auxialiry
 {
@@ -66,7 +67,7 @@ namespace claims.src.auxialiry
                 collector.Add(EnumPlayerRelatedInfo.PLAYER_CITY_TITLES, JsonConvert.SerializeObject(playerInfo.getCityTitles()));
                 collector.Add(EnumPlayerRelatedInfo.CITY_POSSIBLE_RANKS, JsonConvert.SerializeObject(RightsHandler.GetCityRanks()));
                 collector.Add(EnumPlayerRelatedInfo.CITY_PLOTS_COLOR, city.cityColor.ToString());
-
+                collector.Add(EnumPlayerRelatedInfo.CITY_DEBT, city.DebtBalance.ToString(CultureInfo.InvariantCulture));
                 if (city.isMayor(playerInfo)) { 
                     Dictionary<string, List<string>> rankToCitizens = new Dictionary<string, List<string>>();
                     foreach(var citizen in city.getCityCitizens())
@@ -91,7 +92,7 @@ namespace claims.src.auxialiry
                 }
                 if(playerInfo.PlayerPermissionsHandler.HasPermission(rights.EnumPlayerPermissions.CITY_SEE_BALANCE))
                 {
-                    collector.Add(EnumPlayerRelatedInfo.CITY_BALANCE, claims.economyHandler.getBalance(city.MoneyAccountName).ToString());
+                    collector.Add(EnumPlayerRelatedInfo.CITY_BALANCE, claims.economyHandler.getBalance(city.MoneyAccountName).ToString(CultureInfo.InvariantCulture));
                 }
                 if(city.criminals.Count > 0)
                 {
@@ -573,7 +574,10 @@ namespace claims.src.auxialiry
                         result[pair.Key] = JsonConvert.SerializeObject(rankMap);
                         break;
                     case EnumPlayerRelatedInfo.CITY_BALANCE:
-                        result[pair.Key] = claims.economyHandler.getBalance(city.MoneyAccountName).ToString();
+                        result[pair.Key] = claims.economyHandler.getBalance(city.MoneyAccountName).ToString(CultureInfo.InvariantCulture);
+                        break;
+                    case EnumPlayerRelatedInfo.CITY_DEBT:
+                        result[pair.Key] = city.DebtBalance.ToString(CultureInfo.InvariantCulture);
                         break;
                     case EnumPlayerRelatedInfo.CITY_PLOTS_COLOR:
                         result[pair.Key] = city.cityColor.ToString();

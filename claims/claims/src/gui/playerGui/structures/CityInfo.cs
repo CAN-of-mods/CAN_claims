@@ -22,6 +22,7 @@ namespace claims.src.gui.playerGui.structures
         public HashSet<string> PossibleCityRanks { get; set; }
         public int PlotsColor;
         public double CityBalance { get; set; }
+        public double CityDebt { get; set; }
         public HashSet<string> Criminals = new();
         public List<PrisonCellElement> PrisonCells { get; set; } = new();
         public List<SummonCellElement> SummonCells { get; set; } = new();

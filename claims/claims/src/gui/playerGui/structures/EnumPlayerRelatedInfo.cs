@@ -16,6 +16,7 @@ namespace claims.src.gui.playerGui.structures
         CITY_INVITE_REMOVE,
         CITY_PLOTS_COLOR,
         CITY_BALANCE,
+        CITY_DEBT,
 
         CITY_CRIMINALS_LIST,
         CITY_CRIMINAL_ADDED, CITY_CRIMINAL_REMOVED,

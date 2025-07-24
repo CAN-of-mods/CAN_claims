@@ -82,6 +82,7 @@
     "inviterecieved": "Received",
     "cities_list": "Cities list: {0}",
     "city_name_changed_to": "City's name was changed to {0}",
+    "gui-city-debt": "Debt: {0}",
     //ALLIANCE
     "alliance_was_deleted": "Alliance {0} was deleted.",
     "alliance_fee_too_high": "Fee is too high, maximum is {0}.",

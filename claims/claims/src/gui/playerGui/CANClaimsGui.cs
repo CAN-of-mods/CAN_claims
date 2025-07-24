@@ -1726,7 +1726,13 @@ namespace claims.src.gui.playerGui
                         cityTabFont,
                         currentBounds, "cityBalance");
                 }
-
+                currentBounds = currentBounds.BelowCopy(0, 5);
+                if (clientInfo.CityInfo.CityDebt > 0)
+                {
+                    SingleComposer.AddStaticText(Lang.Get("claims:gui-city-debt", clientInfo.CityInfo.CityDebt),
+                        cityTabFont,
+                        currentBounds, "cityDebt");
+                }
 
                 /*==============================================================================================*/
                 /*=====================================UNDER 2 LINE=============================================*/
