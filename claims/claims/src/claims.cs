@@ -30,7 +30,6 @@ using claims.src.network.handlers;
 using Cairo;
 using System.Collections;
 using claims.src.blocks;
-using claims.src.auxialiry.claimAreas;
 using System;
 using claims.src.beb;
 using claims.src.bb;
@@ -103,7 +102,7 @@ namespace claims.src
                 {
                     AssetLocation location = new AssetLocation("claims:textures/icons/" + icon + ".svg");
                     IAsset svgAsset = capi.Assets.TryGet(location, true);
-                    int value = ColorUtil.ColorFromRgba(175, 200, 175, 125);
+                    int value = ColorUtil.ColorFromRgba(175, 200, 175, 240);
                     capi.Gui.DrawSvg(svgAsset, ctx.GetTarget() as ImageSurface, x, y, (int)w, (int)h, new int?(value));
                 };
             }
@@ -218,14 +217,6 @@ namespace claims.src
                     }
                 }
             }
-
-            string claimAreas = sapi.WorldManager.SaveGame.GetData<string>("claimareas");
-
-            if (claimAreas != null)
-            {
-                claims.dataStorage.serverClaimAreaHandler.DeserializeData(claimAreas);
-            }
-
         }           
         public static bool loadDatabase()
         {

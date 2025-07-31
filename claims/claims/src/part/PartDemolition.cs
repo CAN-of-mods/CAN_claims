@@ -88,36 +88,10 @@ namespace claims.src.part
         {
             InvitationHandler.deleteAllInvitationsForSender(alliance);
 
-            //TODO
-            /*foreach (Conflict conflict in claims.dataStorage.getConflictsList().ToArray())
+            foreach (Conflict conflict in claims.dataStorage.conflicts.ToArray())
             {
-                if (conflict.getFirstSide().Equals(alliance))
-                {
-                    if (conflict.getConflictState() == ConflictState.FIRST_WON)
-                    {
-                        conflict.getSecondSide().setConqueredBy(null);
-                        conflict.getSecondSide().setDaysBeforeFreedom(0);
-                        lock (claims.dataStorage.getConflictsList())
-                        {
-                            claims.dataStorage.tryRemoveConflict(conflict);
-                            claims.getModInstance().getDatabaseHandler().deleteFromDatabaseConflict(conflict);
-                        }
-                    }
-                }
-                else if (conflict.getSecondSide().Equals(alliance))
-                {
-                    if (conflict.getConflictState() == ConflictState.SECOND_WON)
-                    {
-                        conflict.getFirstSide().setConqueredBy(null);
-                        conflict.getFirstSide().setDaysBeforeFreedom(0);
-                        lock (claims.dataStorage.getConflictsList())
-                        {
-                            claims.dataStorage.tryRemoveConflict(conflict);
-                            claims.getModInstance().getDatabaseHandler().deleteFromDatabaseConflict(conflict);
-                        }
-                    }
-                }
-            }*/
+                DemolishConflict(conflict);
+            }
 
             //FOR HOSTILE ALLIANCE WE DELETE OUR CITIES FROM HOSTILES FOR THIER CITIES
             foreach (Alliance otherAlliance in alliance.Hostiles)

@@ -28,13 +28,14 @@ namespace claims.src.network.packets
         [ProtoMember(8)]
         public bool NO_ACCESS_WITH_FOR_NOT_CLAIMED_AREA;
         [ProtoMember(9)]
-        public HashSet<int> POSSIBLE_BROKEN_BLOCKS_IN_WILDERNESS = new HashSet<int>();
+        public double NewAllianceCost;
         [ProtoMember(10)]
-        public HashSet<int> POSSIBLE_BUILD_BLOCKS_IN_WILDERNESS = new HashSet<int>();
+        public double SummonPayment;
         [ProtoMember(11)]
         public HashSet<int> POSSIBLE_USED_BLOCKS_IN_WILDERNESS = new HashSet<int>();
         [ProtoMember(12)]
         public HashSet<int> POSSIBLE_BUILD_ITEMS_IN_WILDERNESS = new HashSet<int>();
+
 
     }
 }

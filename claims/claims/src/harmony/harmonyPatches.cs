@@ -13,6 +13,7 @@ using System.Numerics;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Security.AccessControl;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Vintagestory;
@@ -39,295 +40,35 @@ namespace claims.src.harmony
             claimant = "";
             ServerMain serverMain = __instance.World as ServerMain;
         }
-        public static void Postfix_tryAccess(Vintagestory.Common.WorldMap __instance, IPlayer player, BlockPos pos, EnumBlockAccessFlags accessFlag, ref bool __result)
+
+        public static bool Prefix_nearToClaimedLand(Vintagestory.GameContent.BlockEntityBomb __instance, ref bool __result)
         {
-            //__result = false; return;
-            if (!__result && claims.config.NO_ACCESS_WITH_FOR_NOT_CLAIMED_AREA)
+
+            int tmpX = __instance.Pos.X;
+            int tmpZ = __instance.Pos.Z;
+            bool blastEV = claims.dataStorage.getWorldInfo().blastEverywhere;
+            if (blastEV)
             {
-                EnumCANBlockAccessFlags localAccessFlag = EnumCANBlockAccessFlags.BuildOrBreak;
-                switch (accessFlag)
-                {
-                    case EnumBlockAccessFlags.Use:
-                        localAccessFlag = EnumCANBlockAccessFlags.Use; break;
-                    case EnumBlockAccessFlags.BuildOrBreak:
-                        localAccessFlag = EnumCANBlockAccessFlags.BuildOrBreak; break;
-                }
-
-                EnumWorldAccessResponse resp = testBlockAccess(player, localAccessFlag, out string owner);
-                if (resp != EnumWorldAccessResponse.Granted)
-                {
-                    __result = false; return;
-                }
-                if (player.WorldData.CurrentGameMode == EnumGameMode.Creative)
-                {
-                    __result = true; return;
-                }
-                bool canUseClaimed = player.HasPrivilege(Privilege.useblockseverywhere) && player.WorldData.CurrentGameMode == EnumGameMode.Creative;
-
-                bool canBreakClaimed = player.HasPrivilege(Privilege.buildblockseverywhere) && player.WorldData.CurrentGameMode == EnumGameMode.Creative;
-                if (((ServerMain)claims.sapi.World).WorldMap.DebugClaimPrivileges)
-                {
-                    ((ServerMain)claims.sapi.World).WorldMap.Logger.VerboseDebug("Privdebug: type: {3}, player: {0}, canUseClaimed: {1}, canBreakClaimed: {2}", new object[]
-                    {
-                    (player != null) ? player.PlayerName : null,
-                    canUseClaimed,
-                    canBreakClaimed,
-                    localAccessFlag
-                    });
-                }
-                var blockSel = new BlockSelection
-                {
-                    Position = pos
-                };
-                if (localAccessFlag == EnumCANBlockAccessFlags.Use)
-                {
-                    var response = __instance.World.Side == EnumAppSide.Server
-                        ? claims.dataStorage.serverClaimAreaHandler.CheckAccess(player, blockSel, localAccessFlag)
-                        : claims.clientDataStorage.clientClaimAreaHandler.CheckAccess(player, blockSel, localAccessFlag);
-                    if (response == EnumAreaClaimsWorldAccessResponse.GrantedByFlag)
-                    {
-                        __result = true; return;
-                    }
-                    else
-                    {
-                        __result = false; return;
-                    }
-                }
-                else
-                {
-                    
-                    if (player.InventoryManager.ActiveHotbarSlot?.Itemstack?.Block != null && 
-                        (claims.config.POSSIBLE_BROKEN_BLOCKS_IN_WILDERNESS.Contains(player.InventoryManager.ActiveHotbarSlot?.Itemstack?.Block.Id ?? 0) ||
-                        (blockSel.Position != null && claims.config.POSSIBLE_BROKEN_BLOCKS_IN_WILDERNESS.Contains(__instance.World.BlockAccessor.GetBlock(blockSel.Position)?.Id ?? 0))) ||
-                        (player.InventoryManager.ActiveHotbarSlot?.Itemstack?.Item != null && claims.config.POSSIBLE_BUILD_ITEMS_IN_WILDERNESS.Contains(player.InventoryManager.ActiveHotbarSlot?.Itemstack?.Item.Id ?? 0)))
-                    {
-                        __result = true;
-                        return;
-                    }
-                    var handler = __instance.World.Side == EnumAppSide.Server
-                         ? claims.dataStorage.serverClaimAreaHandler
-                         : claims.clientDataStorage.clientClaimAreaHandler;
-
-                    if (EnumCANBlockAccessFlags.BuildOrBreak == localAccessFlag)
-                    {
-
-                            var response1 = handler.CheckAccess(player, blockSel, EnumCANBlockAccessFlags.Build);
-                            var response2 = handler.CheckAccess(player, blockSel, EnumCANBlockAccessFlags.Break);
-                            if(response1 == EnumAreaClaimsWorldAccessResponse.GrantedByFlag && response2 == EnumAreaClaimsWorldAccessResponse.GrantedByFlag)
-                            {
-                                __result = true; return;
-                            }
-                            __result = false; return;
-                    }
-                    var response = __instance.World.Side == EnumAppSide.Server
-                        ? claims.dataStorage.serverClaimAreaHandler.CheckAccess(player, blockSel, localAccessFlag)
-                        : claims.clientDataStorage.clientClaimAreaHandler.CheckAccess(player, blockSel, localAccessFlag);
-
-                    if (response == EnumAreaClaimsWorldAccessResponse.GrantedByFlag)
-                    {
-                        __result = true; return;
-                    }
-                    else
-                    {
-                        __result = false; return;
-                    }
-                }
-            }           
-        }
-        public static bool CheckAreas(Vintagestory.Common.WorldMap __instance, IPlayer player, BlockPos pos, EnumBlockAccessFlags accessFlag)
-        {
-            if (claims.config.NO_ACCESS_WITH_FOR_NOT_CLAIMED_AREA)
-            {
-                EnumCANBlockAccessFlags localAccessFlag = EnumCANBlockAccessFlags.BuildOrBreak;
-                switch (accessFlag)
-                {
-                    case EnumBlockAccessFlags.Use:
-                        localAccessFlag = EnumCANBlockAccessFlags.Use; break;
-                    case EnumBlockAccessFlags.BuildOrBreak:
-                        localAccessFlag = EnumCANBlockAccessFlags.BuildOrBreak; break;
-                }
-
-                EnumWorldAccessResponse resp = testBlockAccess(player, localAccessFlag, out string owner);
-                if (resp != EnumWorldAccessResponse.Granted)
-                {
-                    return false;
-                }
-                if (player.WorldData.CurrentGameMode == EnumGameMode.Creative)
-                {
-                    return true;
-                }
-                bool canUseClaimed = player.HasPrivilege(Privilege.useblockseverywhere) && player.WorldData.CurrentGameMode == EnumGameMode.Creative;
-
-                bool canBreakClaimed = player.HasPrivilege(Privilege.buildblockseverywhere) && player.WorldData.CurrentGameMode == EnumGameMode.Creative;
-                if (((ServerMain)claims.sapi.World).WorldMap.DebugClaimPrivileges)
-                {
-                    ((ServerMain)claims.sapi.World).WorldMap.Logger.VerboseDebug("Privdebug: type: {3}, player: {0}, canUseClaimed: {1}, canBreakClaimed: {2}", new object[]
-                    {
-                    (player != null) ? player.PlayerName : null,
-                    canUseClaimed,
-                    canBreakClaimed,
-                    localAccessFlag
-                    });
-                }
-                var blockSel = new BlockSelection
-                {
-                    Position = pos
-                };
-                if (localAccessFlag == EnumCANBlockAccessFlags.Use)
-                {
-                    var response = __instance.World.Side == EnumAppSide.Server
-                        ? claims.dataStorage.serverClaimAreaHandler.CheckAccess(player, blockSel, localAccessFlag)
-                        : claims.clientDataStorage.clientClaimAreaHandler.CheckAccess(player, blockSel, localAccessFlag);
-                    if (response == EnumAreaClaimsWorldAccessResponse.GrantedByFlag)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-
-                    if (player.InventoryManager.ActiveHotbarSlot?.Itemstack?.Block != null &&
-                        (claims.config.POSSIBLE_BROKEN_BLOCKS_IN_WILDERNESS.Contains(player.InventoryManager.ActiveHotbarSlot?.Itemstack?.Block?.Id ?? 0) ||
-                        (blockSel.Position != null && claims.config.POSSIBLE_BROKEN_BLOCKS_IN_WILDERNESS.Contains(__instance.World.BlockAccessor.GetBlock(blockSel.Position)?.Id ?? 0))) ||
-                        (player.InventoryManager.ActiveHotbarSlot?.Itemstack?.Item != null && claims.config.POSSIBLE_BUILD_ITEMS_IN_WILDERNESS.Contains(player.InventoryManager.ActiveHotbarSlot?.Itemstack?.Item?.Id ?? 0)))
-                    {
-                        return true;
-                    }
-                    var handler = __instance.World.Side == EnumAppSide.Server
-                         ? claims.dataStorage.serverClaimAreaHandler
-                         : claims.clientDataStorage.clientClaimAreaHandler;
-
-                    if (EnumCANBlockAccessFlags.BuildOrBreak == localAccessFlag)
-                    {
-
-                        var response1 = handler.CheckAccess(player, blockSel, EnumCANBlockAccessFlags.Build);
-                        var response2 = handler.CheckAccess(player, blockSel, EnumCANBlockAccessFlags.Break);
-                        if (response1 == EnumAreaClaimsWorldAccessResponse.GrantedByFlag && response2 == EnumAreaClaimsWorldAccessResponse.GrantedByFlag)
-                        {
-                            return true;
-                        }
-                        return false;
-                    }
-                    var response = __instance.World.Side == EnumAppSide.Server
-                        ? claims.dataStorage.serverClaimAreaHandler.CheckAccess(player, blockSel, localAccessFlag)
-                        : claims.clientDataStorage.clientClaimAreaHandler.CheckAccess(player, blockSel, localAccessFlag);
-
-                    if (response == EnumAreaClaimsWorldAccessResponse.GrantedByFlag)
-                    {
-                        return true; 
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-            }
-            return false;
-        }
-        public static bool Prefix_tryAccess(Vintagestory.Common.WorldMap __instance, IPlayer player, BlockPos pos, EnumBlockAccessFlags accessFlag, ref bool __result)
-        {
-            /*if(claims.config.NO_ACCESS_WITH_FOR_NOT_CLAIMED_AREA)
-            {
-                EnumCANBlockAccessFlags localAccessFlag = EnumCANBlockAccessFlags.BuildOrBreak;
-                switch (accessFlag)
-                {
-                    case EnumBlockAccessFlags.Use:
-                        localAccessFlag = EnumCANBlockAccessFlags.Use; break;
-                    case EnumBlockAccessFlags.BuildOrBreak:
-                        localAccessFlag = EnumCANBlockAccessFlags.BuildOrBreak; break;
-                }
-
-                EnumWorldAccessResponse resp = testBlockAccess(player, localAccessFlag, out string owner);
-                if (resp != EnumWorldAccessResponse.Granted)
-                {
-                    __result = false;
-                    return false;
-                }
-                if (player.WorldData.CurrentGameMode == EnumGameMode.Creative)
-                {
-                    __result = true;
-                    return false;
-                }
-                bool canUseClaimed = player.HasPrivilege(Privilege.useblockseverywhere) && player.WorldData.CurrentGameMode == EnumGameMode.Creative;
-
-                bool canBreakClaimed = player.HasPrivilege(Privilege.buildblockseverywhere) && player.WorldData.CurrentGameMode == EnumGameMode.Creative;
-                if (((ServerMain)claims.sapi.World).WorldMap.DebugClaimPrivileges)
-                {
-                    ((ServerMain)claims.sapi.World).WorldMap.Logger.VerboseDebug("Privdebug: type: {3}, player: {0}, canUseClaimed: {1}, canBreakClaimed: {2}", new object[]
-                    {
-                    (player != null) ? player.PlayerName : null,
-                    canUseClaimed,
-                    canBreakClaimed,
-                    localAccessFlag
-                    });
-                }
-
-                if (localAccessFlag == EnumCANBlockAccessFlags.Use)
-                {
-                    if (claims.dataStorage.serverClaimAreaHandler.CheckAccess(player, blockSel, accessType))
-                    {
-                        return EnumWorldAccessResponse.Granted;
-                    }
-                }
-                else
-                {
-                    if (player.InventoryManager.ActiveHotbarSlot?.Itemstack?.Block != null && claims.config.POSSIBLE_BROKEN_BLOCKS_IN_WILDERNESS.Contains(player.InventoryManager.ActiveHotbarSlot?.Itemstack?.Block))
-                    {
-                        return EnumWorldAccessResponse.Granted;
-                    }
-
-                    if (claims.dataStorage.serverClaimAreaHandler.CheckAccess(player, blockSel, accessType))
-                    {
-                        return EnumWorldAccessResponse.Granted;
-                    }
-                }
-                           
-                __result = true;
-                return false; 
-            }*/
-            EnumWorldAccessResponse enumWorldAccessResponse = __instance.TestBlockAccess(player, new BlockSelection
-            {
-                Position = pos
-            }, accessFlag, out string claimant);
-
-            if (claimant == null)
-            {
-                claimant = "";
-            }
-            if (enumWorldAccessResponse == EnumWorldAccessResponse.Granted)
-            {
-                __result = true;
+                __result = false;
                 return false;
             }
-
-            if (!CheckAreas(__instance, player, pos, accessFlag))
+            for (int i = -1; i < 2; ++i)
             {
-
-                if (player != null)
+                for (int j = -1; j < 2; ++j)
                 {
-                    string text = "noprivilege-" + ((accessFlag == EnumBlockAccessFlags.Use) ? "use" : "buildbreak") + "-" + enumWorldAccessResponse.ToString().ToLowerInvariant();
-                    string text2 = claimant;
-                    if (claimant.StartsWithOrdinal("custommessage-"))
+
+                    claims.dataStorage.getPlot(PlotPosition.fromXZ((int)(tmpX + (i * __instance.BlastRadius)),
+                                                                          (int)(tmpZ + (j * __instance.BlastRadius))), out Plot tb);
+                    if (tb == null)
                     {
-                        text = "noprivilege-buildbreak-" + claimant.Substring("custommessage-".Length);
+                        continue;
                     }
 
-                    if (__instance.World.Side == EnumAppSide.Server)
+                    if ((tb.getPermsHandler().blastFlag || tb.getCity().getPermsHandler().blastFlag))
                     {
-                        (player as IServerPlayer).SendIngameError(text, null, text2);
+                        __result = true;
+                        return false;
                     }
-                    else
-                    {
-                        ((__instance.World as ClientMain).Api as ICoreClientAPI).TriggerIngameError(__instance, text, Lang.Get("ingameerror-" + text, claimant));
-                    }
-
-                    player?.InventoryManager.ActiveHotbarSlot?.MarkDirty();
-                    __instance.World.BlockAccessor.MarkBlockEntityDirty(pos);
-                    __instance.World.BlockAccessor.MarkBlockDirty(pos);
                 }
             }
             __result = false;
@@ -411,7 +152,7 @@ namespace claims.src.harmony
             return false;
         }
 
-        public static bool Prefix_nearToClaimedLand(Vintagestory.GameContent.BlockEntityBomb __instance, ref bool __result)
+       /* public static bool Prefix_HasPermissionToUse(Vintagestory.GameContent.BlockEntityBomb __instance, ref bool __result)
         {
 
             int tmpX = __instance.Pos.X;
@@ -443,7 +184,7 @@ namespace claims.src.harmony
             }
             __result = false;
             return false;
-        }
+        }*/
         public static bool Prefix_HandleCommand(Vintagestory.Server.ServerMain __instance, string commandName, IServerPlayer player, string args, Action<TextCommandResult> onCommandComplete)
         {
             claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
@@ -754,239 +495,6 @@ namespace claims.src.harmony
                 }
                 yield return codes[i];
             }
-        }
-
-        public static IEnumerable<CodeInstruction> Transpiler_ServerSystemBlockSimulation_HandleBlockPlaceOrBreak(IEnumerable<CodeInstruction> instructions, ILGenerator il)
-        {
-            bool found = false;
-            var codes = new List<CodeInstruction>(instructions);
-            var proxyMethod = AccessTools.Method(typeof(harmonyPatches), "TestBlockAccess_Replacement");
-            Label return97Lable = il.DefineLabel();
-            codes[49].labels.Clear();
-            for (int i = 0; i < codes.Count; i++)
-            {
-                if (!found &&
-                        codes[i].opcode == OpCodes.Ldarg_0 && codes[i + 1].opcode == OpCodes.Ldfld && codes[i + 2].opcode == OpCodes.Ldfld && codes[i - 1].opcode == OpCodes.Ret)
-                {
-                    //codes[i-2].labels.Clear();
-                    codes[i-2].operand = return97Lable;
-                    i += 8;
-                    
-                    var c = new CodeInstruction(OpCodes.Ldarg_0);
-                    c.labels.Add(return97Lable);
-                    yield return c;
-                    yield return new CodeInstruction(OpCodes.Ldarg_1);
-                    yield return new CodeInstruction(OpCodes.Ldarg_2);
-                    yield return new CodeInstruction(OpCodes.Call, proxyMethod);
-                    //codes[i-2].labels.Add(return97Lable);
-                    found = true;
-                    continue;
-                }
-                yield return codes[i];
-            }
-        }
-
-        public static IEnumerable<CodeInstruction> Transpiler_ServerSystemBlockSimulation_HandleBlockInteract(IEnumerable<CodeInstruction> instructions, ILGenerator il)
-        {
-            bool found = false;
-            var codes = new List<CodeInstruction>(instructions);
-            var proxyMethod = AccessTools.Method(typeof(harmonyPatches), "TestBlockAccess_Replacement_Use");
-            Label return97Lable = il.DefineLabel();
-            codes[49].labels.Clear();
-            for (int i = 0; i < codes.Count; i++)
-            {
-                if (!found &&
-                        codes[i].opcode == OpCodes.Ldarg_0 && codes[i + 1].opcode == OpCodes.Ldfld && codes[i + 2].opcode == OpCodes.Ldfld && codes[i - 1].opcode == OpCodes.Stloc_2)
-                {
-                    //codes[i - 2].operand = return97Lable;
-                    i += 7;
-
-                    var c = new CodeInstruction(OpCodes.Ldarg_0);
-                    //c.labels.Add(return97Lable);
-                    yield return c;
-                    yield return new CodeInstruction(OpCodes.Ldarg_1);
-                    yield return new CodeInstruction(OpCodes.Ldarg_2);
-                    yield return new CodeInstruction(OpCodes.Call, proxyMethod);
-                    //codes[i-2].labels.Add(return97Lable);
-                    found = true;
-                    continue;
-                }
-                yield return codes[i];
-            }
-        }
-        public static EnumWorldAccessResponse TestBlockAccess_Replacement_Use(ServerSystemBlockSimulation __instance, Packet_Client packet, ConnectedClient client)
-        {
-            Packet_ClientHandInteraction p = packet.HandInteraction;
-            BlockPos pos = new BlockPos(p.X, p.Y, p.Z);
-            BlockFacing facing = BlockFacing.ALLFACES[p.OnBlockFace];
-            Vec3d hitPos = new Vec3d(CollectibleNet.DeserializeDoublePrecise(p.HitX), CollectibleNet.DeserializeDoublePrecise(p.HitY), CollectibleNet.DeserializeDoublePrecise(p.HitZ));
-            BlockSelection blockSel = new BlockSelection
-            {
-                Position = pos,
-                Face = facing,
-                HitPosition = hitPos,
-                SelectionBoxIndex = p.SelectionBoxIndex
-            };
-            EnumWorldAccessResponse resp;
-            resp = testBlockAccessInternal_Replacement(client.Player, blockSel, EnumCANBlockAccessFlags.Use, out _);
-            
-
-            /*if (__instance.World.Side == EnumAppSide.Client)
-            {
-                resp = (this.World.Api.Event as ClientEventAPI).TriggerTestBlockAccess(client.Player, blockSel, accessType, claimant, resp);
-            }
-            else*/
-            //{
-            //claims.sapi.Event.
-            //resp = (claims.sapi.Event as ServerEventAPI).TriggerTestBlockAccess(client.Player, blockSel, accessType, claimant, resp);
-            //}
-            return resp;
-        }
-        public static EnumWorldAccessResponse TestBlockAccess_Replacement(ServerSystemBlockSimulation __instance, Packet_Client packet, ConnectedClient client)
-        {
-            Packet_ClientBlockPlaceOrBreak p = packet.BlockPlaceOrBreak;
-            BlockSelection blockSel = new BlockSelection
-            {
-                DidOffset = (p.DidOffset > 0),
-                Face = BlockFacing.ALLFACES[p.OnBlockFace],
-                Position = new BlockPos(p.X, p.Y, p.Z),
-                HitPosition = new Vec3d(CollectibleNet.DeserializeDouble(p.HitX), CollectibleNet.DeserializeDouble(p.HitY), CollectibleNet.DeserializeDouble(p.HitZ)),
-                SelectionBoxIndex = p.SelectionBoxIndex
-            };
-            string claimant;
-            EnumWorldAccessResponse resp;
-            if (p.Mode == 0 || p.Mode == 2)
-            {
-                resp = testBlockAccessInternal_Replacement(client.Player, blockSel, EnumCANBlockAccessFlags.Break, out claimant);
-            }
-            else 
-            {
-                resp = testBlockAccessInternal_Replacement(client.Player, blockSel, EnumCANBlockAccessFlags.Build, out claimant);
-            }
-
-            /*if (__instance.World.Side == EnumAppSide.Client)
-            {
-                resp = (this.World.Api.Event as ClientEventAPI).TriggerTestBlockAccess(client.Player, blockSel, accessType, claimant, resp);
-            }
-            else*/
-            //{
-            //claims.sapi.Event.
-            //resp = (claims.sapi.Event as ServerEventAPI).TriggerTestBlockAccess(client.Player, blockSel, accessType, claimant, resp);
-            //}
-            return resp;
-        }
-
-        public static EnumWorldAccessResponse testBlockAccessInternal_Replacement(IPlayer player, BlockSelection blockSel, EnumCANBlockAccessFlags accessType, out string claimant)
-        {
-            EnumWorldAccessResponse resp = testBlockAccess(player, accessType, out claimant);
-            if (resp != EnumWorldAccessResponse.Granted)
-            {
-                return resp;
-            }
-            if(player.WorldData.CurrentGameMode == EnumGameMode.Creative)
-            {
-                return EnumWorldAccessResponse.Granted;
-            }
-            bool canUseClaimed = player.HasPrivilege(Privilege.useblockseverywhere) && player.WorldData.CurrentGameMode == EnumGameMode.Creative;
-            
-            bool canBreakClaimed = player.HasPrivilege(Privilege.buildblockseverywhere) && player.WorldData.CurrentGameMode == EnumGameMode.Creative;
-            if (((ServerMain)claims.sapi.World).WorldMap.DebugClaimPrivileges)
-            {
-                ((ServerMain)claims.sapi.World).WorldMap.Logger.VerboseDebug("Privdebug: type: {3}, player: {0}, canUseClaimed: {1}, canBreakClaimed: {2}", new object[]
-                {
-                    (player != null) ? player.PlayerName : null,
-                    canUseClaimed,
-                    canBreakClaimed,
-                    accessType
-                });
-            }
-            ServerMain server = claims.sapi.World as ServerMain;
-            if (accessType == EnumCANBlockAccessFlags.Use)
-            {
-                if (!canUseClaimed)
-                {
-                    string blockingLandClaimant;
-                    claimant = (blockingLandClaimant = ((ServerMain)claims.sapi.World).WorldMap.GetBlockingLandClaimant(player, blockSel.Position, EnumBlockAccessFlags.Use));
-                    if (blockingLandClaimant != null)
-                    {
-                        return EnumWorldAccessResponse.LandClaimed;
-                    }
-                }
-
-                if (claims.config.NO_ACCESS_WITH_FOR_NOT_CLAIMED_AREA)
-                {
-                    var response = claims.dataStorage.serverClaimAreaHandler.CheckAccess(player, blockSel, accessType);
-                    if (response == EnumAreaClaimsWorldAccessResponse.GrantedByFlag)
-                    {
-                        return EnumWorldAccessResponse.Granted;
-                    }
-                    else if (response == EnumAreaClaimsWorldAccessResponse.DeniedByFlag)
-                    {
-                        return EnumWorldAccessResponse.DeniedByMod;
-                    }
-                }
-
-                if (server != null && !server.EventManager.TriggerCanUse(player as IServerPlayer, blockSel))
-                {
-                    return EnumWorldAccessResponse.DeniedByMod;
-                }              
-                return EnumWorldAccessResponse.Granted;
-            }
-            else
-            {
-                //to be able to protect all traders
-                if (!canBreakClaimed)
-                {
-                    string blockingLandClaimant;
-                    claimant = (blockingLandClaimant = ((ServerMain)claims.sapi.World).WorldMap.GetBlockingLandClaimant(player, blockSel.Position, EnumBlockAccessFlags.BuildOrBreak));
-                    if (blockingLandClaimant != null)
-                    {
-                        return EnumWorldAccessResponse.LandClaimed;
-                    }
-                }
-
-                if (claims.config.NO_ACCESS_WITH_FOR_NOT_CLAIMED_AREA)
-                {
-                    var selectedBlock = player.Entity.World.BlockAccessor.GetBlock(blockSel.Position);
-                    if (accessType == EnumCANBlockAccessFlags.Break)
-                    {
-                        if (selectedBlock != null && claims.config.POSSIBLE_BROKEN_BLOCKS_IN_WILDERNESS.Contains(selectedBlock.Id))
-                        {
-                            return EnumWorldAccessResponse.Granted;
-                        }
-                    }
-                    else
-                    {
-                        if (player.InventoryManager.ActiveHotbarSlot?.Itemstack?.Block != null && claims.config.POSSIBLE_BUILD_BLOCKS_IN_WILDERNESS.Contains(player.InventoryManager.ActiveHotbarSlot?.Itemstack?.Block.Id ?? 0))
-                        {
-                            return EnumWorldAccessResponse.Granted;
-                        }
-                        if (player.InventoryManager.ActiveHotbarSlot?.Itemstack?.Item != null && claims.config.POSSIBLE_BUILD_ITEMS_IN_WILDERNESS.Contains(player.InventoryManager.ActiveHotbarSlot?.Itemstack?.Item.Id ?? 0))
-                        {
-                            return EnumWorldAccessResponse.Granted;
-                        }
-                    }
-                    var response = claims.dataStorage.serverClaimAreaHandler.CheckAccess(player, blockSel, accessType);
-                    if (response == EnumAreaClaimsWorldAccessResponse.GrantedByFlag)
-                    {
-                        return EnumWorldAccessResponse.Granted;
-                    }
-                    else if (response == EnumAreaClaimsWorldAccessResponse.DeniedByFlag)
-                    {
-                        return EnumWorldAccessResponse.DeniedByMod;
-                    }
-                }
-
-                if (server != null && !server.EventManager.TriggerCanPlaceOrBreak(player as IServerPlayer, blockSel, out claimant))
-                {
-                    return EnumWorldAccessResponse.DeniedByMod;
-                }
-
-                return EnumWorldAccessResponse.Granted;
-            }
-
-
-
         }
         private static EnumWorldAccessResponse testBlockAccess(IPlayer player, EnumCANBlockAccessFlags accessType, out string claimant)
         {

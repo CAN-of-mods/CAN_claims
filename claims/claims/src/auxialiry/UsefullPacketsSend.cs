@@ -233,11 +233,8 @@ namespace claims.src.auxialiry
                        CITY_NAME_CHANGE_COST = claims.config.CITY_NAME_CHANGE_COST,
                        CITY_BASE_CARE = claims.config.CITY_BASE_CARE,
                        PLOTS_COLORS = Settings.colors,
-                       NO_ACCESS_WITH_FOR_NOT_CLAIMED_AREA = claims.config.NO_ACCESS_WITH_FOR_NOT_CLAIMED_AREA,
-                       POSSIBLE_BROKEN_BLOCKS_IN_WILDERNESS = claims.config.POSSIBLE_BROKEN_BLOCKS_IN_WILDERNESS,
-                       POSSIBLE_BUILD_BLOCKS_IN_WILDERNESS = claims.config.POSSIBLE_BUILD_BLOCKS_IN_WILDERNESS,
-                       POSSIBLE_USED_BLOCKS_IN_WILDERNESS = claims.config.POSSIBLE_USED_BLOCKS_IN_WILDERNESS,
-                       POSSIBLE_BUILD_ITEMS_IN_WILDERNESS = claims.config.POSSIBLE_BUILD_ITEMS_IN_WILDERNESS
+                       NewAllianceCost = claims.config.NEW_ALLIANCE_COST,
+                       SummonPayment = claims.config.SUMMON_PAYMENT
                    }
                    , player);
         }

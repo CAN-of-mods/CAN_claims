@@ -151,16 +151,6 @@ namespace claims.src
         public int MAP_ZONE_SIZE = 512;
         public HashSet<string> BLOCKED_NAMES = new HashSet<string> { };
         public HashSet<string> CITY_PLOTS_COLOR_AVAILABLE_COLORS_GUI = new HashSet<string>();
-        public bool NO_ACCESS_WITH_FOR_NOT_CLAIMED_AREA = false;
-        public HashSet<int> POSSIBLE_BROKEN_BLOCKS_IN_WILDERNESS = new HashSet<int>();
-        public HashSet<int> POSSIBLE_BUILD_BLOCKS_IN_WILDERNESS = new HashSet<int>();
-        public HashSet<int> POSSIBLE_USED_BLOCKS_IN_WILDERNESS = new HashSet<int>();
-        public HashSet<int> POSSIBLE_BUILD_ITEMS_IN_WILDERNESS = new HashSet<int>();
-
-        public HashSet<string> BLOCK_CODES_CAN_BE_BROKEN_IN_WILDERNESS = new HashSet<string>();
-        public HashSet<string> BLOCK_CODES_CAN_BE_BUILD_IN_WILDERNESS = new HashSet<string> ();
-        public HashSet<string> BLOCK_CODES_CAN_BE_USED_IN_WILDERNESS = new HashSet<string> { };
-        public HashSet<string> ITEMS_CODES_CAN_BE_BUILD_IN_WILDERNESS = new HashSet<string> ();
 
         public int[] PLOT_COLORS;
 
@@ -196,9 +186,6 @@ namespace claims.src
             "Bighorn ewe", "Bighorn ram", "Rooster", "Chick", "Hen", "Sow", "Boar", "Piglet" };
             claims.config.CITY_PLOTS_COLOR_AVAILABLE_COLORS_GUI = new HashSet<string> { "white", "blue", "red", "orange", "black", "aqua", "yellow", "cyan", "pink", "gold", "indigo", "ivory", "lime", "green", "red", "purple", "silver",
         "violet"};
-            claims.config.BLOCK_CODES_CAN_BE_BROKEN_IN_WILDERNESS = new HashSet<string> { "game:ladder-wood-*", "game:woodbucket", "game:water-*-*", "game:firepit-construct*" };
-            claims.config.BLOCK_CODES_CAN_BE_BUILD_IN_WILDERNESS = new HashSet<string> { "game:ladder-wood-north" };
-            claims.config.ITEMS_CODES_CAN_BE_BUILD_IN_WILDERNESS = new HashSet<string> { "game:drygrass", "game:agedfirewood", "game:firewood" };
             claims.config.BLOCKED_COMMANDS_PRISON = new HashSet<string> { "summon" };
 
         }

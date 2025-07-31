@@ -49,12 +49,6 @@ namespace claims.src.events
             {
                 claims.sapi.WorldManager.SaveGame.StoreData<Dictionary<string, int>>("claimsshowchunkmsgs", tmpDict);
             }
-
-            if (claims.dataStorage.serverClaimAreaHandler != null)
-            {
-                claims.dataStorage.serverClaimAreaHandler.SaveIntoMap();
-            }
-
         }
 
         public static void onServerExit()

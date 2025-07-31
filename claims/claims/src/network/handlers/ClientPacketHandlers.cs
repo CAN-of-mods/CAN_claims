@@ -196,36 +196,9 @@ namespace claims.src.network.handlers
                 claims.config.CITY_NAME_CHANGE_COST = packet.CITY_NAME_CHANGE_COST;
                 claims.config.CITY_BASE_CARE = packet.CITY_BASE_CARE;
                 claims.config.PLOT_COLORS = packet.PLOTS_COLORS;
-                claims.config.NO_ACCESS_WITH_FOR_NOT_CLAIMED_AREA = packet.NO_ACCESS_WITH_FOR_NOT_CLAIMED_AREA;
-            });
-            claims.clientChannel.SetMessageHandler<ClaimAreasPacket>((packet) =>
-            {
-                switch (packet.type)
-                {                   
-                    case ClaimAreasPacketEnum.Init:
-                        claims.clientDataStorage.clientClaimAreaHandler.InitAreasHashSet(packet.claims);
-                        break;
-                    case ClaimAreasPacketEnum.Add:
-                        foreach (var claimArea in packet.claims)
-                        {
-                            claims.clientDataStorage.clientClaimAreaHandler.AddAreaClaim(claimArea);
-                        }
-                        break;
-                    case ClaimAreasPacketEnum.Remove:
-                        foreach (var claimArea in packet.claims)
-                        {
-                            claims.clientDataStorage.clientClaimAreaHandler.RemoveAreaClaim(claimArea);
-                        }
-                        break;
-                    case ClaimAreasPacketEnum.Update:
-                        foreach (var claimArea in packet.claims)
-                        {
-                            claims.clientDataStorage.clientClaimAreaHandler.UpdateClaimArea(claimArea);
-                        }
-                        break;
-
-                }
-            });
+                claims.config.NEW_ALLIANCE_COST = packet.NewAllianceCost;
+                claims.config.SUMMON_PAYMENT = packet.SummonPayment;
+            });          
         }
     }
 }

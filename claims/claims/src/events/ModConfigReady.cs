@@ -87,7 +87,6 @@ namespace claims.src.events
 
                                             ;
             }
-            claims.dataStorage.FillHashSets(claims.sapi);
             Dictionary<string, ClientCityInfoCellElement> CityStatsCashe =
                 ObjectCacheUtil.GetOrCreate<Dictionary<string, ClientCityInfoCellElement>>(claims.sapi,
                 "claims:cityinfocache", () => new Dictionary<string, ClientCityInfoCellElement>());

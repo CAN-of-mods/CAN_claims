@@ -90,21 +90,7 @@ namespace claims.src.events
             Dictionary<string, ClientCityInfoCellElement> CityStatsCashe =
                 ObjectCacheUtil.GetOrCreate<Dictionary<string, ClientCityInfoCellElement>>(claims.sapi,
                 "claims:cityinfocache", () => new Dictionary<string, ClientCityInfoCellElement>());
-            UsefullPacketsSend.AddToQueuePlayerInfoUpdate(playerInfo.Guid, new Dictionary<string, object> { { "value", CityStatsCashe.Values.ToList() } }, EnumPlayerRelatedInfo.CITY_LIST_ALL);
-
-            if (claims.config.NO_ACCESS_WITH_FOR_NOT_CLAIMED_AREA)
-            {
-                if (claims.dataStorage.serverClaimAreaHandler.GetAllClaimAreas() != null)
-                {
-                    claims.serverChannel.SendPacket(new ClaimAreasPacket()
-                    {
-                        type = ClaimAreasPacketEnum.Init,
-                        claims = claims.dataStorage.serverClaimAreaHandler.GetAllClaimAreas().ToList()
-
-                    }, (IServerPlayer)player);
-                }
-            }
-            
+            UsefullPacketsSend.AddToQueuePlayerInfoUpdate(playerInfo.Guid, new Dictionary<string, object> { { "value", CityStatsCashe.Values.ToList() } }, EnumPlayerRelatedInfo.CITY_LIST_ALL);         
         }
         public static void processExistedPlayerInfoOnLogin(PlayerInfo playerInfo, IServerPlayer player)
         {
