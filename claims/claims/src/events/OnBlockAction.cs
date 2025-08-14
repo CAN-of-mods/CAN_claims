@@ -21,6 +21,11 @@ namespace claims.src.events
     {
         public static bool Event_OnBlockUse(IServerPlayer byPlayer, BlockSelection blockSel)
         {
+            var block = claims.sapi.World.BlockAccessor.GetBlock(blockSel.Position);
+            if (claims.config.blockTypesAccess.Contains(block.GetType()))
+            {
+                return true;
+            }
             if (byPlayer.WorldData.CurrentGameMode == EnumGameMode.Creative)
             {
                 return true;

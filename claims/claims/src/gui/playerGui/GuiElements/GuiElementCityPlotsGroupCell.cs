@@ -63,7 +63,7 @@ namespace claims.src.gui.playerGui.GuiElements
             modcellTexture = new LoadedTexture(capi);           
             this.capi = capi;
 
-            TextExtents textExtents = CairoFont.WhiteMediumText().GetTextExtents(plotsGroupCell.Name);
+            TextExtents textExtents = CairoFont.WhiteMediumText().GetTextExtents(plotsGroupCell.CityName + ": " + plotsGroupCell.Name);
             var font = CairoFont.WhiteDetailText();
             texts = new(); double offsetY = 45;
             double offsetX = 15;

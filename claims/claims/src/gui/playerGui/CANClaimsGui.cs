@@ -1142,8 +1142,8 @@ namespace claims.src.gui.playerGui
                 {
                     ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                     clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup,
-                        string.Format("/c plotsgroup set blast {0} {1}", cell?.Name, (t ? "on" : "off")), EnumChatType.Macro, "");
-                    cell.PermsHandler.setBlast(t);
+                        string.Format("/c plotsgroup set blast {0} {1}", cell?.Name, (!t ? "on" : "off")), EnumChatType.Macro, "");
+                    cell.PermsHandler.setBlast(!t);
                 },
                                                 blastToggleButtonBounds,
                                                 "blast-switch");

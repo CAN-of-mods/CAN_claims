@@ -932,7 +932,7 @@ namespace claims.src.commands.register
                                 .WithPreCondition((TextCommandCallingArgs args) => {
                                     if (args.Caller.Player is IServerPlayer player)
                                     {
-                                        if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.PLOT_SET_ALL_CITY_PLOTS, EnumPlayerPermissions.PLOT_SET_PVP }))
+                                        if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.CITY_PLOTSGROUP_SET_PVP }))
                                         {
                                             return TextCommandResult.Success();
                                         }
@@ -952,7 +952,7 @@ namespace claims.src.commands.register
                                .WithPreCondition((TextCommandCallingArgs args) => {
                                    if (args.Caller.Player is IServerPlayer player)
                                    {
-                                       if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.PLOT_SET_ALL_CITY_PLOTS, EnumPlayerPermissions.PLOT_SET_FIRE }))
+                                       if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.CITY_PLOTSGROUP_SET_FIRE }))
                                        {
                                            return TextCommandResult.Success();
                                        }
@@ -972,7 +972,7 @@ namespace claims.src.commands.register
                                .WithPreCondition((TextCommandCallingArgs args) => {
                                    if (args.Caller.Player is IServerPlayer player)
                                    {
-                                       if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.PLOT_SET_ALL_CITY_PLOTS, EnumPlayerPermissions.PLOT_SET_BLAST }))
+                                       if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.CITY_PLOTSGROUP_SET_BLAST }))
                                        {
                                            return TextCommandResult.Success();
                                        }

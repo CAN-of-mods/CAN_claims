@@ -25,6 +25,7 @@ namespace claims.src.part.structure
         double customTax = 0;
         public Prison Prison { get; set; }
         public int Price { get; set; } = -1;
+        public bool IsForSale => Price != -1;
         CityPlotsGroup plotGroup;
         PermsHandler permsHandler = new PermsHandler();
         public bool MarkedNoPvp { get; set; } = false;

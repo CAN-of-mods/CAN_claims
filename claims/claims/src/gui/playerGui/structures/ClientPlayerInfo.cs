@@ -284,7 +284,7 @@ namespace claims.src.gui.playerGui.structures
             {
                 foreach (var it in claims.clientDataStorage.GetCitySavedPlotInfos(claims.clientDataStorage.clientPlayerInfo.CityInfo.Name))
                 {
-                    claims.clientModInstance.plotsMapLayer.OnResChunkPixels(it, claims.clientDataStorage.ClientGetCityColor(claims.clientDataStorage.clientPlayerInfo?.CityInfo.Name ?? ""), claims.clientDataStorage.clientPlayerInfo?.CityInfo.Name);
+                    claims.clientModInstance.plotsMapLayer.OnResChunkPixels(it, claims.clientDataStorage.clientPlayerInfo?.CityInfo.Name);
                 }
             }
         }
@@ -590,7 +590,7 @@ namespace claims.src.gui.playerGui.structures
             {
                 if (claims.clientDataStorage.getSavedPlot(it, out var plot))
                 {
-                    claims.clientModInstance.plotsMapLayer.OnResChunkPixels(it, claims.clientDataStorage.ClientGetCityColor(plot.cityName), plot.cityName);
+                    claims.clientModInstance.plotsMapLayer.OnResChunkPixels(it, plot.cityName);
                 }
             }
         }

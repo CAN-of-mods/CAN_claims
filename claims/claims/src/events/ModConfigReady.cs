@@ -2,12 +2,14 @@
 using caneconomy.src.implementations.RealMoney;
 using caneconomy.src.implementations.VirtualMoney;
 using claims.src.auxialiry;
+using claims.src.commands;
 using claims.src.gui.playerGui.structures.cellElements;
 using claims.src.messages;
 using claims.src.part;
 using claims.src.part.structure;
 using claims.src.part.structure.conflict;
 using claims.src.part.structure.war;
+using claims.src.rights;
 using System;
 using System.Collections.Generic;
 using Vintagestory.API.Client;
@@ -64,6 +66,21 @@ namespace claims.src.events
                                                 .WithDesc("Deposit money to city account.")
                                             .EndSub()
                                             .BeginSub("withdraw")
+                                                .WithPreCondition((TextCommandCallingArgs args) => {
+                                                    if (args.Caller.Player is IServerPlayer player)
+                                                    {
+                                                        if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.CITY_WITHDRAW_MONEY }))
+                                                        {
+                                                            return TextCommandResult.Success();
+                                                        }
+                                                        else
+                                                        {
+                                                            return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                                        }
+
+                                                    }
+                                                    return TextCommandResult.Error("");
+                                                })
                                                 .HandleWith(commands.MoneyCommands.OnCityWithdraw)
                                                 .WithDesc("Withdraw money from city account.")
                                                 .WithArgs(parsers.Int("amount"))
@@ -80,6 +97,21 @@ namespace claims.src.events
                                                 .WithDesc("Deposit money to alliance account.")
                                             .EndSub()
                                             .BeginSub("withdraw")
+                                             .WithPreCondition((TextCommandCallingArgs args) => {
+                                                 if (args.Caller.Player is IServerPlayer player)
+                                                 {
+                                                     if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.ALLIANCE_WITHDRAW_MONEY }))
+                                                     {
+                                                         return TextCommandResult.Success();
+                                                     }
+                                                     else
+                                                     {
+                                                         return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                                     }
+
+                                                 }
+                                                 return TextCommandResult.Error("");
+                                             })
                                                 .HandleWith(commands.MoneyCommands.OnAllianceWithdraw)
                                                 .WithDesc("Withdraw money from alliance account.")
                                                 .WithArgs(parsers.Int("amount"))

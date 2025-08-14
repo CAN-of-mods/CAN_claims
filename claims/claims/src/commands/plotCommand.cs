@@ -85,6 +85,10 @@ namespace claims.src.commands
             {
                 return TextCommandResult.Error("claims:plot_has_owner_already");
             }
+            if(!plot.IsForSale)
+            {
+                return TextCommandResult.Error("claims:not_for_sale");
+            }
 
             if (!plot.hasCity())
             {
@@ -252,14 +256,9 @@ namespace claims.src.commands
             {
                 return TextCommandResult.Success("claims:no_city_here");
             }
-            if ((plot.getCity().Equals(playerInfo.City) && !(plot.getPlotOwner()?.Equals(playerInfo) ?? false) && !(playerInfo.City?.isMayor(playerInfo) ?? true)))
+            if(!isOwnerOfPlotMayorAdmin(plot, playerInfo, player))
             {
-                return TextCommandResult.Success("claims:not_your_city");
-            }
-
-            if ((!plot.getCity().Equals(playerInfo.City) && !plot.getPlotOwner().Equals(playerInfo)))
-            {
-                return TextCommandResult.Success("claims:not_your_city");
+                return TextCommandResult.Success("claims:not_owner_or_mayor");
             }
             string name = Filter.filterName((string)args.LastArg);
             if (name.Length == 0 || !Filter.checkForBlockedNames(name))
@@ -287,27 +286,21 @@ namespace claims.src.commands
                 return TextCommandResult.Success("claims:not_negative");
             }
             PlotPosition currentPlotPosition = PlotPosition.fromXZ((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Z);
-            claims.dataStorage.getPlot(currentPlotPosition, out Plot plotHere);
-            if (plotHere == null)
+            if(!claims.dataStorage.getPlot(currentPlotPosition, out Plot plotHere))
             {
                 return TextCommandResult.Success("claims:plot_not_claimed");
             }
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
-            if (playerInfo == null)
+
+            if(!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Success("claims:no_such_player");
             }
 
-            if (!plotHere.hasCity())
+            if (!isOwnerOfPlotMayorAdmin(plotHere, playerInfo, player))
             {
-                return TextCommandResult.Success("claims:no_city_here");
+                return TextCommandResult.Success("claims:not_owner_or_mayor");
             }
-
-            if (!plotHere.getCity().Equals(playerInfo.City))
-            {
-                return TextCommandResult.Success("claims:player_should_be_in_same_city");
-            }
-
+            
             if (!plotHere.setCustomTax(tax))
             {
                 return TextCommandResult.Success();
@@ -317,6 +310,7 @@ namespace claims.src.commands
             claims.serverPlayerMovementListener.markPlotToWasReUpdated(plotHere.getPos());
             UsefullPacketsSend.SendCurrentPlotUpdate(player, plotHere);
             plotHere.saveToDatabase();
+            
             return TextCommandResult.Success();
         }
         public static TextCommandResult SetType(TextCommandCallingArgs args)
@@ -327,28 +321,20 @@ namespace claims.src.commands
             if (PlotInfo.nameToPlotType.ContainsKey((string)args.LastArg))
             {
                 PlotPosition currentPlotPosition = PlotPosition.fromXZ((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Z);
-                claims.dataStorage.getPlot(currentPlotPosition, out Plot plotHere);
-                if (plotHere == null)
+                if(!claims.dataStorage.getPlot(currentPlotPosition, out Plot plotHere))
                 {
                     return TextCommandResult.Success("claims:plot_not_claimed");
                 }
 
-                claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
-                if (playerInfo == null)
+                if(!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
                 {
                     return TextCommandResult.Success("claims:no_such_player");
                 }
 
-                if (!plotHere.hasCity())
+                if (!isOwnerOfPlotMayorAdmin(plotHere, playerInfo, player))
                 {
-                    return TextCommandResult.Success("claims:no_city_here");
+                    return TextCommandResult.Success("claims:not_owner_or_mayor");
                 }
-
-                if (!plotHere.getCity().Equals(playerInfo.City))
-                {
-                    return TextCommandResult.Success("claims:player_should_be_in_same_city");
-                }
-
                 TextCommandResult tcr = new();
                 tcr.Status = EnumCommandStatus.Success;
                 if (!plotHere.setNewType(tcr, (string)args.LastArg, player))
@@ -357,7 +343,7 @@ namespace claims.src.commands
                 }
                 claims.dataStorage.setNowEpochZoneTimestampFromPlotPosition(plotHere.getPos());
                 claims.serverPlayerMovementListener.markPlotToWasReUpdated(plotHere.getPos());
-                UsefullPacketsSend.SendCurrentPlotUpdate(player, plotHere);                
+                UsefullPacketsSend.SendCurrentPlotUpdate(player, plotHere);
                 return tcr;
             }
             else
@@ -400,26 +386,21 @@ namespace claims.src.commands
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
 
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
-            if (playerInfo == null)
+            if(!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Success("claims:no_such_player");
             }
 
-            claims.dataStorage.getPlot(PlotPosition.fromXZ((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Z), out Plot plot);
-            if (plot == null)
+            if(!claims.dataStorage.getPlot(PlotPosition.fromXZ((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Z), out Plot plot))
             {
                 return TextCommandResult.Success("claims:no_plots_here");
             }
-            if (!plot.hasCity())
+
+            if (!isOwnerOfPlotMayorAdmin(plot, playerInfo, player))
             {
-                return TextCommandResult.Success("claims:no_city_here");
+                return TextCommandResult.Success("claims:not_owner_or_mayor");
             }
 
-            if (!plot.getCity().Equals(playerInfo.City))
-            {
-                return TextCommandResult.Success("claims:not_your_city");
-            }
             int price = (int)args.LastArg;
 
             if (price < 0)
@@ -439,24 +420,18 @@ namespace claims.src.commands
             TextCommandResult tcr = new();
             tcr.Status = EnumCommandStatus.Success;
 
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
-            if (playerInfo == null)
+            if(!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Success("claims:no_such_player");
             }
 
-            claims.dataStorage.getPlot(PlotPosition.fromXZ((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Z), out Plot plot);
-            if (plot == null)
+            if(!claims.dataStorage.getPlot(PlotPosition.fromXZ((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Z), out Plot plot))
             {
                 return TextCommandResult.Success("claims:no_plots_here");
             }
-            if (!plot.hasCity())
+            if (!isOwnerOfPlotMayorAdmin(plot, playerInfo, player))
             {
-                return TextCommandResult.Success("claims:no_city_here");
-            }
-            if (!plot.getCity().Equals(playerInfo.City))
-            {
-                return TextCommandResult.Success("claims:not_your_city");
+                return TextCommandResult.Success("claims:not_owner_or_mayor");
             }
 
             plot.Price = -1;
@@ -492,10 +467,18 @@ namespace claims.src.commands
                 tcr.StatusMessage = "claims:no_city_here";
                 return false;
             }
-            if (!plotHere.getCity().getPlayerInfos().Contains(playerInfo) && (!plotHere.hasPlotOwner() || !plotHere.getPlotOwner().Equals(playerInfo)))
+
+            if(!plotHere.getCity().isCitizen(playerInfo))
             {
-                tcr.StatusMessage = "claims:have_to_be_owner_or_mayor";
-                return false;
+                if(!plotHere.hasPlotOwner() || !plotHere.getPlotOwner().Equals(playerInfo))
+                {
+                    tcr.StatusMessage = "claims:have_to_be_owner_or_mayor";
+                    return false;
+                }
+            }
+            else
+            {
+                return plotHere.hasPlotOwner() && plotHere.getPlotOwner().Equals(playerInfo);
             }
             return true;
         }

@@ -72,6 +72,10 @@ namespace claims.src
                         EnumPlayerPermissions.CITY_PLOTSGROUP_REMOVE_PLOT, 
                         EnumPlayerPermissions.CITY_PLOTSGROUP_LIST, 
                         EnumPlayerPermissions.CITY_PLOTSGROUP_SET,
+                        EnumPlayerPermissions.CITY_PLOTSGROUP_SET_FIRE,
+                        EnumPlayerPermissions.CITY_PLOTSGROUP_SET_PVP,
+                        EnumPlayerPermissions.CITY_PLOTSGROUP_SET_BLAST,
+                        EnumPlayerPermissions.CITY_WITHDRAW_MONEY
                     }
                 },
 
@@ -82,6 +86,7 @@ namespace claims.src
                         EnumPlayerPermissions.CITY_UNCLAIM_PLOT,
                         EnumPlayerPermissions.CITY_KICK,
                         EnumPlayerPermissions.CITY_INVITE,
+                        EnumPlayerPermissions.CITY_UNINVITE,
                         EnumPlayerPermissions.CITY_SET_PLOTS_COLOR,
                         EnumPlayerPermissions.CITY_SEE_BALANCE
                     }
@@ -95,7 +100,8 @@ namespace claims.src
                         EnumPlayerPermissions.ALLIANCE_DENY_CONFLICT,
                         EnumPlayerPermissions.ALLIANCE_OFFER_STOP_CONFLICT,
                         EnumPlayerPermissions.ALLIANCE_ACCEPT_STOP_CONFLICT,
-                        EnumPlayerPermissions.ALLIANCE_DENY_STOP_CONFLICT
+                        EnumPlayerPermissions.ALLIANCE_DENY_STOP_CONFLICT,
+                        EnumPlayerPermissions.ALLIANCE_WITHDRAW_MONEY
                     }
                 }
 

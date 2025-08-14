@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.MathTools;
+using static OpenTK.Graphics.OpenGL.GL;
 
 namespace claims.src.network.handlers
 {
@@ -32,7 +33,7 @@ namespace claims.src.network.handlers
                             foreach (var plot in zone.Value)
                             {
                                 claims.clientDataStorage.addClientSavedPlots(plot.Key, plot.Value);
-                                claims.clientModInstance.plotsMapLayer.OnResChunkPixels(plot.Key, claims.clientDataStorage.ClientGetCityColor(plot.Value.cityName), plot.Value.cityName);
+                                claims.clientModInstance.plotsMapLayer.OnResChunkPixels(plot.Key, plot.Value.cityName);
                             }
                         }
                         //TODO
@@ -41,7 +42,7 @@ namespace claims.src.network.handlers
                     case PacketsContentEnum.ADD_SINGLE_PLOT:
                         Tuple<Vec2i, SavedPlotInfo> savedPlotTuple = JsonConvert.DeserializeObject<Tuple<Vec2i, SavedPlotInfo>>(packet.data);
                         claims.clientDataStorage.addClientSavedPlots(savedPlotTuple.Item1, savedPlotTuple.Item2);
-                        claims.clientModInstance.plotsMapLayer.OnResChunkPixels(savedPlotTuple.Item1, claims.clientDataStorage.ClientGetCityColor(savedPlotTuple.Item2.cityName), savedPlotTuple.Item2.cityName);
+                        claims.clientModInstance.plotsMapLayer.OnResChunkPixels(savedPlotTuple.Item1, savedPlotTuple.Item2.cityName);
                         //TODO
                         claims.clientModInstance.pmlc.saveActiveZonesToDb();
                         break;
@@ -49,7 +50,7 @@ namespace claims.src.network.handlers
                         //try to send saved plot as null without creating object
                         Tuple<Vec2i, SavedPlotInfo> savedPlotTupleRemove = JsonConvert.DeserializeObject<Tuple<Vec2i, SavedPlotInfo>>(packet.data);
                         claims.clientDataStorage.removeClientSavedPlots(savedPlotTupleRemove.Item1);
-                        claims.clientModInstance.plotsMapLayer.OnResChunkPixels(savedPlotTupleRemove.Item1, 0, "");
+                        claims.clientModInstance.plotsMapLayer.OnResChunkPixels(savedPlotTupleRemove.Item1, "");
                         //TODO
                         claims.clientModInstance.pmlc.saveActiveZonesToDb();
                         break;
@@ -88,7 +89,7 @@ namespace claims.src.network.handlers
                         foreach (var savedPlot in plotsToRemove)
                         {
                             claims.clientDataStorage.removeClientSavedPlots(savedPlot);
-                            claims.clientModInstance.plotsMapLayer.OnResChunkPixels(savedPlot, 0, "");
+                            claims.clientModInstance.plotsMapLayer.OnResChunkPixels(savedPlot, "");
                         }
                         //TODO
                         claims.clientModInstance.pmlc.saveActiveZonesToDb();
@@ -198,6 +199,12 @@ namespace claims.src.network.handlers
                 claims.config.PLOT_COLORS = packet.PLOTS_COLORS;
                 claims.config.NEW_ALLIANCE_COST = packet.NewAllianceCost;
                 claims.config.SUMMON_PAYMENT = packet.SummonPayment;
+                claims.config.ALWAYS_ACCESS_BLOCKS = packet.ALWAYS_ACCESS_BLOCKS;
+
+                if(claims.config.ALWAYS_ACCESS_BLOCKS.Count > 0)
+                {
+                    claims.FindAlwaysUseBlocks(claims.capi);
+                }
             });          
         }
     }

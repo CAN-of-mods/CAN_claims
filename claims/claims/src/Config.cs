@@ -151,6 +151,8 @@ namespace claims.src
         public int MAP_ZONE_SIZE = 512;
         public HashSet<string> BLOCKED_NAMES = new HashSet<string> { };
         public HashSet<string> CITY_PLOTS_COLOR_AVAILABLE_COLORS_GUI = new HashSet<string>();
+        public HashSet<string> ALWAYS_ACCESS_BLOCKS = new HashSet<string> { "canmailbox:CANBlockGenericTypedContainer" };
+        public HashSet<Type> blockTypesAccess = new HashSet<Type>();
 
         public int[] PLOT_COLORS;
 

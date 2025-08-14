@@ -18,7 +18,17 @@ namespace claims.src.events
         //IPlayer player, BlockSelection blockSel, EnumBlockAccessFlags accessType, ref string claimant, EnumWorldAccessResponse response
         public static EnumWorldAccessResponse TestBlockAccessDelegate_1(IPlayer player, BlockSelection blockSel, EnumBlockAccessFlags accessType, ref string claimant, EnumWorldAccessResponse response)
         {
+            if(claimant == null)
+            {
+                claimant = "";
+            }
             if (player.WorldData.CurrentGameMode == EnumGameMode.Creative)
+            {
+                return EnumWorldAccessResponse.Granted;
+            }
+
+            var c = claims.capi.World.BlockAccessor.GetBlock(blockSel.Position);
+            if(claims.config.blockTypesAccess.Contains(c.GetType()))
             {
                 return EnumWorldAccessResponse.Granted;
             }

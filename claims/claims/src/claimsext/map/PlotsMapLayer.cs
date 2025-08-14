@@ -82,7 +82,7 @@ namespace claims.src.claimsext.map
             {
                 foreach (var pl in zone.Value.savedPlots)
                 {
-                    OnResChunkPixels(pl.Key.Copy(), claims.clientDataStorage.ClientGetCityColor(pl.Value.cityName), "");
+                    OnResChunkPixels(pl.Key.Copy(), "");
                 }
             }
         }
@@ -114,7 +114,7 @@ namespace claims.src.claimsext.map
                 {
                     foreach(var pl in zone.Value.savedPlots)
                     {
-                        OnResChunkPixels(pl.Key.Copy(), -777777777, "");
+                        OnResChunkPixels(pl.Key.Copy(), "");
                     }
                     
                 }
@@ -211,34 +211,44 @@ namespace claims.src.claimsext.map
                 {
                     foreach(var it in clientSavedZone.savedPlots)
                     {
-                        OnResChunkPixels(it.Key, claims.clientDataStorage.ClientGetCityColor(it.Value.cityName), it.Value.cityName);
+                        OnResChunkPixels(it.Key, it.Value.cityName);
                     }
                 }
             });
         }
-        public async void OnResChunkPixels(Vec2i cord, int color, string structureName)
+        public async void OnResChunkPixels(Vec2i cord, string cityName)
         {
             await Task.Factory.StartNew(async () =>
             {
                 //System.Threading.Thread.Sleep(1000);
-                int[] pixels = (int[])GenerateChunkImage(cord, structureName.Length == 0 ? 0 : color, true)?.Clone();
+                int color = 0;
+                if (cityName != null) 
+                { 
+                    claims.clientDataStorage.ClientGetCityColor(cityName);
+                }
 
+
+                int[] pixels = (int[])GenerateChunkImage(cord, true)?.Clone();
+                
                 if (pixels == null)
                 {
                     return;
                 }
 
-
-                loadFromChunkPixels(cord, pixels, structureName);
-                if (true)
+                Vec2i[] UpdateChunkImage = new Vec2i[]
                 {
-                    //triggeredPlotImageUpdate(cord);
+                    new Vec2i(cord.X + 1, cord.Y),
+                    new Vec2i(cord.X - 1, cord.Y),
+                    new Vec2i(cord.X, cord.Y + 1),
+                    new Vec2i(cord.X, cord.Y - 1)
+                };
 
-                    /*foreach (CANMultiChunkMapComponent cmp in loadedMapData.Values)
-                    {
-                        cmp.;
-                    }
-                    loadedMapData.Clear();*/
+                loadFromChunkPixels(cord, pixels, cityName);
+
+                foreach(var it in UpdateChunkImage)
+                {
+                    pixels = (int[])GenerateChunkImage(it, false)?.Clone();
+                    loadFromChunkPixels(it, pixels, "");
                 }
             });
         }
@@ -377,7 +387,7 @@ namespace claims.src.claimsext.map
             {
                 Task.Factory.StartNew(() =>
                 {
-                    int[] pixels = (int[])GenerateChunkImage(chunkPos, savedPlotInfo != null ? claims.clientDataStorage.ClientGetCityColor(savedPlotInfo.cityName) : 0, false)?.Clone();
+                    int[] pixels = (int[])GenerateChunkImage(chunkPos, false)?.Clone();
 
                     loadFromChunkPixels(mm, pixels, savedPlotInfo.cityName);
                 });
@@ -391,7 +401,7 @@ namespace claims.src.claimsext.map
             return iCol;
         }
 
-        public void GenerateChunkPart(int X, int Y, int color, ref int[] pixels)
+        public void GenerateChunkPart(int X, int Y, int color, ref int[] pixels, Vec2i tmpVec, string cityName)
         {
             int pivot = 0;
             color &= unchecked((int)0x80ffffff);
@@ -418,40 +428,84 @@ namespace claims.src.claimsext.map
                         continue;                                      
                 }
             }
+            var copyVec = tmpVec.Copy();
+            copyVec.X--;
+            SavedPlotInfo plot;
+            color &= unchecked((int)0x80ffff11);
+            //left
+            if (!claims.clientDataStorage.getSavedPlot(copyVec, out plot) || plot.cityName != cityName)
+            {
+                for(int i = 0; i < 16;i++)
+                {
+                    place = i * 32 + pivot;
+                    pixels[place] = color;
+                }
+            }
+            copyVec.X++;
+            copyVec.Y++;
+            //down
+            if (!claims.clientDataStorage.getSavedPlot(copyVec, out plot) || plot.cityName != cityName)
+            {
+                
+                for (int i = 0; i < 16; i++)
+                {
+                    place = i + 480 + pivot;
+                    pixels[place] = color;
+                }
+            }
+            copyVec.X++;
+            copyVec.Y--;
+            //right
+            if (!claims.clientDataStorage.getSavedPlot(copyVec, out plot) || plot.cityName != cityName)
+            {
+                for (int i = 0; i < 16; i++)
+                {
+                    place = i * 32 + 15 + pivot;
+                    pixels[place] = color;
+                }
+            }
+            copyVec.X--;
+            copyVec.Y--;
+            //up
+            if (!claims.clientDataStorage.getSavedPlot(copyVec, out plot) || plot.cityName != cityName)
+            {
+                for (int i = 0; i < 16; i++)
+                {
+                    place = i + pivot;
+                    pixels[place] = color;
+                }
+            }
         }
 
 
-        public int[] GenerateChunkImage(Vec2i chunkPos, int color, bool informOthers = false)
+        public int[] GenerateChunkImage(Vec2i chunkPos, bool informOthers = false)
         {
             ICoreClientAPI capi = api as ICoreClientAPI;
             var rand1 = new Random();
             BlockPos tmpPos = new BlockPos();
             Vec2i localpos = new Vec2i();
             int[] texDataTmp = new int[chunksize * chunksize];
-
-            int colorFill = color & unchecked((int)0x80ffffff);
-            
+         
             Vec2i leftUpperCorner = new Vec2i(chunkPos.X - (chunkPos.X % 2), chunkPos.Y - (chunkPos.Y % 2));
 
             SavedPlotInfo[] savedPlots = new SavedPlotInfo[4];
 
             Vec2i tmpVec = leftUpperCorner.Copy();
             if (claims.clientDataStorage.getSavedPlot(tmpVec, out savedPlots[0]))
-                GenerateChunkPart(0, 0, claims.clientDataStorage.ClientGetCityColor(savedPlots[0].cityName), ref texDataTmp);
+                GenerateChunkPart(0, 0, claims.clientDataStorage.ClientGetCityColor(savedPlots[0].cityName), ref texDataTmp, tmpVec, savedPlots[0].cityName);
 
             tmpVec.X++;
             if(claims.clientDataStorage.getSavedPlot(tmpVec, out savedPlots[1]))
-                GenerateChunkPart(0, 1, claims.clientDataStorage.ClientGetCityColor(savedPlots[1].cityName), ref texDataTmp);
+                GenerateChunkPart(0, 1, claims.clientDataStorage.ClientGetCityColor(savedPlots[1].cityName), ref texDataTmp, tmpVec, savedPlots[1].cityName);
 
             tmpVec.X--;
             tmpVec.Y++;
             if(claims.clientDataStorage.getSavedPlot(tmpVec, out savedPlots[2]))
-                GenerateChunkPart(1, 0, claims.clientDataStorage.ClientGetCityColor(savedPlots[2].cityName), ref texDataTmp);
+                GenerateChunkPart(1, 0, claims.clientDataStorage.ClientGetCityColor(savedPlots[2].cityName), ref texDataTmp, tmpVec, savedPlots[2].cityName);
 
             tmpVec.X++;
             if(claims.clientDataStorage.getSavedPlot(tmpVec, out savedPlots[3]))
-                GenerateChunkPart(1, 1, claims.clientDataStorage.ClientGetCityColor(savedPlots[3].cityName), ref texDataTmp);
-
+                GenerateChunkPart(1, 1, claims.clientDataStorage.ClientGetCityColor(savedPlots[3].cityName), ref texDataTmp, tmpVec, savedPlots[3].cityName);
             return texDataTmp;
         }
     }

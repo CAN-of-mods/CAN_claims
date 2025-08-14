@@ -234,7 +234,8 @@ namespace claims.src.auxialiry
                        CITY_BASE_CARE = claims.config.CITY_BASE_CARE,
                        PLOTS_COLORS = Settings.colors,
                        NewAllianceCost = claims.config.NEW_ALLIANCE_COST,
-                       SummonPayment = claims.config.SUMMON_PAYMENT
+                       SummonPayment = claims.config.SUMMON_PAYMENT,
+                       ALWAYS_ACCESS_BLOCKS = claims.config.ALWAYS_ACCESS_BLOCKS
                    }
                    , player);
         }

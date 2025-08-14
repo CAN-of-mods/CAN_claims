@@ -824,7 +824,10 @@ namespace claims.src.commands
         public static TextCommandResult CitySetCitizenPrefix(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-
+            if(args.LastArg == null)
+            {
+                return TextCommandResult.Error("claims:no_paramaters");
+            }
             string[] playerName_title = ((string)args.LastArg).Split(' ');
             if (playerName_title.Length < 1)
             {
@@ -851,6 +854,12 @@ namespace claims.src.commands
             {
                 return TextCommandResult.Error("claims:invalid_name");
             }
+
+            if(!targetPlayer.hasCity() || !targetPlayer.City.Equals(playerInfo.City))
+            {
+                return TextCommandResult.Error("claims:invalid_name");
+            }
+
             if (playerName_title.Length < 2)
             {
                 targetPlayer.Prefix = "";
@@ -1321,7 +1330,19 @@ namespace claims.src.commands
                 tcr.StatusMessage = "claims:you_dont_have_city";
                 return false;
             }
-            if (playerInfo.hasCity() && !playerInfo.City.Equals(city))
+            string targetPlayerName = Filter.filterName(playerName);
+            if (targetPlayerName.Length == 0 || !Filter.checkForBlockedNames(targetPlayerName))
+            {
+                tcr.StatusMessage = "claims:invalid_player_name";
+                return false;
+            }
+
+            if(!claims.dataStorage.getPlayerByName(targetPlayerName, out targetPlayer))
+            {
+                tcr.StatusMessage = "claims:invalid_player_name";
+                return false;
+            }
+            if (!targetPlayer.hasCity() || !targetPlayer.City.Equals(city))
             {
                 tcr.StatusMessage = "claims:player_should_be_in_same_city";
                 return false;
@@ -1338,18 +1359,8 @@ namespace claims.src.commands
                 tcr.StatusMessage = "claims:no_such_city_rank";
                 return false;
             }
-            string targetPlayerName = Filter.filterName(playerName);
-            if (targetPlayerName.Length == 0 || !Filter.checkForBlockedNames(targetPlayerName))
-            {
-                tcr.StatusMessage = "claims:invalid_player_name";
-                return false;
-            }
-            claims.dataStorage.getPlayerByName(targetPlayerName, out targetPlayer);
-            if (targetPlayer == null)
-            {
-                tcr.StatusMessage = "claims:invalid_player_name";
-                return false;
-            }
+                    
+           
             return true;
         }
         public static bool HelperFunctionPrison(IServerPlayer player, out City city, out Plot plotHere, TextCommandResult tcr)
@@ -2105,6 +2116,15 @@ namespace claims.src.commands
                                                                                           searchedGroup.PermsHandler,
                                                                                           searchedGroup.PlotsGroupFee)} },
                     EnumPlayerRelatedInfo.CITY_PLOTS_GROUPS_UPDATE);
+                    foreach (var plot in city.getCityPlots())
+                    {
+                        if (plot.hasPlotGroup() && plot.getPlotGroup().Equals(searchedGroup))
+                        {
+                           targetPlayer.PlayerCache.Reset();
+                           claims.dataStorage.setNowEpochZoneTimestampFromPlotPosition(plot.getPos());
+                           claims.serverPlayerMovementListener.markPlotToWasReUpdated(plot.getPos());
+                        }
+                    }
                })),
                new Thread(new ThreadStart(() =>
                {
@@ -2209,6 +2229,15 @@ namespace claims.src.commands
                                                                                       searchedGroup.PermsHandler,
                                                                                       searchedGroup.PlotsGroupFee)} },
                 EnumPlayerRelatedInfo.CITY_PLOTS_GROUPS_UPDATE);
+            foreach (var plot in city.getCityPlots())
+            {
+                if (plot.hasPlotGroup() && plot.getPlotGroup().Equals(searchedGroup))
+                {
+                    targetPlayer.PlayerCache.Reset();
+                    claims.dataStorage.setNowEpochZoneTimestampFromPlotPosition(plot.getPos());
+                    claims.serverPlayerMovementListener.markPlotToWasReUpdated(plot.getPos());
+                }
+            }
             tcr.Status = EnumCommandStatus.Success;
             return tcr;
         }

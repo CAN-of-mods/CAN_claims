@@ -34,6 +34,8 @@ using System;
 using claims.src.beb;
 using claims.src.bb;
 using claims.src.part.structure.conflict;
+using System.Reflection;
+using static OpenTK.Graphics.OpenGL.GL;
 
 namespace claims.src
 {
@@ -132,7 +134,7 @@ namespace claims.src
                 Config.LoadConfig(capi);
             }
             PlotInfo.initDicts();
-
+            FindAlwaysUseBlocks(api);
 
             clientChannel = api.Network.RegisterChannel("claimsExt");
             Common.RegisterMessageTypes(clientChannel, capi);
@@ -163,9 +165,14 @@ namespace claims.src
         public override void StartServerSide(ICoreServerAPI api)
         {
             base.StartServerSide(api);
+
             modInstance = this;
             sapi = api;
             Config.LoadConfig(sapi);
+            
+            
+
+
 
             PermsHandler.initDicts();
             PlotInfo.initDicts();
@@ -203,6 +210,27 @@ namespace claims.src
             dataStorage = null;
             databaseHandler = null;
         }       
+        public static void FindAlwaysUseBlocks(ICoreAPI api)
+        {
+            foreach (var it in claims.config.ALWAYS_ACCESS_BLOCKS)
+            {
+                string[] split = it.Split(':');
+                foreach (var mod in api.ModLoader.Mods)
+                {
+                    if (mod.FileName.StartsWith(split[0]))
+                    {
+                        Type[] allTypes = ((Vintagestory.Common.ModContainer)mod).Assembly.GetTypes();
+                        foreach (var ii in allTypes)
+                        {
+                            if (ii.Name == split[1])
+                            {
+                                claims.config.blockTypesAccess.Add(ii);
+                            }
+                        }
+                    }
+                }
+            }
+        }
         public static void loadShowChunksMsgsValues()
         {
             var showMsgsDict = sapi.WorldManager.SaveGame.GetData<Dictionary<string, int>>("claimsshowchunkmsgs");
