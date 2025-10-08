@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using claims.src.gui.playerGui.structures.cellElements;
+using claims.src.perms;
 
 namespace claims.src.gui.playerGui.structures
 {
@@ -23,7 +24,9 @@ namespace claims.src.gui.playerGui.structures
         public int PlotsColor;
         public double CityBalance { get; set; }
         public double CityDebt { get; set; }
+        public double CityDayPayment { get; set; }
         public HashSet<string> Criminals = new();
+        public PermsHandler PermsHandler { get; set; } = new();
         public List<PrisonCellElement> PrisonCells { get; set; } = new();
         public List<SummonCellElement> SummonCells { get; set; } = new();
         public List<PlotsGroupCellElement> PlotsGroupCells { get; set; } = new();   

@@ -73,13 +73,7 @@ namespace claims.src.commands
                 return tcr;
             }
 
-            if (args.RawArgs.Length < 2)
-            {
-                tcr.StatusMessage = "claims:need_command";
-                return tcr;
-            }
-
-            plot.getPermsHandler().setAccessPerm(args.RawArgs);
+            plot.getPermsHandler().setAccessPerm(((string)args.Parsers[0].GetValue()), ((string)args.Parsers[1].GetValue()), ((string)args.Parsers[2].GetValue()));
             plot.saveToDatabase();
             claims.dataStorage.clearCacheForPlayersInPlot(plot);
             return tcr;
@@ -382,13 +376,7 @@ namespace claims.src.commands
             TextCommandResult tcr = new TextCommandResult();
             tcr.Status = EnumCommandStatus.Success;
 
-            if (args.RawArgs.Length < 1)
-            {
-                tcr.StatusMessage = "claims:need_player_name";
-                return tcr;
-            }
-
-            string filteredName = Filter.filterName(args.RawArgs[0]);
+            string filteredName = Filter.filterName((string)args.Parsers[0].GetValue());
             if (filteredName.Length == 0 || !Filter.checkForBlockedNames(filteredName))
             {
                 tcr.StatusMessage = "claims:invalid_name";
@@ -401,7 +389,7 @@ namespace claims.src.commands
                 return tcr;
             }
 
-            string targetPlayerName = Filter.filterName(args.RawArgs[1]);
+            string targetPlayerName = Filter.filterName((string)args.Parsers[1].GetValue());
             if (targetPlayerName.Length == 0 || !Filter.checkForBlockedNames(targetPlayerName))
             {
                 tcr.StatusMessage = "claims:invalid_player_name";
@@ -426,13 +414,7 @@ namespace claims.src.commands
             TextCommandResult tcr = new TextCommandResult();
             tcr.Status = EnumCommandStatus.Success;
 
-            if (args.RawArgs.Length < 1)
-            {
-                tcr.StatusMessage = "claims:need_player_name";
-                return tcr;
-            }
-
-            string filteredName = Filter.filterName(args.RawArgs[0]);
+            string filteredName = Filter.filterName((string)args.Parsers[0].GetValue());
             if (filteredName.Length == 0 || !Filter.checkForBlockedNames(filteredName))
             {
                 tcr.StatusMessage = "claims:invalid_name";
@@ -445,7 +427,7 @@ namespace claims.src.commands
                 return tcr;
             }
 
-            string targetPlayerName = Filter.filterName(args.RawArgs[1]);
+            string targetPlayerName = Filter.filterName((string)args.Parsers[1].GetValue());
             if (targetPlayerName.Length == 0 || !Filter.checkForBlockedNames(targetPlayerName))
             {
                 tcr.StatusMessage = "claims:invalid_player_name";
@@ -469,13 +451,7 @@ namespace claims.src.commands
             TextCommandResult tcr = new TextCommandResult();
             tcr.Status = EnumCommandStatus.Success;
 
-            if (args.RawArgs.Length < 2)
-            {
-                tcr.StatusMessage = "claims:need_value";
-                return tcr;
-            }
-
-            string filteredName = Filter.filterName(args.RawArgs[0]);
+            string filteredName = Filter.filterName((string)args.Parsers[0].GetValue());
             if (filteredName.Length == 0 || !Filter.checkForBlockedNames(filteredName))
             {
                 tcr.StatusMessage = "claims:invalid_name";
@@ -488,7 +464,7 @@ namespace claims.src.commands
                 return tcr;
             }
 
-            city.rename(args.RawArgs[1]);
+            city.rename((string)args.Parsers[1].GetValue());
             return tcr;
         }
         public static TextCommandResult citySetPvp(TextCommandCallingArgs args)
@@ -497,7 +473,7 @@ namespace claims.src.commands
             TextCommandResult tcr = new TextCommandResult();
             tcr.Status = EnumCommandStatus.Success;
 
-            string filteredName = Filter.filterName(args.RawArgs[0]);
+            string filteredName = Filter.filterName((string)args.Parsers[0].GetValue());
             if (filteredName.Length == 0 || !Filter.checkForBlockedNames(filteredName))
             {
                 tcr.StatusMessage = "claims:invalid_name";
@@ -510,7 +486,7 @@ namespace claims.src.commands
                 return tcr;
             }
 
-            city.getPermsHandler().setPvp(args.RawArgs[1]);
+            city.getPermsHandler().setPvp((string)args.Parsers[1].GetValue());
             city.saveToDatabase();
             return tcr;
         }
@@ -520,7 +496,7 @@ namespace claims.src.commands
             TextCommandResult tcr = new TextCommandResult();
             tcr.Status = EnumCommandStatus.Success;
 
-            string filteredName = Filter.filterName(args.RawArgs[0]);
+            string filteredName = Filter.filterName((string)args.Parsers[0].GetValue());
             if (filteredName.Length == 0 || !Filter.checkForBlockedNames(filteredName))
             {
                 tcr.StatusMessage = "claims:invalid_name";
@@ -543,7 +519,7 @@ namespace claims.src.commands
             TextCommandResult tcr = new TextCommandResult();
             tcr.Status = EnumCommandStatus.Success;
 
-            string filteredName = Filter.filterName(args.RawArgs[0]);
+            string filteredName = Filter.filterName((string)args.Parsers[0].GetValue());
             if (filteredName.Length == 0 || !Filter.checkForBlockedNames(filteredName))
             {
                 tcr.StatusMessage = "claims:invalid_name";
@@ -556,7 +532,7 @@ namespace claims.src.commands
                 return tcr;
             }
 
-            city.getPermsHandler().setBlast(args.RawArgs[1]);
+            city.getPermsHandler().setBlast((string)args.Parsers[1].GetValue());
             city.saveToDatabase();
             return tcr;
         }
@@ -566,7 +542,7 @@ namespace claims.src.commands
             TextCommandResult tcr = new TextCommandResult();
             tcr.Status = EnumCommandStatus.Success;
 
-            string filteredName = Filter.filterName(args.RawArgs[0]);
+            string filteredName = Filter.filterName((string)args.Parsers[0].GetValue());
             if (filteredName.Length == 0 || !Filter.checkForBlockedNames(filteredName))
             {
                 tcr.StatusMessage = "claims:invalid_name";
@@ -579,7 +555,7 @@ namespace claims.src.commands
                 return tcr;
             }
 
-            city.setCityOpenCloseState(args.RawArgs[1]);
+            city.setCityOpenCloseState((string)args.Parsers[1].GetValue());
             city.saveToDatabase();
             return tcr;
         }
@@ -589,7 +565,7 @@ namespace claims.src.commands
             TextCommandResult tcr = new TextCommandResult();
             tcr.Status = EnumCommandStatus.Success;
 
-            string filteredName = Filter.filterName(args.RawArgs[0]);
+            string filteredName = Filter.filterName((string)args.Parsers[0].GetValue());
             if (filteredName.Length == 0 || !Filter.checkForBlockedNames(filteredName))
             {
                 tcr.StatusMessage = "claims:invalid_name";
@@ -602,7 +578,7 @@ namespace claims.src.commands
                 return tcr;
             }
 
-            city.setIsTechnicalCity(args.RawArgs[1], tcr);
+            city.setIsTechnicalCity((string)args.Parsers[1].GetValue(), tcr);
             city.saveToDatabase();
             return tcr;
         }
@@ -612,7 +588,7 @@ namespace claims.src.commands
             TextCommandResult tcr = new TextCommandResult();
             tcr.Status = EnumCommandStatus.Success;
 
-            string filteredName = Filter.filterName(args.RawArgs[0]);
+            string filteredName = Filter.filterName((string)args.Parsers[0].GetValue());
             if (filteredName.Length == 0 || !Filter.checkForBlockedNames(filteredName))
             {
                 tcr.StatusMessage = "claims:invalid_name";
@@ -625,15 +601,10 @@ namespace claims.src.commands
                 return tcr;
             }
 
-            if (args.RawArgs.Length < 2)
-            {
-                tcr.StatusMessage = "claims:need_number";
-                return tcr;
-            }
             int fee = 0;
             try
             {
-                fee = int.Parse(args.RawArgs[1]);
+                fee = int.Parse((string)args.Parsers[1].GetValue());
             }
             catch
             {
@@ -704,154 +675,153 @@ namespace claims.src.commands
             city.saveToDatabase();
             return tcr;
         }
-        /*==============================================================================================*/
-        /*=====================================WORLD=====================================================*/
-        /*==============================================================================================*/
-        public static TextCommandResult cWorldCommands(TextCommandCallingArgs args)
+        public static TextCommandResult citySetBonusPlots(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
             TextCommandResult tcr = new TextCommandResult();
             tcr.Status = EnumCommandStatus.Success;
 
-            if (args.RawArgs[0].Equals("set", StringComparison.OrdinalIgnoreCase))
+            string filteredName = Filter.filterName((string)args.Parsers[0].GetValue());
+            if (filteredName.Length == 0 || !Filter.checkForBlockedNames(filteredName))
             {
-                args.RawArgs.PopWord();
-                worldSet(player, args.RawArgs, tcr);
+                tcr.StatusMessage = "claims:invalid_name";
+                return tcr;
             }
-            else if (args.RawArgs[0].Equals("info", StringComparison.OrdinalIgnoreCase))
+            claims.dataStorage.getCityByName(filteredName, out City city);
+            if (city == null)
             {
-                args.RawArgs.PopWord();
-                worldInfo(player, args.RawArgs, tcr);
-            }
-            return tcr;
-        }
-        public static void worldInfo(IServerPlayer player, CmdArgs args, TextCommandResult tcr)
-        {
-            tcr.StatusMessage = string.Join("", claims.dataStorage.getWorldInfo().getStatus());
-        }
-        public static void worldSet(IServerPlayer player, CmdArgs args, TextCommandResult res)
-        {
-            //name, mayor, 
-            if (args.Length < 2)
-            {
-                MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:need_value"));
-                return;
+                tcr.StatusMessage = "claims:no_such_city";
+                return tcr;
             }
 
-            if (args[0].Equals("blastew", StringComparison.OrdinalIgnoreCase))
+            int bonusPlots = 0;
+            try
             {
-                if (args.Length < 2)
-                {
-                    return;
-                }
-                if (args[1].Equals("on", StringComparison.OrdinalIgnoreCase))
+                bonusPlots = (int)args.Parsers[1].GetValue();
+            }
+            catch
+            {
+                tcr.StatusMessage = "claims:need_number";
+                return tcr;
+            }
+            if (bonusPlots < 0)
+            {
+                tcr.StatusMessage = "claims:not_negative";
+                return tcr;
+            }
+
+            city.setBonusPlots(bonusPlots);
+            city.saveToDatabase();
+            return tcr;
+        }
+        /*==============================================================================================*/
+        /*=====================================WORLD=====================================================*/
+        /*==============================================================================================*/
+        public static TextCommandResult worldInfo(TextCommandCallingArgs args)
+        {
+            IServerPlayer player = args.Caller.Player as IServerPlayer;
+            TextCommandResult tcr = new TextCommandResult();
+            tcr.Status = EnumCommandStatus.Success;
+            tcr.StatusMessage = string.Join("", claims.dataStorage.getWorldInfo().getStatus());
+            return tcr;
+        }
+        public static TextCommandResult worldSet(TextCommandCallingArgs args)
+        {
+            IServerPlayer player = args.Caller.Player as IServerPlayer;
+            TextCommandResult tcr = new TextCommandResult();
+            tcr.Status = EnumCommandStatus.Success;
+
+            if (((string)args.Parsers[0].GetValue()).Equals("blastew", StringComparison.OrdinalIgnoreCase))
+            {
+                if (((string)args.Parsers[1].GetValue()).Equals("on", StringComparison.OrdinalIgnoreCase))
                 {
                     claims.dataStorage.getWorldInfo().blastEverywhere = true;
                     claims.dataStorage.getWorldInfo().saveToDatabase();
-                    return;
+                    return tcr;
                 }
-                if (args[1].Equals("off", StringComparison.OrdinalIgnoreCase))
+                if (((string)args.Parsers[1].GetValue()).Equals("off", StringComparison.OrdinalIgnoreCase))
                 {
                     claims.dataStorage.getWorldInfo().blastEverywhere = false;
                     claims.dataStorage.getWorldInfo().saveToDatabase();
-                    return;
+                    return tcr;
                 }
             }
-            else if (args[0].Equals("pvpew", StringComparison.OrdinalIgnoreCase))
+            else if (((string)args.Parsers[0].GetValue()).Equals("pvpew", StringComparison.OrdinalIgnoreCase))
             {
-                if (args.Length < 2)
-                {
-                    return;
-                }
-                if (args[1].Equals("on", StringComparison.OrdinalIgnoreCase))
+                if (((string)args.Parsers[1].GetValue()).Equals("on", StringComparison.OrdinalIgnoreCase))
                 {
                     claims.dataStorage.getWorldInfo().pvpEverywhere = true;
                     claims.dataStorage.getWorldInfo().saveToDatabase();
-                    return;
+                    return tcr;
                 }
-                if (args[1].Equals("off", StringComparison.OrdinalIgnoreCase))
+                if (((string)args.Parsers[1].GetValue()).Equals("off", StringComparison.OrdinalIgnoreCase))
                 {
                     claims.dataStorage.getWorldInfo().pvpEverywhere = false;
                     claims.dataStorage.getWorldInfo().saveToDatabase();
-                    return;
+                    return tcr;
                 }
             }
-            else if (args[0].Equals("fireew", StringComparison.OrdinalIgnoreCase))
+            else if (((string)args.Parsers[0].GetValue()).Equals("fireew", StringComparison.OrdinalIgnoreCase))
             {
-                if (args.Length < 2)
-                {
-                    return;
-                }
-                if (args[1].Equals("on", StringComparison.OrdinalIgnoreCase))
+                if (((string)args.Parsers[1].GetValue()).Equals("on", StringComparison.OrdinalIgnoreCase))
                 {
                     claims.dataStorage.getWorldInfo().fireEverywhere = true;
                     claims.dataStorage.getWorldInfo().saveToDatabase();
-                    return;
+                    return tcr;
                 }
-                if (args[1].Equals("off", StringComparison.OrdinalIgnoreCase))
+                if (((string)args.Parsers[1].GetValue()).Equals("off", StringComparison.OrdinalIgnoreCase))
                 {
                     claims.dataStorage.getWorldInfo().fireEverywhere = false;
                     claims.dataStorage.getWorldInfo().saveToDatabase();
-                    return;
+                    return tcr;
                 }
             }
-            else if (args[0].Equals("pvpfb", StringComparison.OrdinalIgnoreCase))
+            else if (((string)args.Parsers[0].GetValue()).Equals("pvpfb", StringComparison.OrdinalIgnoreCase))
             {
-                if (args.Length < 2)
-                {
-                    return;
-                }
-                if (args[1].Equals("on", StringComparison.OrdinalIgnoreCase))
+                if (((string)args.Parsers[1].GetValue()).Equals("on", StringComparison.OrdinalIgnoreCase))
                 {
                     claims.dataStorage.getWorldInfo().pvpForbidden = true;
                     claims.dataStorage.getWorldInfo().saveToDatabase();
-                    return;
+                    return tcr;
                 }
-                if (args[1].Equals("off", StringComparison.OrdinalIgnoreCase))
+                if (((string)args.Parsers[1].GetValue()).Equals("off", StringComparison.OrdinalIgnoreCase))
                 {
                     claims.dataStorage.getWorldInfo().pvpForbidden = false;
                     claims.dataStorage.getWorldInfo().saveToDatabase();
-                    return;
+                    return tcr;
                 }
             }
-            else if (args[0].Equals("firefb", StringComparison.OrdinalIgnoreCase))
+            else if (((string)args.Parsers[0].GetValue()).Equals("firefb", StringComparison.OrdinalIgnoreCase))
             {
-                if (args.Length < 2)
-                {
-                    return;
-                }
-                if (args[1].Equals("on", StringComparison.OrdinalIgnoreCase))
+                if (((string)args.Parsers[1].GetValue()).Equals("on", StringComparison.OrdinalIgnoreCase))
                 {
                     claims.dataStorage.getWorldInfo().fireForbidden = true;
                     claims.dataStorage.getWorldInfo().saveToDatabase();
-                    return;
+                    return tcr;
                 }
-                if (args[1].Equals("off", StringComparison.OrdinalIgnoreCase))
+                if (((string)args.Parsers[1].GetValue()).Equals("off", StringComparison.OrdinalIgnoreCase))
                 {
                     claims.dataStorage.getWorldInfo().fireForbidden = false;
                     claims.dataStorage.getWorldInfo().saveToDatabase();
-                    return;
+                    return tcr;
                 }
             }
-            else if (args[0].Equals("blastfb", StringComparison.OrdinalIgnoreCase))
+            else if (((string)args.Parsers[0].GetValue()).Equals("blastfb", StringComparison.OrdinalIgnoreCase))
             {
-                if (args.Length < 2)
-                {
-                    return;
-                }
-                if (args[1].Equals("on", StringComparison.OrdinalIgnoreCase))
+                if (((string)args.Parsers[1].GetValue()).Equals("on", StringComparison.OrdinalIgnoreCase))
                 {
                     claims.dataStorage.getWorldInfo().blastForbidden = true;
                     claims.dataStorage.getWorldInfo().saveToDatabase();
-                    return;
+                    return tcr;
                 }
-                if (args[1].Equals("off", StringComparison.OrdinalIgnoreCase))
+                if (((string)args.Parsers[1].GetValue()).Equals("off", StringComparison.OrdinalIgnoreCase))
                 {
                     claims.dataStorage.getWorldInfo().blastForbidden = false;
                     claims.dataStorage.getWorldInfo().saveToDatabase();
-                    return;
+                    return tcr;
                 }
             }
+            return tcr;
         }
         public static TextCommandResult processBackup(TextCommandCallingArgs args)
         {

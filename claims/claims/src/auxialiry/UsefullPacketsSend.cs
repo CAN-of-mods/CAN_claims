@@ -50,109 +50,39 @@ namespace claims.src.auxialiry
             {
                 return;
             }
+
+            List<EnumPlayerRelatedInfo> infoToUpdateCity = new();
+            List<EnumPlayerRelatedInfo> infoToUpdatePlayer = new();
+            City city = null;
             if (playerInfo.hasCity())
             {
-                City city = playerInfo.City;
-                collector.Add(EnumPlayerRelatedInfo.CITY_NAME, city.GetPartName());
-                if (city.getMayor() != null)
+                infoToUpdateCity.Add(EnumPlayerRelatedInfo.CITY_NAME);
+                city = playerInfo.City;
+                if (city.HasMayor())
                 {
-                    collector.Add(EnumPlayerRelatedInfo.MAYOR_NAME, city.getMayor().GetPartName());
-                }
-                collector.Add(EnumPlayerRelatedInfo.CITY_CREATED_TIMESTAMP, city.TimeStampCreated.ToString());
-                collector.Add(EnumPlayerRelatedInfo.CITY_MEMBERS, JsonConvert.SerializeObject(StringFunctions.getNamesOfCitizens(city)));
-                collector.Add(EnumPlayerRelatedInfo.MAX_COUNT_PLOTS, Settings.getMaxNumberOfPlotForCity(city).ToString());
-                collector.Add(EnumPlayerRelatedInfo.CLAIMED_PLOTS, city.getCityPlots().Count.ToString());
-                collector.Add(EnumPlayerRelatedInfo.PLAYER_PREFIX, playerInfo.Prefix);
-                collector.Add(EnumPlayerRelatedInfo.PLAYER_AFTER_NAME, playerInfo.AfterName);
-                collector.Add(EnumPlayerRelatedInfo.PLAYER_CITY_TITLES, JsonConvert.SerializeObject(playerInfo.getCityTitles()));
-                collector.Add(EnumPlayerRelatedInfo.CITY_POSSIBLE_RANKS, JsonConvert.SerializeObject(RightsHandler.GetCityRanks()));
-                collector.Add(EnumPlayerRelatedInfo.CITY_PLOTS_COLOR, city.cityColor.ToString());
-                collector.Add(EnumPlayerRelatedInfo.CITY_DEBT, city.DebtBalance.ToString(CultureInfo.InvariantCulture));
-                if (city.isMayor(playerInfo)) { 
-                    Dictionary<string, List<string>> rankToCitizens = new Dictionary<string, List<string>>();
-                    foreach(var citizen in city.getCityCitizens())
+                    infoToUpdateCity.Add(EnumPlayerRelatedInfo.MAYOR_NAME);
+                    if (city.isMayor(playerInfo))
                     {
-                        foreach(var title in citizen.getCityTitles())
-                        {
-                            if(rankToCitizens.TryGetValue(title, out var li))
-                            {
-                                li.Add(citizen.GetPartName());
-                            }
-                            else
-                            {
-                                rankToCitizens.Add(title, new List<string> { citizen.GetPartName() });
-                            }
-                        }
-                    
+                        infoToUpdateCity.Add(EnumPlayerRelatedInfo.CITY_CITIZENS_RANKS);
                     }
-
-                
-                
-                    collector.Add(EnumPlayerRelatedInfo.CITY_CITIZENS_RANKS, JsonConvert.SerializeObject(rankToCitizens));
-                }
-                if(playerInfo.PlayerPermissionsHandler.HasPermission(rights.EnumPlayerPermissions.CITY_SEE_BALANCE))
-                {
-                    collector.Add(EnumPlayerRelatedInfo.CITY_BALANCE, claims.economyHandler.getBalance(city.MoneyAccountName).ToString(CultureInfo.InvariantCulture));
-                }
-                if(city.criminals.Count > 0)
-                {
-                    collector.Add(EnumPlayerRelatedInfo.CITY_CRIMINALS_LIST, JsonConvert.SerializeObject(StringFunctions.getNamesOfCriminals(city)));
-                }
-                if(city.hasPrison())
-                {
-                    HashSet<PrisonCellElement> prisonCellElements = new HashSet<PrisonCellElement>();
-                    foreach (var it in city.getPrisons())
-                    {
-                        foreach(PrisonCellInfo cell in it.getPrisonCells())
-                        {
-                            prisonCellElements.Add(new PrisonCellElement(cell.getSpawnPosition(), cell.GetPlayersNames()));
-                        }
-                    }
-                    collector.Add(EnumPlayerRelatedInfo.CITY_PRISON_CELL_ALL, JsonConvert.SerializeObject(prisonCellElements));
                 }
 
-                if(city.summonPlots.Count > 0)
-                {
-                    HashSet<SummonCellElement> summonCellElements = new HashSet<SummonCellElement>();
-                    foreach (var it in city.summonPlots)
-                    {
-                        summonCellElements.Add(new SummonCellElement((it.PlotDesc as PlotDescSummon).SummonPoint.AsVec3i.Clone(), (it.PlotDesc as PlotDescSummon).Name));
-                    }
-                    collector.Add(EnumPlayerRelatedInfo.CITY_SUMMON_POINT_ALL, JsonConvert.SerializeObject(summonCellElements));
-                }
-
-                if (city.getCityPlotsGroups().Count > 0)
-                {
-                    HashSet<PlotsGroupCellElement> plotsgroupCellElements = new HashSet<PlotsGroupCellElement>();
-                    foreach (var it in city.getCityPlotsGroups())
-                    {
-                        plotsgroupCellElements.Add(
-                            new PlotsGroupCellElement(it.Guid, it.GetPartName(), it.City.GetPartName(),
-                                                      it.PlayersList.Select(pl => pl.GetPartName()).ToList(),
-                                                      it.PermsHandler, it.PlotsGroupFee));
-                    }
-                    collector.Add(EnumPlayerRelatedInfo.CITY_PLOTS_GROUPS_ALL, JsonConvert.SerializeObject(plotsgroupCellElements));
-                }
+                infoToUpdateCity.AddRange([EnumPlayerRelatedInfo.CITY_CREATED_TIMESTAMP, EnumPlayerRelatedInfo.CITY_MEMBERS,
+                                           EnumPlayerRelatedInfo.MAX_COUNT_PLOTS, EnumPlayerRelatedInfo.CLAIMED_PLOTS, EnumPlayerRelatedInfo.CITY_POSSIBLE_RANKS,
+                                           EnumPlayerRelatedInfo.CITY_PLOTS_COLOR, EnumPlayerRelatedInfo.CITY_DEBT, EnumPlayerRelatedInfo.CITY_DAY_PAYMENT,
+                                           EnumPlayerRelatedInfo.CITY_PERMISSIONS_UPDATED, EnumPlayerRelatedInfo.CITY_BALANCE, EnumPlayerRelatedInfo.CITY_CRIMINALS_LIST,
+                                           EnumPlayerRelatedInfo.CITY_PRISON_CELL_ALL, EnumPlayerRelatedInfo.CITY_SUMMON_POINT_ALL, EnumPlayerRelatedInfo.CITY_PLOTS_GROUPS_ALL]);
             }
-
-            collector.Add(EnumPlayerRelatedInfo.SHOW_PLOT_MOVEMENT, ((int)playerInfo.showPlotMovement).ToString());
-            collector.Add(EnumPlayerRelatedInfo.FRIENDS, JsonConvert.SerializeObject(StringFunctions.getNamesOfFriends(playerInfo)));
-            collector.Add(EnumPlayerRelatedInfo.TO_CITY_INVITES, JsonConvert.SerializeObject(InvitationHandler.getInvitesForReceiver(playerInfo)));
-            Dictionary<string, ClientCityInfoCellElement> CityStatsCashe =
-                ObjectCacheUtil.GetOrCreate<Dictionary<string, ClientCityInfoCellElement>>(claims.sapi,
-                "claims:cityinfocache", () => new Dictionary<string, ClientCityInfoCellElement>());
-            if (CityStatsCashe.Count > 0)
+            infoToUpdatePlayer.AddRange([EnumPlayerRelatedInfo.SHOW_PLOT_MOVEMENT, EnumPlayerRelatedInfo.FRIENDS, EnumPlayerRelatedInfo.TO_CITY_INVITES,
+                                         EnumPlayerRelatedInfo.PLAYER_PREFIX, EnumPlayerRelatedInfo.PLAYER_AFTER_NAME, EnumPlayerRelatedInfo.PLAYER_CITY_TITLES]);
+            if(city != null)
             {
-                collector.Add(EnumPlayerRelatedInfo.CITY_LIST_ALL, JsonConvert.SerializeObject(CityStatsCashe.Values.ToList()));
+                AddToQueueCityInfoUpdate(city.Guid, infoToUpdateCity.ToArray());
             }
-            claims.serverChannel.SendPacket(
-                new SavedPlotsPacket()
-                {
-                    data = JsonConvert.SerializeObject(collector),
-                    type = PacketsContentEnum.OWN_CITY_INFO_ON_JOIN
-                }
-                , player);
-
+            else
+            {
+                AddToQueuePlayerInfoUpdate(playerInfo.Guid, infoToUpdatePlayer.ToArray());
+            }
         }
         public static void SendCityRelatedInfoToAllOnlineCitizensOnPlayerJoinCity(City city, List<string> exceptListPlayersUIDs)
         {
@@ -483,6 +413,10 @@ namespace claims.src.auxialiry
         }
         public static void CheckCitisUpdatedAndSend()
         {
+            if(claims.dataStorage == null)
+            {
+                return;
+            }
             List<City> updatedCities = new List<City>();
             foreach (var it in claims.dataStorage.getCitiesList())
             {
@@ -598,6 +532,54 @@ namespace claims.src.auxialiry
                     case EnumPlayerRelatedInfo.ALLIANCE_BALANCE:
                         result[pair.Key] = claims.economyHandler.getBalance(city.Alliance.MoneyAccountName).ToString();
                         break;
+                    case EnumPlayerRelatedInfo.CITY_DAY_PAYMENT:
+                        result[pair.Key] = city.GetDayPaymentAmount().ToString();
+                        break;
+                    case EnumPlayerRelatedInfo.CITY_PERMISSIONS_UPDATED:
+                        result[pair.Key] = JsonConvert.SerializeObject(city.getPermsHandler());
+                        break;
+                    case EnumPlayerRelatedInfo.CITY_PRISON_CELL_ALL:
+                        if (city.hasPrison())
+                        {
+                            HashSet<PrisonCellElement> prisonCellElements = new HashSet<PrisonCellElement>();
+                            foreach (var it in city.getPrisons())
+                            {
+                                foreach (PrisonCellInfo cell in it.getPrisonCells())
+                                {
+                                    prisonCellElements.Add(new PrisonCellElement(cell.getSpawnPosition(), cell.GetPlayersNames()));
+                                }
+                            }
+                            result[pair.Key] = JsonConvert.SerializeObject(prisonCellElements);
+                        }
+                        break;
+                    case EnumPlayerRelatedInfo.CITY_SUMMON_POINT_ALL:
+                        if (city.summonPlots.Count > 0)
+                        {
+                            HashSet<SummonCellElement> summonCellElements = new HashSet<SummonCellElement>();
+                            foreach (var it in city.summonPlots)
+                            {
+                                summonCellElements.Add(new SummonCellElement((it.PlotDesc as PlotDescSummon).SummonPoint.AsVec3i.Clone(), (it.PlotDesc as PlotDescSummon).Name));
+                            }
+                            result[pair.Key] = JsonConvert.SerializeObject(summonCellElements);
+                        }
+                        break;
+                    case EnumPlayerRelatedInfo.CITY_PLOTS_GROUPS_ALL:
+                        if (city.getCityPlotsGroups().Count > 0)
+                        {
+                            HashSet<PlotsGroupCellElement> plotsgroupCellElements = new HashSet<PlotsGroupCellElement>();
+                            foreach (var it in city.getCityPlotsGroups())
+                            {
+                                plotsgroupCellElements.Add(
+                                    new PlotsGroupCellElement(it.Guid, it.GetPartName(), it.City.GetPartName(),
+                                                              it.PlayersList.Select(pl => pl.GetPartName()).ToList(),
+                                                              it.PermsHandler, it.PlotsGroupFee));
+                            }
+                            result[pair.Key] = JsonConvert.SerializeObject(plotsgroupCellElements);
+                        }
+                        break;
+                    case EnumPlayerRelatedInfo.CITY_POSSIBLE_RANKS:
+                        result[pair.Key] = JsonConvert.SerializeObject(RightsHandler.GetCityRanks());
+                        break;
                     default:
                         if (pair.Value.TryGetValue("value", out var list))
                             result[pair.Key] = JsonConvert.SerializeObject(list);
@@ -676,6 +658,21 @@ namespace claims.src.auxialiry
                             var allianceJson = JsonConvert.SerializeObject(plotToRecolor);
                             if (allianceJson != null)
                                 result[pair.Key] = allianceJson;
+                        }
+                        break;
+                    case EnumPlayerRelatedInfo.TO_CITY_INVITES:
+                        result[pair.Key] = JsonConvert.SerializeObject(InvitationHandler.getInvitesForReceiver(playerInfo));
+                        break;
+                    case EnumPlayerRelatedInfo.SHOW_PLOT_MOVEMENT:
+                        result[pair.Key] = ((int)playerInfo.showPlotMovement).ToString();
+                        break;
+                    case EnumPlayerRelatedInfo.CITY_LIST_ALL:
+                        Dictionary<string, ClientCityInfoCellElement> CityStatsCashe =
+                        ObjectCacheUtil.GetOrCreate<Dictionary<string, ClientCityInfoCellElement>>(claims.sapi,
+                        "claims:cityinfocache", () => new Dictionary<string, ClientCityInfoCellElement>());
+                        if (CityStatsCashe.Count > 0)
+                        {
+                            result[pair.Key] = JsonConvert.SerializeObject(CityStatsCashe.Values.ToList());
                         }
                         break;
                     default:

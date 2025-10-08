@@ -4,6 +4,7 @@ using claims.src.messages;
 using claims.src.network.packets;
 using claims.src.part.structure;
 using claims.src.part.structure.plots;
+using claims.src.perms;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -56,7 +57,12 @@ namespace claims.src.part
             {
                 creator.saveToDatabase();
             }
-            
+
+            var perms = city.getPermsHandler();
+            perms.CitizenPerms[0] = true;
+            perms.CitizenPerms[1] = true;
+            perms.CitizenPerms[2] = true;
+
             city.saveToDatabase();
             newPlot.saveToDatabase();
             claims.dataStorage.clearCacheForPlayersInPlot(newPlot);
@@ -93,7 +99,7 @@ namespace claims.src.part
                 collector.Add(EnumPlayerRelatedInfo.PLAYER_AFTER_NAME, creator.AfterName);
                 collector.Add(EnumPlayerRelatedInfo.PLAYER_CITY_TITLES, JsonConvert.SerializeObject(creator.getCityTitles()));
                 collector.Add(EnumPlayerRelatedInfo.SHOW_PLOT_MOVEMENT, ((int)creator.showPlotMovement).ToString());
-
+                collector.Add(EnumPlayerRelatedInfo.CITY_PERMISSIONS_UPDATED, JsonConvert.SerializeObject(city.getPermsHandler()));
                 claims.serverChannel.SendPacket(new SavedPlotsPacket()
                 {
                     type = PacketsContentEnum.OWN_NEW_CITY_CREATED,

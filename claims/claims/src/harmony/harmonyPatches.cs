@@ -152,7 +152,7 @@ namespace claims.src.harmony
             return false;
         }
 
-       /* public static bool Prefix_HasPermissionToUse(Vintagestory.GameContent.BlockEntityBomb __instance, ref bool __result)
+       public static bool Prefix_HasPermissionToUse(Vintagestory.GameContent.BlockEntityBomb __instance, ref bool __result)
         {
 
             int tmpX = __instance.Pos.X;
@@ -184,7 +184,7 @@ namespace claims.src.harmony
             }
             __result = false;
             return false;
-        }*/
+        }
         public static bool Prefix_HandleCommand(Vintagestory.Server.ServerMain __instance, string commandName, IServerPlayer player, string args, Action<TextCommandResult> onCommandComplete)
         {
             claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);

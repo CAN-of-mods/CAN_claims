@@ -47,6 +47,8 @@ namespace claims.src
         public int MAX_CITIZEN_TITLE_LENGTH = 16;
         public double LOCAL_CHAT_DISTANCE = 100;
         public int ALLIANCE_PREFIX_LENGTH = 3;
+        public bool SHOW_CITY_NAME_IN_CHAT = true;
+        public bool SHOW_ALLIANCE_PREFIX_IN_CHAT = true;
 
         //INVITATIONS
         public int MAX_SENT_INVITATIONS_CITY = 20;
@@ -151,7 +153,8 @@ namespace claims.src
         public int MAP_ZONE_SIZE = 512;
         public HashSet<string> BLOCKED_NAMES = new HashSet<string> { };
         public HashSet<string> CITY_PLOTS_COLOR_AVAILABLE_COLORS_GUI = new HashSet<string>();
-        public HashSet<string> ALWAYS_ACCESS_BLOCKS = new HashSet<string> { "canmailbox:CANBlockGenericTypedContainer" };
+        public HashSet<string> ALWAYS_ACCESS_BLOCKS = new HashSet<string> { "canmailbox:CANBlockGenericTypedContainer",
+            "canmarket:BlockCANMarket", "canmarket:BlockCANMarketSingle", "canmarket:BlockCANStall" };
         public HashSet<Type> blockTypesAccess = new HashSet<Type>();
 
         public int[] PLOT_COLORS;

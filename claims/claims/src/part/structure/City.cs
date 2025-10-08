@@ -207,6 +207,10 @@ namespace claims.src.part
         {
             return mayor;
         }
+        public bool HasMayor()
+        {
+            return mayor != null;
+        }
 
         public bool setMayor(PlayerInfo player)
         {
@@ -383,6 +387,30 @@ namespace claims.src.part
                 return true;
             }
             return false;
+        }
+        public double GetDayPaymentAmount()
+        {
+            double sumToPay = claims.config.CITY_BASE_CARE;
+            // Add additional cost for plot with plot with pvp on
+            if (claims.config.ADDITIONAL_COST_OF_NO_PVP_PLOT)
+            {
+                sumToPay += this.getNoPVPCost();
+                //It's a new day, if plot has not pvp turned on we unmark it
+                this.updateMarkedPVP();
+            }
+
+            foreach (Plot plot in this.getCityPlots())
+            {
+                PlotInfo.dictPlotTypes.TryGetValue(plot.Type, out PlotInfo plotInfo);
+                sumToPay += plotInfo.getCost();
+            }
+            CityLevelInfo cityLevelInfo = Settings.getCityLevelInfo(this.getCityCitizens().Count);
+            int cityOutGo = cityLevelInfo.UnconditionalPayment;
+
+            sumToPay += cityOutGo;
+            claims.sapi.Logger.Debug(string.Format("[claims] processCityCare, withdraw {0} from city {1} account. Balance before is {2}, debt is {3}.",
+                sumToPay, this.GetPartName(), claims.economyHandler.getBalance(this.MoneyAccountName), this.DebtBalance));
+            return sumToPay;
         }
 
         /// <summary>

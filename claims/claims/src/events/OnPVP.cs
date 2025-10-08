@@ -14,6 +14,14 @@ namespace claims.src.events
             claims.dataStorage.getPlayerByUid(attacker.PlayerUID, out PlayerInfo attackerPlayerInfo);
             claims.dataStorage.getPlayerByUid(defend.PlayerUID, out PlayerInfo defendPlayerInfo);
 
+            if (claims.dataStorage.getWorldInfo().pvpEverywhere)
+            {
+                return true;
+            }
+            if (claims.dataStorage.getWorldInfo().pvpForbidden)
+            {
+                return false;
+            }
             if (/*attackerPlot != null && */defendPlot != null && defendPlot.hasCity())
             {
                 if (defendPlot.Type == PlotType.TOURNAMENT || defendPlot.getPermsHandler().pvpFlag
@@ -22,15 +30,7 @@ namespace claims.src.events
                     || (defendPlot.getCity().criminals.Contains(attackerPlayerInfo) && defendPlot.getCity().isCitizen(defendPlayerInfo))))
                 {
                     return true;
-                }
-                if (claims.dataStorage.getWorldInfo().pvpEverywhere)
-                {
-                    return true;
-                }
-                if (claims.dataStorage.getWorldInfo().pvpForbidden)
-                {
-                    return false;
-                }
+                }                         
                 if (defendPlot.getCity().getPermsHandler().pvpFlag)
                 {
                     return true;
@@ -39,16 +39,6 @@ namespace claims.src.events
                 {
                     return true;
                 }
-                return false;
-            }
-
-            //No plot
-            if (claims.dataStorage.getWorldInfo().pvpEverywhere)
-            {
-                return false;
-            }
-            if (claims.dataStorage.getWorldInfo().pvpForbidden)
-            {
                 return false;
             }
             return true;

@@ -84,27 +84,7 @@ namespace claims.src.timers
         }
         public static void processCityCare(City city)
         {
-            decimal sumToPay = (decimal)claims.config.CITY_BASE_CARE;
-            // Add additional cost for plot with plot with pvp on
-            if (claims.config.ADDITIONAL_COST_OF_NO_PVP_PLOT)
-            {
-                sumToPay += (decimal)city.getNoPVPCost();
-                //It's a new day, if plot has not pvp turned on we unmark it
-                city.updateMarkedPVP();
-            }
-
-            foreach (Plot plot in city.getCityPlots())
-            {
-                PlotInfo.dictPlotTypes.TryGetValue(plot.Type, out PlotInfo plotInfo);
-                sumToPay += (decimal)plotInfo.getCost();
-            }
-            CityLevelInfo cityLevelInfo = Settings.getCityLevelInfo(city.getCityCitizens().Count);
-            int cityOutGo = cityLevelInfo.UnconditionalPayment;
-
-            sumToPay += cityOutGo;
-            claims.sapi.Logger.Debug(string.Format("[claims] processCityCare, withdraw {0} from city {1} account. Balance before is {2}, debt is {3}.",
-                sumToPay, city.GetPartName(), claims.economyHandler.getBalance(city.MoneyAccountName), city.DebtBalance));
-            
+            decimal sumToPay = (decimal)city.GetDayPaymentAmount();
             if (claims.economyHandler.getBalance(city.MoneyAccountName) < sumToPay + (decimal)city.DebtBalance) 
             {
                 city.DebtBalance += (double)sumToPay;

@@ -2,6 +2,7 @@
 using claims.src.part;
 using claims.src.part.structure;
 using claims.src.part.structure.conflict;
+using claims.src.perms;
 using claims.src.rights;
 using Newtonsoft.Json;
 using System;
@@ -89,6 +90,8 @@ namespace claims.src.gui.playerGui.structures
             AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.ALLIANCE_CONFLICT_ALL, OnAllianceConflictAll);
             AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_PLOT_RECOLOR, OnCityPlotRecolor);
             AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.ALLIANCE_CONFLICT_WARRANGES_UPDATED, OnAllianceConflictWarrangesUpdated);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_DAY_PAYMENT, OnCityDayPayment);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_PERMISSIONS_UPDATED, OnCityPermissionsUpdated);
         }
         public ClientPlayerInfo(string cityName, string mayorName, long timeStampCreated, HashSet<string> citizens, int maxCountPlots, int countPlots, string prefix,
             string afterName, HashSet<string> cityTitles, EnumShowPlotMovement showPlotMovement, int PlotColor, double cityBalance, HashSet<string> criminals)
@@ -609,6 +612,15 @@ namespace claims.src.gui.playerGui.structures
                     cell.NextBattleDateStart = it.NextBattleDateStart;
                 }
             }
+        }
+        private void OnCityDayPayment(string val)
+        {
+            CityInfo.CityDayPayment = double.Parse(val, CultureInfo.InvariantCulture);
+        }
+        private void OnCityPermissionsUpdated(string val)
+        {
+            PermsHandler ph = JsonConvert.DeserializeObject<PermsHandler>(val);
+            this.CityInfo.PermsHandler = ph;
         }
     }
 }

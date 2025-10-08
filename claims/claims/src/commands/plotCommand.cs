@@ -187,6 +187,7 @@ namespace claims.src.commands
             {
                 return tcr;
             }
+            UsefullPacketsSend.AddToQueueCityInfoUpdate(plotHere.getCity().Guid, EnumPlayerRelatedInfo.CITY_DAY_PAYMENT);
             claims.dataStorage.setNowEpochZoneTimestampFromPlotPosition(plotHere.getPos());
             claims.serverPlayerMovementListener.markPlotToWasReUpdated(plotHere.getPos());
             UsefullPacketsSend.SendCurrentPlotUpdate(player, plotHere);
@@ -344,6 +345,7 @@ namespace claims.src.commands
                 claims.dataStorage.setNowEpochZoneTimestampFromPlotPosition(plotHere.getPos());
                 claims.serverPlayerMovementListener.markPlotToWasReUpdated(plotHere.getPos());
                 UsefullPacketsSend.SendCurrentPlotUpdate(player, plotHere);
+                UsefullPacketsSend.AddToQueueCityInfoUpdate(plotHere.getCity().Guid, EnumPlayerRelatedInfo.CITY_DAY_PAYMENT);
                 return tcr;
             }
             else

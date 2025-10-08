@@ -53,7 +53,8 @@ namespace claims.src.gui.playerGui
 
             SELECT_NEW_ALLIANCE_NAME, INVITE_TO_ALLIANCE_NEED_NAME, KICK_FROM_ALLIANCE_NEED_NAME, UNINVITE_TO_ALLIANCE,
             LEAVE_ALLIANCE_CONFIRM, NEW_ALLIANCE_NEED_NAME, ALLIANCE_PREFIX_NEED_NAME, ALLIANCE_SEND_NEW_CONFLICT_LETTER_NEED_NAME,
-            ALLIANCE_SEND_PEACE_OFFER_CONFIRM
+            ALLIANCE_SEND_PEACE_OFFER_CONFIRM,
+            CITY_PLOTS_PERMISSIONS
         }
         public EnumUpperWindowSelectedState CreateNewCityState { get; set; } = EnumUpperWindowSelectedState.NONE;
         public string collectedNewCityName { get; set; } = "";
@@ -1599,6 +1600,170 @@ namespace claims.src.gui.playerGui
                     }), noButtonBounds, EnumButtonStyle.Normal);
                 }
             }
+            else if (CreateNewCityState == EnumUpperWindowSelectedState.CITY_PLOTS_PERMISSIONS)
+            {
+                Composers["canclaimsgui-upper"].AddStaticText("City permissions",
+                 CairoFont.WhiteDetailText(),
+                 el);
+                ElementBounds yesButtonBounds = el.BelowCopy(0, 15);
+                yesButtonBounds.fixedWidth /= 2;
+                bgBounds.WithChildren(yesButtonBounds);
+
+
+                ElementBounds pvpToggleTextBounds = el.BelowCopy(0, 15);
+                pvpToggleTextBounds.fixedWidth = 80;
+                Composers["canclaimsgui-upper"].AddStaticText("PVP", CairoFont.WhiteDetailText(), pvpToggleTextBounds);
+
+                ElementBounds pvpToggleButtonBounds = pvpToggleTextBounds.RightCopy(0, 0);
+                Composers["canclaimsgui-upper"].AddSwitch((t) =>
+                {
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
+                    clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/city set pvp " + (t ? "on" : "off"), EnumChatType.Macro, "");
+                },
+                                                pvpToggleButtonBounds,
+                                                "pvp-switch");
+                Composers["canclaimsgui-upper"].GetSwitch("pvp-switch").SetValue(claims.clientDataStorage.clientPlayerInfo.CityInfo.PermsHandler.pvpFlag);
+                bgBounds.WithChildren(pvpToggleTextBounds);
+
+
+                ElementBounds fireToggleTextBounds = pvpToggleTextBounds.BelowCopy(0, 15);
+                fireToggleTextBounds.fixedWidth = 80;
+                Composers["canclaimsgui-upper"].AddStaticText("Fire", CairoFont.WhiteDetailText(), fireToggleTextBounds);
+
+                ElementBounds fireToggleButtonBounds = fireToggleTextBounds.RightCopy(0, 0);
+                Composers["canclaimsgui-upper"].AddSwitch((t) =>
+                {
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
+                    clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/city set fire " + (t ? "on" : "off"), EnumChatType.Macro, "");
+                },
+                                                fireToggleButtonBounds,
+                                                "fire-switch");
+                Composers["canclaimsgui-upper"].GetSwitch("fire-switch").SetValue(claims.clientDataStorage.clientPlayerInfo.CityInfo.PermsHandler.fireFlag);
+                bgBounds.WithChildren(fireToggleTextBounds);
+
+                ElementBounds blastToggleTextBounds = fireToggleTextBounds.BelowCopy(0, 15);
+                blastToggleTextBounds.fixedWidth = 80;
+                Composers["canclaimsgui-upper"].AddStaticText("Blast", CairoFont.WhiteDetailText(), blastToggleTextBounds);
+
+                ElementBounds blastToggleButtonBounds = blastToggleTextBounds.RightCopy(0, 0);
+                Composers["canclaimsgui-upper"].AddSwitch((t) =>
+                {
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
+                    clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/city set blast " + (!t ? "on" : "off"), EnumChatType.Macro, "");
+                },
+                                                blastToggleButtonBounds,
+                                                "blast-switch");
+                Composers["canclaimsgui-upper"].GetSwitch("blast-switch").SetValue(!claims.clientDataStorage.clientPlayerInfo.CityInfo.PermsHandler.blastFlag);
+                bgBounds.WithChildren(blastToggleButtonBounds);
+
+
+                /////BUILD SWITCHES
+                ElementBounds buildTextBounds = blastToggleTextBounds.BelowCopy(0, 15);
+                Composers["canclaimsgui-upper"].AddStaticText("Build", CairoFont.WhiteDetailText(), buildTextBounds);
+                bgBounds.WithChildren(buildTextBounds);
+
+                ElementBounds friendBuildBounds = buildTextBounds.RightCopy(0, 0);
+                Composers["canclaimsgui-upper"].AddSwitch((t) =>
+                {
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
+                    clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/city set p friend build " + (t ? "on" : "off"), EnumChatType.Macro, "");
+                }, friendBuildBounds, "friend-build");
+
+                Composers["canclaimsgui-upper"].GetSwitch("friend-build").SetValue(claims.clientDataStorage.clientPlayerInfo.CityInfo.PermsHandler.getPerm(perms.PermGroup.COMRADE, perms.type.PermType.BUILD_AND_DESTROY_PERM));
+                Composers["canclaimsgui-upper"].AddHoverText("friend", CairoFont.WhiteDetailText(), 60, friendBuildBounds);
+
+
+
+                ElementBounds citizenBuildBounds = friendBuildBounds.RightCopy(5, 0);
+                Composers["canclaimsgui-upper"].AddSwitch((t) =>
+                {
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
+                    clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/city set p citizen build " + (t ? "on" : "off"), EnumChatType.Macro, "");
+                }, citizenBuildBounds, "citizen-build");
+                Composers["canclaimsgui-upper"].GetSwitch("citizen-build").SetValue(claims.clientDataStorage.clientPlayerInfo.CityInfo.PermsHandler.getPerm(perms.PermGroup.CITIZEN, perms.type.PermType.BUILD_AND_DESTROY_PERM));
+                Composers["canclaimsgui-upper"].AddHoverText("citizen", CairoFont.WhiteDetailText(), 60, citizenBuildBounds);
+                ElementBounds strangerBuildBounds = citizenBuildBounds.RightCopy(5, 0);
+                Composers["canclaimsgui-upper"].AddSwitch((t) =>
+                {
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
+                    clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/city set p stranger build " + (t ? "on" : "off"), EnumChatType.Macro, "");
+                }, strangerBuildBounds, "stranger-build");
+                Composers["canclaimsgui-upper"].GetSwitch("stranger-build").SetValue(claims.clientDataStorage.clientPlayerInfo.CityInfo.PermsHandler.getPerm(perms.PermGroup.STRANGER, perms.type.PermType.BUILD_AND_DESTROY_PERM));
+                Composers["canclaimsgui-upper"].AddHoverText("stranger", CairoFont.WhiteDetailText(), 60, strangerBuildBounds);
+
+                bgBounds.WithChildren(blastToggleButtonBounds);
+
+                ///USE SWITCHES
+                ///
+
+                ElementBounds useTextBounds = buildTextBounds.BelowCopy(0, 15);
+                Composers["canclaimsgui-upper"].AddStaticText("Use", CairoFont.WhiteDetailText(), useTextBounds);
+                bgBounds.WithChildren(useTextBounds);
+
+                ElementBounds friendUseBounds = useTextBounds.RightCopy(0, 0);
+                Composers["canclaimsgui-upper"].AddSwitch((t) =>
+                {
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
+                    clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/city set p friend use " + (t ? "on" : "off"), EnumChatType.Macro, "");
+                }, friendUseBounds, "friend-use");
+
+                Composers["canclaimsgui-upper"].GetSwitch("friend-use").SetValue(claims.clientDataStorage.clientPlayerInfo.CityInfo.PermsHandler.getPerm(perms.PermGroup.COMRADE, perms.type.PermType.USE_PERM));
+                Composers["canclaimsgui-upper"].AddHoverText("friend", CairoFont.WhiteDetailText(), 60, friendUseBounds);
+
+
+
+                ElementBounds citizenUseBounds = friendUseBounds.RightCopy(5, 0);
+                Composers["canclaimsgui-upper"].AddSwitch((t) =>
+                {
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
+                    clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/city set p citizen use " + (t ? "on" : "off"), EnumChatType.Macro, "");
+                }, citizenUseBounds, "citizen-use");
+                Composers["canclaimsgui-upper"].GetSwitch("citizen-use").SetValue(claims.clientDataStorage.clientPlayerInfo.CityInfo.PermsHandler.getPerm(perms.PermGroup.CITIZEN, perms.type.PermType.USE_PERM));
+                Composers["canclaimsgui-upper"].AddHoverText("citizen", CairoFont.WhiteDetailText(), 60, citizenUseBounds);
+                ElementBounds strangerUseBounds = citizenUseBounds.RightCopy(5, 0);
+                Composers["canclaimsgui-upper"].AddSwitch((t) =>
+                {
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
+                    clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/city set p stranger use " + (t ? "on" : "off"), EnumChatType.Macro, "");
+                }, strangerUseBounds, "stranger-use");
+                Composers["canclaimsgui-upper"].GetSwitch("stranger-use").SetValue(claims.clientDataStorage.clientPlayerInfo.CityInfo.PermsHandler.getPerm(perms.PermGroup.STRANGER, perms.type.PermType.USE_PERM));
+                Composers["canclaimsgui-upper"].AddHoverText("stranger", CairoFont.WhiteDetailText(), 60, strangerUseBounds);
+
+                ///ATTACK ANIMALS SWITCHES
+                ///
+                ElementBounds attackAnimalsTextBounds = useTextBounds.BelowCopy(0, 15);
+                Composers["canclaimsgui-upper"].AddStaticText("Attack animals", CairoFont.WhiteDetailText(), attackAnimalsTextBounds);
+                bgBounds.WithChildren(attackAnimalsTextBounds);
+
+                ElementBounds friendAttackBounds = attackAnimalsTextBounds.RightCopy(0, 0);
+                Composers["canclaimsgui-upper"].AddSwitch((t) =>
+                {
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
+                    clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/city set p friend attack " + (t ? "on" : "off"), EnumChatType.Macro, "");
+                }, friendAttackBounds, "friend-attack");
+
+                Composers["canclaimsgui-upper"].GetSwitch("friend-attack").SetValue(claims.clientDataStorage.clientPlayerInfo.CityInfo.PermsHandler.getPerm(perms.PermGroup.COMRADE, perms.type.PermType.ATTACK_ANIMALS_PERM));
+                Composers["canclaimsgui-upper"].AddHoverText("friend", CairoFont.WhiteDetailText(), 60, friendAttackBounds);
+
+
+
+                ElementBounds citizenAttackBounds = friendAttackBounds.RightCopy(5, 0);
+                Composers["canclaimsgui-upper"].AddSwitch((t) =>
+                {
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
+                    clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/city set p citizen attack " + (t ? "on" : "off"), EnumChatType.Macro, "");
+                }, citizenAttackBounds, "citizen-attack");
+                Composers["canclaimsgui-upper"].GetSwitch("citizen-attack").SetValue(claims.clientDataStorage.clientPlayerInfo.CityInfo.PermsHandler.getPerm(perms.PermGroup.CITIZEN, perms.type.PermType.ATTACK_ANIMALS_PERM));
+                Composers["canclaimsgui-upper"].AddHoverText("citizen", CairoFont.WhiteDetailText(), 60, citizenAttackBounds);
+                ElementBounds strangerAttackBounds = citizenAttackBounds.RightCopy(5, 0);
+                Composers["canclaimsgui-upper"].AddSwitch((t) =>
+                {
+                    ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
+                    clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/city set p stranger attack " + (t ? "on" : "off"), EnumChatType.Macro, "");
+                }, strangerAttackBounds, "stranger-attack");
+                Composers["canclaimsgui-upper"].GetSwitch("stranger-attack").SetValue(claims.clientDataStorage.clientPlayerInfo.CityInfo.PermsHandler.getPerm(perms.PermGroup.STRANGER, perms.type.PermType.ATTACK_ANIMALS_PERM));
+                Composers["canclaimsgui-upper"].AddHoverText("stranger", CairoFont.WhiteDetailText(), 60, strangerAttackBounds);
+            }
             Composers["canclaimsgui-upper"].AddDialogTitleBar(Lang.Get(""), 
                 () => 
                 { 
@@ -1676,6 +1841,29 @@ namespace claims.src.gui.playerGui
                     }
                 }, unclaimCityPlotButtonBounds);
 
+                /*==============================================================================================*/
+                /*=====================================CITY PERMISSIONS=========================================*/
+                /*==============================================================================================*/
+                ElementBounds cityPermBounds = unclaimCityPlotButtonBounds.RightCopy();
+                ElementBounds showPermissionsButtonBounds = currentBounds.RightCopy();
+                cityPermBounds.WithFixedSize(25, 25);
+                SingleComposer.AddIconButton("medal", (bool t) =>
+                {
+                    if (t)
+                    {
+                        CreateNewCityState = EnumUpperWindowSelectedState.CITY_PLOTS_PERMISSIONS;
+                        BuildUpperWindow();
+                    }
+                    else
+                    {
+                        CreateNewCityState = EnumUpperWindowSelectedState.NONE;
+
+                        BuildUpperWindow();
+                    }
+                }, cityPermBounds, "setPermissions");
+                SingleComposer.GetToggleButton("setPermissions").Toggleable = true;
+
+
 
                 currentBounds = currentBounds.BelowCopy(0, 5);
 
@@ -1726,13 +1914,23 @@ namespace claims.src.gui.playerGui
                         cityTabFont,
                         currentBounds, "cityBalance");
                 }
-                currentBounds = currentBounds.BelowCopy(0, 5);
+                
                 if (clientInfo.CityInfo.CityDebt > 0)
                 {
+                    currentBounds = currentBounds.BelowCopy(0, 5);
                     SingleComposer.AddStaticText(Lang.Get("claims:gui-city-debt", clientInfo.CityInfo.CityDebt),
                         cityTabFont,
                         currentBounds, "cityDebt");
                 }
+                
+                if (clientInfo.CityInfo.CityDayPayment > 0)
+                {
+                    currentBounds = currentBounds.BelowCopy(0, 5);
+                    SingleComposer.AddStaticText(Lang.Get("claims:gui-city-payment", clientInfo.CityInfo.CityDayPayment),
+                        cityTabFont,
+                        currentBounds, "cityPayment");
+                }
+                
 
                 /*==============================================================================================*/
                 /*=====================================UNDER 2 LINE=============================================*/
@@ -1933,7 +2131,7 @@ namespace claims.src.gui.playerGui
             currentBounds.fixedY += 15;
             string currencyStr = Lang.Get("claims:gui-currency-item");
             TextExtents textExtents = pricesTabFont.GetTextExtents(currencyStr);
-            currentBounds.fixedWidth = textExtents.Width;
+            currentBounds.fixedWidth = textExtents.Width + 10;
             SingleComposer.AddStaticText(currencyStr,
                    pricesTabFont,
                    currentBounds, "currency-itme");
@@ -1945,39 +2143,60 @@ namespace claims.src.gui.playerGui
             {
                 ItemStack coin = new ItemStack(capi.World.GetItem(new AssetLocation(coin_code)), 1);
                 ItemstackTextComponent currencyStack = new ItemstackTextComponent(capi, coin, 48);
-                //SlideshowItemstackTextComponent sitc = new SlideshowItemstackTextComponent(capi, new ItemStack[] { coin }, 48, EnumFloat.Inline);
                 SingleComposer.AddRichtext(new RichTextComponentBase[] { currencyStack }, cityPriceBounds, "coin-item");
             }
             currentBounds = currentBounds.BelowCopy(0, 0);
+            ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+            string cityCostString = Lang.Get("claims:gui-new-city-cost", claims.config.NEW_CITY_COST.ToString());
+            textExtents = pricesTabFont.GetTextExtents(cityCostString);
+            currentBounds.fixedWidth = textExtents.Width + 10;
             SingleComposer.AddStaticText(Lang.Get("claims:gui-new-city-cost", claims.config.NEW_CITY_COST.ToString()),
                     pricesTabFont,
                     currentBounds, "new-city-price");
 
             currentBounds = currentBounds.BelowCopy(0, 0);
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            
+
             string cityPlotCost = Lang.Get("claims:gui-city-plot-cost", claims.config.PLOT_CLAIM_PRICE.ToString());
-            currentBounds.fixedWidth = pricesTabFont.GetTextExtents(cityPlotCost).Width;
+            currentBounds.fixedWidth = pricesTabFont.GetTextExtents(cityPlotCost).Width + 10;
             SingleComposer.AddStaticText(cityPlotCost,
                     pricesTabFont,
                     currentBounds, "plot-claim-price");
 
             currentBounds = currentBounds.BelowCopy(0, 0);
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
             string cityNameChangeCost = Lang.Get("claims:gui-city-name-change-cost", claims.config.CITY_NAME_CHANGE_COST.ToString());
-            currentBounds.fixedWidth = pricesTabFont.GetTextExtents(cityNameChangeCost).Width;
+            currentBounds.fixedWidth = pricesTabFont.GetTextExtents(cityNameChangeCost).Width + 10;
             SingleComposer.AddStaticText(cityNameChangeCost,
                     pricesTabFont,
                     currentBounds, "city-name-price");
 
             currentBounds = currentBounds.BelowCopy(0, 0);
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            
+
             SingleComposer.AddStaticText(Lang.Get("claims:gui-city-base-cost", claims.config.CITY_BASE_CARE.ToString()),
                     pricesTabFont,
                     currentBounds, "city-base-care");
 
             currentBounds = currentBounds.BelowCopy(0, 0);
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            
+
             SingleComposer.AddStaticText(Lang.Get("claims:gui-teleportation-cost", claims.config.SUMMON_PAYMENT.ToString()),
                     pricesTabFont,
                     currentBounds, "city-summon-price");
 
             currentBounds = currentBounds.BelowCopy(0, 0);
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            
+
+
             SingleComposer.AddStaticText(Lang.Get("claims:gui-new-alliance-cost", claims.config.NEW_ALLIANCE_COST.ToString()),
                     pricesTabFont,
                     currentBounds, "city-alliance-price");

@@ -44,8 +44,8 @@ namespace claims.src.harmony
 
             harmonyInstance.Patch(typeof(Vintagestory.GameContent.BEBehaviorBurning).GetMethod("TrySpreadTo"), prefix: new HarmonyMethod(typeof(harmonyPatches).GetMethod("Prefix_On_TrySpreadFireAllDirs")));
 
-            harmonyInstance.Patch(typeof(Vintagestory.GameContent.BlockEntityBomb).GetMethod("nearToClaimedLand"), prefix: new HarmonyMethod(typeof(harmonyPatches).GetMethod("Prefix_nearToClaimedLand")));
-            //harmonyInstance.Patch(typeof(Vintagestory.GameContent.BlockEntityBomb).GetMethod("HasPermissionToUse"), prefix: new HarmonyMethod(typeof(harmonyPatches).GetMethod("Prefix_HasPermissionToUse")));
+            //harmonyInstance.Patch(typeof(Vintagestory.GameContent.BlockEntityBomb).GetMethod("nearToClaimedLand"), prefix: new HarmonyMethod(typeof(harmonyPatches).GetMethod("Prefix_nearToClaimedLand")));
+            harmonyInstance.Patch(typeof(Vintagestory.GameContent.BlockEntityBomb).GetMethod("HasPermissionToUse"), prefix: new HarmonyMethod(typeof(harmonyPatches).GetMethod("Prefix_HasPermissionToUse")));
 
             harmonyInstance.Patch(typeof(Vintagestory.Common.ChatCommandApi).GetMethod("Execute", new[] { typeof(string), typeof(IServerPlayer), typeof(int), typeof(string), typeof(Action<TextCommandResult>) }), prefix: new HarmonyMethod(typeof(harmonyPatches).GetMethod("Prefix_HandleCommand")));
 

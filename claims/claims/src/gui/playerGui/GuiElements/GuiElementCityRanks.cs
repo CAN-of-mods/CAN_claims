@@ -95,7 +95,7 @@ namespace claims.src.gui.playerGui.GuiElements
             var font = CairoFont.WhiteDetailText();
             var offY = (height - font.UnscaledFontsize) / 2.0;
             TextExtents textExtents = CairoFont.WhiteMediumText().GetTextExtents(rankCell.RankName);
-            var labelTextBounds = ElementBounds.Fixed(0.0, 0.0, textExtents.Width, height).WithParent(Bounds);
+            var labelTextBounds = ElementBounds.Fixed(0.0, 0.0, textExtents.Width + 10, height).WithParent(Bounds);
             this.richTextElem = new GuiElementRichtext(capi, VtmlUtil.Richtextify(capi, this.rankCell.RankName, CairoFont.WhiteMediumText()), labelTextBounds);
             var addRankBounds = labelTextBounds.RightCopy().WithFixedSize(25, 25);
             addRankBounds.fixedY += 5;

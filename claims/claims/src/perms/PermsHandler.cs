@@ -20,7 +20,7 @@ namespace claims.src.perms
         /// </summary>
         public bool pvpFlag { get; set; }
         public bool fireFlag { get; set; }
-        public bool blastFlag { get; set; }
+        public bool blastFlag { get; set; } = true;
         public bool[] CitizenPerms { get; set; }
         public bool[] StrangerPerms { get; set; }
         public bool[] AlliancePerms { get; set; }
@@ -200,6 +200,61 @@ namespace claims.src.perms
             }
 
             bool newValue = StringFunctions.getBoolFromString(args[2]);
+
+            switch (permGroup)
+            {
+                case PermGroup.STRANGER:
+                    this.StrangerPerms[(int)permType] = newValue;
+                    break;
+                case PermGroup.CITIZEN:
+                    this.CitizenPerms[(int)permType] = newValue;
+                    break;
+                case PermGroup.ALLY:
+                    this.AlliancePerms[(int)permType] = newValue;
+                    break;
+                case PermGroup.COMRADE:
+                    this.ComradePerms[(int)permType] = newValue;
+                    break;
+            }
+            return true;
+        }
+        public bool setAccessPerm(string permGroupStr, string permTypeStr, string newValueStr)
+        {
+            PermGroup permGroup;
+            switch (permGroupStr)
+            {
+                case "citizen":
+                    permGroup = PermGroup.CITIZEN;
+                    break;
+                case "stranger":
+                    permGroup = PermGroup.STRANGER;
+                    break;
+                case "ally":
+                    permGroup = PermGroup.ALLY;
+                    break;
+                case "friend":
+                    permGroup = PermGroup.COMRADE;
+                    break;
+                default:
+                    return false;
+            }
+            PermType permType;
+            switch (permTypeStr)
+            {
+                case "use":
+                    permType = PermType.USE_PERM;
+                    break;
+                case "build":
+                    permType = PermType.BUILD_AND_DESTROY_PERM;
+                    break;
+                case "attack":
+                    permType = PermType.ATTACK_ANIMALS_PERM;
+                    break;
+                default:
+                    return false;
+            }
+
+            bool newValue = StringFunctions.getBoolFromString(newValueStr);
 
             switch (permGroup)
             {

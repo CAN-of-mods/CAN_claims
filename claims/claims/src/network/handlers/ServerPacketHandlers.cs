@@ -49,6 +49,10 @@ namespace claims.src.network.handlers
                         {
                             continue;
                         }
+                        needUpdateZones.Add(zoneItem.Item1);
+                        continue;
+                        //ignore timestamps now
+
                         if (zoneItem.Item2 == 0)
                         {
                             needUpdateZones.Add(zoneItem.Item1);

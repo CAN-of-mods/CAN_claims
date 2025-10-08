@@ -257,7 +257,13 @@ namespace claims.src.playerMovements
                 {
                     tmpZoneCoords.X = centerZoneCoords.X + i;
                     tmpZoneCoords.Y = centerZoneCoords.Y + j;
-                    if(claims.clientDataStorage.getClientSavedZone(tmpZoneCoords, out ClientSavedZone oldClientSavedZone))
+
+                    zonesTimestamps.Add(new Tuple<Vec2i, long>(tmpZoneCoords.Copy(), 0));
+                    continue;
+                    //ignore db for now
+
+
+                    if (claims.clientDataStorage.getClientSavedZone(tmpZoneCoords, out ClientSavedZone oldClientSavedZone))
                     {
                         zonesTimestamps.Add(new Tuple<Vec2i, long>(tmpZoneCoords.Copy(), oldClientSavedZone.timestamp));
                         continue;

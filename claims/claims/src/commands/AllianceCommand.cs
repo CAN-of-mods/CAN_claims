@@ -378,6 +378,7 @@ namespace claims.src.commands
                 return TextCommandResult.Success(Lang.Get("claims:alliance_fee_too_high", claims.config.ALLIANCE_MAX_FEE));
             }
             playerInfo.Alliance.AllianceFee = fee;
+            UsefullPacketsSend.AddToQueueAllianceInfoUpdate(playerInfo.Alliance.Guid, EnumPlayerRelatedInfo.CITY_DAY_PAYMENT);
             playerInfo.Alliance.saveToDatabase();
             return TextCommandResult.Success(Lang.Get("claims:alliane_fee_set_to", fee));
         }

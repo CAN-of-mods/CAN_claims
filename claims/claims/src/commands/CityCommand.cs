@@ -244,6 +244,7 @@ namespace claims.src.commands
                 return TextCommandResult.Error("claims:economy_money_transaction_error");
             }
             UsefullPacketsSend.AddToQueueCityInfoUpdate(playerInfo.City.Guid, gui.playerGui.structures.EnumPlayerRelatedInfo.CITY_BALANCE);
+            UsefullPacketsSend.AddToQueueCityInfoUpdate(playerInfo.City.Guid, gui.playerGui.structures.EnumPlayerRelatedInfo.CITY_DAY_PAYMENT);
             plotHere.setCity(playerInfo.City);
             plotHere.getPermsHandler().setPerm(city.getPermsHandler());
             plotHere.Price = -1;
@@ -310,6 +311,7 @@ namespace claims.src.commands
             claims.dataStorage.setNowEpochZoneTimestampFromPlotPosition(plotHere.getPos());
             claims.serverPlayerMovementListener.markPlotToWasRemoved(plotHere.getPos());
             UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid, EnumPlayerRelatedInfo.CLAIMED_PLOTS);
+            UsefullPacketsSend.AddToQueueCityInfoUpdate(playerInfo.City.Guid, gui.playerGui.structures.EnumPlayerRelatedInfo.CITY_DAY_PAYMENT);
             plotHere.CheckBorderPlotValue();
             return SuccessWithParams("claims:plot_has_been_unclaimed", new object[] { currentPlotPosition.getPos().X, currentPlotPosition.getPos().Y });
         }
@@ -367,6 +369,7 @@ namespace claims.src.commands
             tree.SetString("name", plotHere.getCity().GetPartName());
             claims.sapi.World.Api.Event.PushEvent("plotclaimed", tree);
             UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid, EnumPlayerRelatedInfo.CLAIMED_PLOTS);
+            UsefullPacketsSend.AddToQueueCityInfoUpdate(playerInfo.City.Guid, gui.playerGui.structures.EnumPlayerRelatedInfo.CITY_DAY_PAYMENT);
             plotHere.CheckBorderPlotValue();
             return SuccessWithParams("claims:plot_has_been_claimed", new object[] { currentPlotPosition.getPos().X, currentPlotPosition.getPos().Y });
         }
@@ -427,6 +430,7 @@ namespace claims.src.commands
             tree.SetString("name", plotHere.getCity().GetPartName());
             claims.sapi.World.Api.Event.PushEvent("plotclaimed", tree);
             UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid, EnumPlayerRelatedInfo.CLAIMED_PLOTS);
+            UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid, EnumPlayerRelatedInfo.CITY_DAY_PAYMENT);
             plotHere.CheckBorderPlotValue();
             //return SuccessWithParams("claims:plot_has_been_claimed", new object[] { currentPlotPosition.getPos().X, currentPlotPosition.getPos().Y, claims.config.PLOT_CLAIM_PRICE });
             return SuccessWithParams("claims:plot_has_been_claimed", new object[] { currentPlotPosition.getPos().X, currentPlotPosition.getPos().Y, claims.config.PLOT_CLAIM_PRICE });
@@ -471,6 +475,7 @@ namespace claims.src.commands
                     targetPlayer.setCity(city);
                     city.saveToDatabase();
                     targetPlayer.saveToDatabase();
+                    targetPlayer.PlayerCache.Reset();
                     TreeAttribute tree = new TreeAttribute();
                     tree.SetString("cityname", city.GetPartName());
                     claims.sapi.World.Api.Event.PushEvent("updatecityinfo", tree);
@@ -551,6 +556,7 @@ namespace claims.src.commands
             TreeAttribute tree = new();
             tree.SetString("cityname", city.GetPartName());
             claims.sapi.World.Api.Event.PushEvent("updatecityinfo", tree);
+            targetPlayer.PlayerCache.Reset();
             UsefullPacketsSend.SendPlayerRelatedInfoOnKickFromCity(targetPlayer);
             UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid, EnumPlayerRelatedInfo.CITY_MEMBERS, EnumPlayerRelatedInfo.MAX_COUNT_PLOTS);
             return TextCommandResult.Success();
@@ -576,6 +582,7 @@ namespace claims.src.commands
             playerInfo.clearCity();
             TreeAttribute tree = new();
             tree.SetString("cityname", city.GetPartName());
+            playerInfo.PlayerCache.Reset();
             claims.sapi.World.Api.Event.PushEvent("updatecityinfo", tree);
             UsefullPacketsSend.SendPlayerRelatedInfoOnKickFromCity(playerInfo);
             UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid, EnumPlayerRelatedInfo.CITY_MEMBERS, EnumPlayerRelatedInfo.MAX_COUNT_PLOTS);
@@ -744,7 +751,9 @@ namespace claims.src.commands
 
             city.getPermsHandler().setAccessPerm(args.RawArgs);
             city.saveToDatabase();
-            return SuccessWithParams("claims:for_group_perm_set_what", new object[] { args[0], args[1], args[2] });
+            UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid, EnumPlayerRelatedInfo.CITY_PERMISSIONS_UPDATED);
+            return SuccessWithParams("claims:for_group_perm_set_what", new object[] { args.RawArgs[0], args.RawArgs[1], args.RawArgs[2] });
+            //return SuccessWithParams("claims:for_group_perm_set_what", new object[] { args[0], args[1], args[2] });
         }
         public static TextCommandResult CitySetInvMsg(TextCommandCallingArgs args)
         {
@@ -793,6 +802,7 @@ namespace claims.src.commands
             }
             city.getPermsHandler().setPvp((string)args.LastArg);
             city.saveToDatabase();
+            UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid, EnumPlayerRelatedInfo.CITY_PERMISSIONS_UPDATED);
             return SuccessWithParams("claims:pvp_flag_set_to", new object[] { (string)args.LastArg });
         }
         public static TextCommandResult CitySetFire(TextCommandCallingArgs args)
@@ -806,6 +816,7 @@ namespace claims.src.commands
             }
             city.getPermsHandler().setFire((string)args.LastArg);
             city.saveToDatabase();
+            UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid, EnumPlayerRelatedInfo.CITY_PERMISSIONS_UPDATED);
             return SuccessWithParams("claims:fire_flag_set_to", new object[] { (string)args.LastArg });
         }
         public static TextCommandResult CitySetBlast(TextCommandCallingArgs args)
@@ -819,7 +830,8 @@ namespace claims.src.commands
             }
             city.getPermsHandler().setBlast((string)args.LastArg);
             city.saveToDatabase();
-            return SuccessWithParams("claims:fire_flag_set_to", new object[] { (string)args.LastArg });
+            UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid, EnumPlayerRelatedInfo.CITY_PERMISSIONS_UPDATED);
+            return SuccessWithParams("claims:blast_flag_set_to", new object[] { (string)args.LastArg });
         }
         public static TextCommandResult CitySetCitizenPrefix(TextCommandCallingArgs args)
         {
@@ -1083,28 +1095,22 @@ namespace claims.src.commands
             TextCommandResult tcr = new TextCommandResult();
             tcr.Status = EnumCommandStatus.Error;
 
-            if (args.LastArg == null)
+            string rank_name = (string)args.Parsers[0].GetValue();
+            string player_name = (string)args.Parsers[1].GetValue();
+
+            if (!HelperFunctionRank(player, rank_name, player_name, out City city, out PlayerInfo targetPlayer, tcr))
             {
                 return tcr;
             }
-            string[] rank_and_player_name = ((string)args.LastArg).Split(' ');
-            if (rank_and_player_name.Length < 2)
-            {
-                return tcr;
-            }
-            if (!HelperFunctionRank(player, rank_and_player_name[0], rank_and_player_name[1], out City city, out PlayerInfo targetPlayer, tcr))
-            {
-                return tcr;
-            }
-            if (targetPlayer.getCityTitles().Contains(rank_and_player_name[0]))
+            if (targetPlayer.getCityTitles().Contains(rank_name))
             {
                 tcr.StatusMessage = "claims:player_already_has_rank";
                 return tcr;
             }
-            targetPlayer.addCityTitle(rank_and_player_name[0]);
+            targetPlayer.addCityTitle(rank_name);
             RightsHandler.reapplyRights(targetPlayer);
-            MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:rank_added_to_player", targetPlayer.GetPartName(), rank_and_player_name[0]));
-            MessageHandler.sendMsgToPlayerInfo(targetPlayer, Lang.Get("claims:you_got_now_rank", rank_and_player_name[0]));
+            MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:rank_added_to_player", targetPlayer.GetPartName(), rank_name));
+            MessageHandler.sendMsgToPlayerInfo(targetPlayer, Lang.Get("claims:you_got_now_rank", rank_name));
             targetPlayer.saveToDatabase();
             UsefullPacketsSend.AddToQueueCityInfoUpdate(targetPlayer.Guid, EnumPlayerRelatedInfo.PLAYER_CITY_TITLES);
             UsefullPacketsSend.AddToQueueCityInfoUpdate(targetPlayer.Guid, EnumPlayerRelatedInfo.PLAYER_PERMISSIONS);

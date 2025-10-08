@@ -502,7 +502,7 @@ namespace claims.src.commands.register
                              })
                              .HandleWith(commands.CityCommand.CityRankAdd)
                              .WithDesc("Add rank to player.")
-                             .WithArgs(parsers.OptionalAll("rank playerName"))
+                             .WithArgs(parsers.Word("rank"), parsers.Word("playerName"))
                          .EndSub()
                          .BeginSub("remove")
                                .WithPreCondition((TextCommandCallingArgs args) => {
@@ -1800,6 +1800,7 @@ namespace claims.src.commands.register
                           })
                         .HandleWith(commands.CAdminCommand.cCityPlayerKick)
                         .WithDesc("Kick player from city")
+                        .WithArgs(parsers.Word("cityName"), parsers.Word("playerName"))
                         .IgnoreAdditionalArgs()
                     .EndSub()
                     .BeginSub("add")
@@ -1817,6 +1818,7 @@ namespace claims.src.commands.register
                               return TextCommandResult.Error("");
                           })
                         .HandleWith(commands.CAdminCommand.cCityPlayerAdd)
+                        .WithArgs(parsers.Word("cityName"), parsers.Word("playerName"))
                         .WithDesc("Add player to the city")
                         .IgnoreAdditionalArgs()
                     .EndSub()
@@ -1957,6 +1959,23 @@ namespace claims.src.commands.register
                             .HandleWith(commands.CAdminCommand.citySetMayor)
                             .WithArgs(parsers.Word("cityName"), parsers.Word("newMayorName"))
                         .EndSub()
+                        .BeginSub("bonusclaims")
+                             .WithPreCondition((TextCommandCallingArgs args) => {
+
+                                 if (args.Caller.Player is IServerPlayer player)
+                                 {
+                                     if (!player.Role.Code.Equals("admin"))
+                                     {
+                                         return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                     }
+                                     return TextCommandResult.Success();
+
+                                 }
+                                 return TextCommandResult.Error("");
+                             })
+                            .HandleWith(commands.CAdminCommand.citySetBonusPlots)
+                            .WithArgs(parsers.Word("cityName"), parsers.Int("bonusClaimAmount"))
+                        .EndSub()
                     .EndSub()
                 .EndSub()
                 /*.BeginSub("claimscolor")
@@ -1977,8 +1996,41 @@ namespace claims.src.commands.register
                         }
                         return TextCommandResult.Error("");
                     })
-                    .HandleWith(commands.CAdminCommand.cWorldCommands)
-                    .IgnoreAdditionalArgs()
+                        .BeginSub("info")
+                             .WithPreCondition((TextCommandCallingArgs args) => {
+
+                                 if (args.Caller.Player is IServerPlayer player)
+                                 {
+                                     if (!player.Role.Code.Equals("admin"))
+                                     {
+                                         return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                     }
+                                     return TextCommandResult.Success();
+
+                                 }
+                                 return TextCommandResult.Error("");
+                             })
+                            .HandleWith(commands.CAdminCommand.worldInfo)
+                        .EndSub()
+                        .BeginSub("set")
+                             .WithPreCondition((TextCommandCallingArgs args) => {
+
+                                 if (args.Caller.Player is IServerPlayer player)
+                                 {
+                                     if (!player.Role.Code.Equals("admin"))
+                                     {
+                                         return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                     }
+                                     return TextCommandResult.Success();
+
+                                 }
+                                 return TextCommandResult.Error("");
+                             })
+                             .WithArgs(parsers.WordRange("param", "blastew", "pvpew", "fireew", "pvpfb", "firefb", "blastfb"), parsers.WordRange("state", "on", "off"))
+                            .HandleWith(commands.CAdminCommand.worldSet)
+                        .EndSub()
+                //.HandleWith(commands.CAdminCommand.cWorldCommands)
+                //.IgnoreAdditionalArgs()
                 .EndSub()
                 /*.BeginSub("gb")
                     .HandleWith(commands.CAdminCommand.cGlobalBank)
