@@ -50,6 +50,7 @@ namespace claims.src.part
         public List<City> HostileCities { get; set; } = new List<City>();
         public List<City> ComradeCities { get; set; } = new List<City>();
         public bool Dirty { get; set; } = false;
+        public Dictionary<string, CustomCityRank> CustomCityRanks { get; set; } = new();
         public City(string valName, string guid, bool isTechnical = false) : base(valName, guid)
         {
             this.isTechnical = isTechnical;
@@ -57,6 +58,43 @@ namespace claims.src.part
 
 
         /*****************************************************************/
+        public bool HasCityRank(string rankName)
+        {
+            return CustomCityRanks.ContainsKey(rankName);
+        }
+        public bool AddNewCityRank(string rankName, CustomCityRank rank)
+        {
+            CustomCityRanks.Add(rankName, rank);
+            return true;
+        }
+        public bool GrantPlayerRank(string rankName, PlayerInfo playerInfo)
+        {
+            if(CustomCityRanks.TryGetValue(rankName, out var rankInfo))
+            {
+                if(rankInfo.CitizensNames.Contains(playerInfo.GetPartName()))
+                {
+                    return false;
+                }
+                return rankInfo.CitizensNames.Add(playerInfo.GetPartName());
+            }
+            return false;
+        }
+        public bool RevokePlayerRank(string rankName, PlayerInfo playerInfo)
+        {
+            if (CustomCityRanks.TryGetValue(rankName, out var rankInfo))
+            {
+                if (rankInfo.CitizensNames.Contains(playerInfo.GetPartName()))
+                {
+                    return rankInfo.CitizensNames.Remove(playerInfo.GetPartName());
+                }
+                return false;
+            }
+            return false;
+        }
+        public bool RemoveCityRank(string rankName)
+        {
+            return CustomCityRanks.Remove(rankName);
+        }
         public void updateMarkedPVP()
         {
             foreach (var it in cityPlots)

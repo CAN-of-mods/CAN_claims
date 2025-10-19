@@ -200,6 +200,7 @@ namespace claims.src.network.handlers
                 claims.config.NEW_ALLIANCE_COST = packet.NewAllianceCost;
                 claims.config.SUMMON_PAYMENT = packet.SummonPayment;
                 claims.config.ALWAYS_ACCESS_BLOCKS = packet.ALWAYS_ACCESS_BLOCKS;
+                claims.config.AVAILABLE_CITY_PERMISSIONS = packet.AVAILABLE_CITY_PERMISSIONS;
 
                 if(claims.config.ALWAYS_ACCESS_BLOCKS.Count > 0)
                 {

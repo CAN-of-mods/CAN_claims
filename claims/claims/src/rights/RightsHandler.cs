@@ -75,7 +75,12 @@ namespace claims.src
                         EnumPlayerPermissions.CITY_PLOTSGROUP_SET_FIRE,
                         EnumPlayerPermissions.CITY_PLOTSGROUP_SET_PVP,
                         EnumPlayerPermissions.CITY_PLOTSGROUP_SET_BLAST,
-                        EnumPlayerPermissions.CITY_WITHDRAW_MONEY
+                        EnumPlayerPermissions.CITY_WITHDRAW_MONEY,
+                        EnumPlayerPermissions.CITY_CREATE_CITY_RANK,
+                        EnumPlayerPermissions.CITY_DELETE_CITY_RANK,
+                        EnumPlayerPermissions.CITY_SEE_CITY_RANKS,
+                        EnumPlayerPermissions.CITY_ADD_PERMISSION_TO_RANK,
+                        EnumPlayerPermissions.CITY_REMOVE_PERMISSION_FROM_RANK
                     }
                 },
 
@@ -157,11 +162,17 @@ namespace claims.src
                         playerInfo.PlayerPermissionsHandler.AddPermissions(mayorPerms);
                     }
                 }
-                foreach (string str in playerInfo.getCityTitles())
+                if (playerInfo.hasCity())
                 {
-                    if (PlayerPermissionsByGroups.TryGetValue("CITY_" + str, out HashSet<EnumPlayerPermissions> titlePerms))
+                    foreach (string str in playerInfo.getCityTitles())
                     {
-                        playerInfo.PlayerPermissionsHandler.AddPermissions(titlePerms);
+                        if(playerInfo.City.CustomCityRanks.TryGetValue(str, out var rank))
+                        {
+                            foreach(var it in rank.Permissions)
+                            {
+                                playerInfo.PlayerPermissionsHandler.AddPermission(it);
+                            }
+                        }
                     }
                 }
             }

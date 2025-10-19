@@ -31,6 +31,7 @@ namespace claims.src.database
             "extrachunksbought INTEGER," +
             "citycolor INTEGER," +
             "templerespawnpoints TEXT" +
+            "ranks TEXT" +
              ");";
 
         public static string playerTable =

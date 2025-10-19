@@ -267,6 +267,19 @@ namespace claims.src.database
                     command.ExecuteNonQuery();
                 }
 
+                //city ranks
+                try
+                {
+                    command.CommandText = "SELECT ranks FROM CITIES LIMIT 1";
+                    command.ExecuteNonQuery();
+
+                }
+                catch
+                {
+                    command.CommandText = "ALTER TABLE CITIES ADD COLUMN ranks TEXT DEFAULT \"\"";
+                    command.ExecuteNonQuery();
+                }
+
             }
             catch (Exception ex)
             {
@@ -585,6 +598,7 @@ namespace claims.src.database
 
         public override bool saveCity(City city, bool update = true)
         {
+            var c = JsonConvert.SerializeObject(city.CustomCityRanks);
             Dictionary<string, object> tmpDict = new Dictionary<string, object> {
                 { "@name", city.GetPartName() },
                 { "@guid", city.Guid},
@@ -606,7 +620,8 @@ namespace claims.src.database
                 { "@bonusplots", city.getBonusPlots() },
                 { "@extrachunksbought", city.Extrachunksbought },
                 { "@citycolor", city.cityColor },
-                { "@templerespawnpoints", JsonConvert.SerializeObject(city.TempleRespawnPoints) }
+                { "@templerespawnpoints", JsonConvert.SerializeObject(city.TempleRespawnPoints) },
+                { "@ranks", JsonConvert.SerializeObject(city.CustomCityRanks) }
             };
 
             queryQueue.Enqueue(new QuerryInfo("CITIES", update ? QuerryType.UPDATE : QuerryType.INSERT, tmpDict));
@@ -718,6 +733,24 @@ namespace claims.src.database
                 claims.dataStorage.getCityByGUID(str, out City city1);
                 city.ComradeCities.Add(city1);
             }
+
+            string ranksString = it["ranks"].ToString();
+            if (ranksString.Length != 0)
+            {
+                city.CustomCityRanks = JsonConvert.DeserializeObject<Dictionary<string, CustomCityRank>>(ranksString);
+            }
+
+            foreach(var citizen in city.getCityCitizens())
+            {
+                foreach(var title in citizen.getCityTitles())
+                {
+                    if(city.CustomCityRanks.TryGetValue(title, out var rank))
+                    {
+                        rank.CitizensNames.Add(citizen.GetPartName());
+                    }
+                }
+            }
+
             MessageHandler.sendDebugMsg("loadCity::load city" + city.GetPartName());
             return true;
 

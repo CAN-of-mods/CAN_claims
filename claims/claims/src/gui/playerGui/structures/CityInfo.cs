@@ -19,8 +19,9 @@ namespace claims.src.gui.playerGui.structures
         public string Prefix { get; set; }
         public string AfterName { get; set; }
         public HashSet<string> CityTitles { get; set; } = new();
-        public List<RankCellElement> CitizensRanks { get; set; } = new();
-        public HashSet<string> PossibleCityRanks { get; set; }
+        public List<CityRankCellElement> CityRanks { get; set; } = new();
+        //public List<RankCellElement> CitizensRanks { get; set; } = new();
+        //public HashSet<string> PossibleCityRanks { get; set; }
         public int PlotsColor;
         public double CityBalance { get; set; }
         public double CityDebt { get; set; }
@@ -37,7 +38,7 @@ namespace claims.src.gui.playerGui.structures
         public CityInfo()
         {
             Name = "";
-            PossibleCityRanks = new HashSet<string>();
+            //PossibleCityRanks = new HashSet<string>();
             this.ClientWarRangeCellElements = CreateDefaultWarRangeForWeek();
         }
         public CityInfo(string cityName, string mayorName, long timeStampCreated, HashSet<string> citizens, int maxCountPlots, int countPlots,

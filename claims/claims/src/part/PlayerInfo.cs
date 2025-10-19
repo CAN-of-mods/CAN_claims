@@ -83,6 +83,10 @@ namespace claims.src.part
         {
             cityTitles.Remove(title);
         }
+        public bool hasCityTitle(string title)
+        {
+            return cityTitles.Contains(title);
+        }
         public bool hasAfterName()
         {
             return AfterName != "";

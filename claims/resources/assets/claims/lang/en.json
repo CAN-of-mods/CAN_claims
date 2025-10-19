@@ -279,6 +279,8 @@
     "rank_was_deleted": "You now don't have rank {0}.",
     "your_ranks": "Your ranks: ",
     "player_ranks": "{0} ranks: ",
+    "rank_added": "Rank added.",
+    "rank_removed": "Rank removed.",
     //FORMAT
     "rank_format_command": "/city rank add/remove rankname nickname",
     //SUMMON
@@ -360,6 +362,7 @@
     "gui-claim-plot-plotsgroup": "Claim plot for plots group {0}?",
     "gui-unclaim-plot-plotsgroup": "Unclaim plot for plots group {0}?",
     "gui-enter-plotsgroup-name": "Create new plots group.",
+    "gui-rank-members": "Citizens: {0}",
 
     "claimsguide": "Claims",
     "claimsguide-title": "Game Mechanic: Claims",
@@ -399,6 +402,7 @@
     "gui-teleportation-cost": "Summon: {0}",
     "gui-no-plotsgroup-invites": "No plot groups invites",
     "gui-create-button": "Create",
+    "gui-enter-rank-name": "Enter a new rank name",
 
     //blocks
     "cantempleblock-desc": "Place to set city respawn point in temple plot.",
