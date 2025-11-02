@@ -1,15 +1,11 @@
-﻿using claims.src.auxialiry;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using claims.src.auxialiry;
 using claims.src.messages;
 using claims.src.part;
 using claims.src.part.structure;
-using claims.src.part.structure.conflict;
-using claims.src.part.structure.plots;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Vintagestory.API.Config;
 
 namespace claims.src.timers

@@ -1,13 +1,8 @@
-﻿using claims.src.auxialiry;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Vintagestory.API.Client;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
-using OpenTK.Graphics.OpenGL;
 
 namespace claims.src.claimsext.map
 {

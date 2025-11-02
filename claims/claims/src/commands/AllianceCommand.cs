@@ -1,23 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
 using claims.src.agreement;
 using claims.src.auxialiry;
 using claims.src.delayed.cooldowns;
 using claims.src.delayed.invitations;
+using claims.src.gui.playerGui.structures;
+using claims.src.gui.playerGui.structures.cellElements;
 using claims.src.messages;
-using claims.src.part.structure;
 using claims.src.part;
+using claims.src.part.structure;
+using claims.src.part.structure.conflict;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Server;
-using System.Collections;
-using claims.src.gui.playerGui.structures;
-using claims.src.part.structure.conflict;
-using claims.src.gui.playerGui.structures.cellElements;
 
 namespace claims.src.commands
 {

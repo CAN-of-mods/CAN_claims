@@ -1,4 +1,11 @@
-﻿using claims.src.auxialiry;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Data;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using claims.src.auxialiry;
 using claims.src.auxialiry.converters;
 using claims.src.messages;
 using claims.src.part;
@@ -7,17 +14,8 @@ using claims.src.part.structure.conflict;
 using claims.src.part.structure.plots;
 using Microsoft.Data.Sqlite;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Data;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
-using Vintagestory.GameContent;
 
 namespace claims.src.database
 {

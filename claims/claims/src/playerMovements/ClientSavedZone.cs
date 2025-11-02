@@ -1,10 +1,6 @@
-﻿using claims.src.clientMapHandling;
+﻿using System.Collections.Generic;
+using claims.src.clientMapHandling;
 using ProtoBuf;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Vintagestory.API.MathTools;
 
 namespace claims.src.playerMovements

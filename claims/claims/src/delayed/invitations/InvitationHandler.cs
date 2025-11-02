@@ -1,12 +1,6 @@
-﻿using claims.src.auxialiry;
-using claims.src.messages;
+﻿using System.Collections.Generic;
+using claims.src.auxialiry;
 using claims.src.part.interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Vintagestory.API.Config;
 
 namespace claims.src.delayed.invitations
 {

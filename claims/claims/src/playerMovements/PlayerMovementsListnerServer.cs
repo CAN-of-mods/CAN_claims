@@ -1,4 +1,6 @@
-﻿using claims.src.auxialiry;
+﻿using System;
+using System.Collections.Generic;
+using claims.src.auxialiry;
 using claims.src.clientMapHandling;
 using claims.src.delayed.teleportation;
 using claims.src.events;
@@ -9,18 +11,11 @@ using claims.src.network.packets;
 using claims.src.part;
 using claims.src.part.structure;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
-using Vintagestory.Common;
-using Vintagestory.GameContent;
 
 namespace claims.src
 {

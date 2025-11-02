@@ -1,12 +1,7 @@
-﻿using claims.src.part;
+﻿using System.Data;
+using claims.src.part;
 using claims.src.part.structure;
 using claims.src.part.structure.conflict;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace claims.src.database
 {

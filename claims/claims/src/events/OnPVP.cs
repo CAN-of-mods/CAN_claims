@@ -1,6 +1,6 @@
 ﻿using claims.src.auxialiry;
-using claims.src.part.structure;
 using claims.src.part;
+using claims.src.part.structure;
 using Vintagestory.API.Server;
 
 namespace claims.src.events

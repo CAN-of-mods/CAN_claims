@@ -1,10 +1,6 @@
-﻿using claims.src.rights;
+﻿using System.Collections.Generic;
+using claims.src.rights;
 using ProtoBuf;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Vintagestory.API.Datastructures;
 
 namespace claims.src.network.packets

@@ -1,19 +1,15 @@
-﻿using claims.src.auxialiry;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using claims.src.auxialiry;
 using claims.src.messages;
 using claims.src.part;
 using claims.src.part.structure;
 using claims.src.part.structure.conflict;
 using claims.src.rights;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Vintagestory.API.Config;
 using Vintagestory.API.Server;
-using Vintagestory.Client.NoObf;
 
 namespace claims.src
 {

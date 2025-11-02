@@ -1,19 +1,13 @@
-﻿using System.Linq;
-using claims.src.auxialiry;
+﻿using claims.src.auxialiry;
 using claims.src.part;
 using claims.src.part.structure;
 using claims.src.part.structure.conflict;
 using claims.src.part.structure.plots;
 using claims.src.perms;
 using claims.src.perms.type;
-using Vintagestory;
 using Vintagestory.API.Common;
-using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
-using Vintagestory.Client;
-using Vintagestory.Common;
-using Vintagestory.Server;
 
 namespace claims.src.events
 {

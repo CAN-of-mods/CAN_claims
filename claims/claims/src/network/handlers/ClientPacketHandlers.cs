@@ -1,14 +1,13 @@
-﻿using claims.src.auxialiry;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using claims.src.auxialiry;
 using claims.src.clientMapHandling;
 using claims.src.gui.playerGui.structures;
 using claims.src.network.packets;
 using claims.src.playerMovements;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Vintagestory.API.MathTools;
-using static OpenTK.Graphics.OpenGL.GL;
 
 namespace claims.src.network.handlers
 {

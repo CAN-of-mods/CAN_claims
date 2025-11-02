@@ -1,21 +1,13 @@
-﻿using claims.src.auxialiry;
+﻿using System;
+using claims.src.auxialiry;
 using claims.src.messages;
 using claims.src.part;
 using claims.src.part.structure;
 using claims.src.part.structure.plots;
-using claims.src.perms;
-using claims.src.perms.type;
 using claims.src.timers;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
-using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 
 namespace claims.src.commands
