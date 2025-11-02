@@ -1,14 +1,8 @@
-﻿using claims.src.part.structure;
-using claims.src.part;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Vintagestory.API.Server;
+﻿using claims.src.part;
+using claims.src.part.structure;
 using claims.src.rights;
 using Vintagestory.API.Common;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using Vintagestory.API.Server;
 
 namespace claims.src.commands
 {

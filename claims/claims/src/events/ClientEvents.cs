@@ -1,8 +1,6 @@
-﻿using claims.src.auxialiry;
-using claims.src.playerMovements;
+﻿using claims.src.playerMovements;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
-using static claims.src.harmony.harmonyPatches;
 
 namespace claims.src.events
 {

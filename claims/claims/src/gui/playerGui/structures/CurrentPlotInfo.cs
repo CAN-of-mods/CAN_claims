@@ -1,13 +1,5 @@
-﻿using claims.src.auxialiry;
-using claims.src.part.structure.plots;
-using claims.src.part.structure;
-using claims.src.part;
+﻿using claims.src.part.structure;
 using claims.src.perms;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Vintagestory.API.MathTools;
 
 namespace claims.src.gui.playerGui.structures

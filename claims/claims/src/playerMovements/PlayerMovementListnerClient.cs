@@ -1,25 +1,21 @@
-﻿using claims.src.auxialiry;
-using claims.src.messages;
-using claims.src.part.structure;
-using claims.src.part;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using claims.src.auxialiry;
+using claims.src.claimsext.map;
+using claims.src.clientMapHandling;
+using claims.src.commands.register;
+using claims.src.network.packets;
+using claims.src.part;
+using Newtonsoft.Json;
+using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
-using Vintagestory.API.Server;
-using Vintagestory.API.Client;
-using claims.src.clientMapHandling;
 using Vintagestory.GameContent;
-using System.IO;
-using Newtonsoft.Json;
-using claims.src.claimsext.map;
-using claims.src.network.packets;
-using claims.src.commands.register;
 
 namespace claims.src.playerMovements
 {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using claims.src.rights;
 using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
 
@@ -184,6 +185,8 @@ namespace claims.src
         public OrderedDictionary<int, double> ID_TO_COINS_VALUES = new OrderedDictionary<int, double>();
 
         public bool VERBOSE_LOGGING = true;
+        public HashSet<EnumPlayerPermissions> AVAILABLE_CITY_PERMISSIONS = new() {
+        };
         public static void AddDefaultValues()
         {
             claims.config.DAYTIME_MAKE_BACKUP = new HashSet<string> { "6:00", "12:00", "18:00", "0:00" };
@@ -192,6 +195,68 @@ namespace claims.src
             claims.config.CITY_PLOTS_COLOR_AVAILABLE_COLORS_GUI = new HashSet<string> { "white", "blue", "red", "orange", "black", "aqua", "yellow", "cyan", "pink", "gold", "indigo", "ivory", "lime", "green", "red", "purple", "silver",
         "violet"};
             claims.config.BLOCKED_COMMANDS_PRISON = new HashSet<string> { "summon" };
+            claims.config.AVAILABLE_CITY_PERMISSIONS = new() { EnumPlayerPermissions.CITY_CLAIM_PLOT,
+            EnumPlayerPermissions.CITY_UNCLAIM_PLOT,
+            EnumPlayerPermissions.CITY_BUY_EXTRA_PLOT,
+            EnumPlayerPermissions.CITY_BUY_OUTPOST,
+
+            EnumPlayerPermissions.CITY_INVITE,
+            EnumPlayerPermissions.CITY_KICK,
+            EnumPlayerPermissions.CITY_UNINVITE,
+            EnumPlayerPermissions.SHOW_INVITES_SENT,
+
+            EnumPlayerPermissions.CITY_SET_ALL,
+            EnumPlayerPermissions.CITY_SET_NAME,
+            EnumPlayerPermissions.CITY_SET_OPEN_STATE,
+            EnumPlayerPermissions.CITY_SET_PVP,
+            EnumPlayerPermissions.CITY_SET_FIRE,
+            EnumPlayerPermissions.CITY_SET_BLAST,
+            EnumPlayerPermissions.CITY_SET_GLOBAL_FEE,
+            EnumPlayerPermissions.CITY_SET_DAILY_MSG,
+            EnumPlayerPermissions.CITY_SET_PLOT_ACCESS_PERMISSIONS,
+            EnumPlayerPermissions.CITY_SET_INV_MSG,
+
+            EnumPlayerPermissions.CITY_INFO,
+            EnumPlayerPermissions.CITY_HERE,
+
+            EnumPlayerPermissions.CITY_SHOW_RANK_OTHERS,
+            EnumPlayerPermissions.CITY_SET_RANK,
+            EnumPlayerPermissions.CITY_REMOVE_RANK,
+
+            EnumPlayerPermissions.CITY_PRISON_ALL,
+            EnumPlayerPermissions.CITY_CRIMINAL_ALL,
+            EnumPlayerPermissions.CITY_ADD_CRIMINAL,
+            EnumPlayerPermissions.CITY_REMOVE_CRIMINAL,
+            EnumPlayerPermissions.CITY_PRISON_ADD_CELL,
+            EnumPlayerPermissions.CITY_PRISON_REMOVE_CELL,
+            EnumPlayerPermissions.CITY_PRISON_LIST,
+
+            EnumPlayerPermissions.CITY_SET_SUMMON,
+
+            EnumPlayerPermissions.CITY_SET_OTHERS_PREFIX,
+
+            EnumPlayerPermissions.CITY_PLOTSGROUP_CREATE,
+            EnumPlayerPermissions.CITY_PLOTSGROUP_REMOVE,
+            EnumPlayerPermissions.CITY_PLOTSGROUP_ADD_PLAYER,
+            EnumPlayerPermissions.CITY_PLOTSGROUP_KICK_PLAYER,
+            EnumPlayerPermissions.CITY_PLOTSGROUP_ADD_PLOT,
+            EnumPlayerPermissions.CITY_PLOTSGROUP_REMOVE_PLOT,
+            EnumPlayerPermissions.CITY_PLOTSGROUP_LIST,
+            EnumPlayerPermissions.CITY_PLOTSGROUP_SET,
+            EnumPlayerPermissions.CITY_PLOTSGROUP_SET_PVP,
+            EnumPlayerPermissions.CITY_PLOTSGROUP_SET_FIRE,
+            EnumPlayerPermissions.CITY_PLOTSGROUP_SET_BLAST,
+
+            EnumPlayerPermissions.CITY_SET_PLOTS_COLOR,
+
+            EnumPlayerPermissions.CITY_SEE_BALANCE,
+
+            EnumPlayerPermissions.CITY_WITHDRAW_MONEY,
+            EnumPlayerPermissions.CITY_CREATE_CITY_RANK,
+            EnumPlayerPermissions.CITY_DELETE_CITY_RANK,
+            EnumPlayerPermissions.CITY_SEE_CITY_RANKS,
+            EnumPlayerPermissions.CITY_ADD_PERMISSION_TO_RANK,
+            EnumPlayerPermissions.CITY_REMOVE_PERMISSION_FROM_RANK};
 
         }
         public static void LoadConfig(ICoreAPI api)

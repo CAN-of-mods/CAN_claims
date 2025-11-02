@@ -1,21 +1,15 @@
-﻿using claims.src.gui.playerGui.structures.cellElements;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using claims.src.gui.playerGui.structures.cellElements;
 using claims.src.part;
 using claims.src.part.structure;
 using claims.src.part.structure.conflict;
 using claims.src.perms;
 using claims.src.rights;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Security;
-using System.Text;
-using System.Threading.Tasks;
-using Vintagestory.API.Client;
-using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
-using static claims.src.gui.playerGui.CANClaimsGui;
 
 namespace claims.src.gui.playerGui.structures
 {
@@ -52,7 +46,6 @@ namespace claims.src.gui.playerGui.structures
             AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_INVITE_REMOVE, OnCityInviteRemove);
             AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.PLAYER_PERMISSIONS, OnPlayerPermissions);
             AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.FRIENDS, OnPlayerFriends);
-            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_POSSIBLE_RANKS, OnCityPossibleRanks);
             AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_CITIZENS_RANKS, OnCityCitizensRanks);
             AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_CITIZEN_RANK_ADDED, OnCityCitizenRankAdded);
             AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_CITIZEN_RANK_REMOVED, OnCityCitizenRankRemoved);
@@ -227,55 +220,41 @@ namespace claims.src.gui.playerGui.structures
         {
             Friends = JsonConvert.DeserializeObject<List<string>>(val).ToHashSet();
         }
-        private void OnCityPossibleRanks(string val)
-        {
-            CityInfo.PossibleCityRanks = JsonConvert.DeserializeObject<List<string>>(val).ToHashSet();
-        }
         private void OnCityCitizensRanks(string val)
         {
-            Dictionary<string, List<string>> di = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(val);
+            Dictionary<string, CustomCityRank> di = JsonConvert.DeserializeObject<Dictionary<string, CustomCityRank>>(val);
+            CityInfo.CityRanks.Clear();
             foreach (var it in di)
             {
-                var foundCell = CityInfo.CitizensRanks.FirstOrDefault(cell => cell.RankName == it.Key);
-                if (foundCell != null)
-                {
-                    foundCell.CitizensRanks = it.Value;
-                }
-                else
-                {
-                    CityInfo.CitizensRanks.Add(new RankCellElement(it.Key, it.Value));
-                }
+                CityInfo.CityRanks.Add(new CityRankCellElement(it.Key, it.Value.CitizensNames, it.Value.Permissions));
             }
         }
         private void OnCityCitizenRankAdded(string val)
         {
-            Dictionary<string, List<string>> di = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(val);
+            Dictionary<string, CustomCityRank> di = JsonConvert.DeserializeObject<Dictionary<string, CustomCityRank>>(val);
             foreach (var it in di)
             {
-                var foundCell = CityInfo.CitizensRanks.FirstOrDefault(cell => cell.RankName == it.Key);
+                var foundCell = CityInfo.CityRanks.FirstOrDefault(cell => cell.Name == it.Key);
                 if (foundCell != null)
                 {
-                    foundCell.CitizensRanks = it.Value;
+                    foundCell.Citizens = it.Value.CitizensNames;
+                    foundCell.Permissions = it.Value.Permissions;
                 }
                 else
                 {
-                    CityInfo.CitizensRanks.Add(new RankCellElement(it.Key, it.Value));
+                    CityInfo.CityRanks.Add(new CityRankCellElement(it.Key, it.Value.CitizensNames, it.Value.Permissions));
                 }
             }
         }
         private void OnCityCitizenRankRemoved(string val)
         {
-            Dictionary<string, List<string>> di = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(val);
+            Dictionary<string, CustomCityRank> di = JsonConvert.DeserializeObject<Dictionary<string, CustomCityRank>>(val);
             foreach (var it in di)
             {
-                var foundCell = CityInfo.CitizensRanks.FirstOrDefault(cell => cell.RankName == it.Key);
+                var foundCell = CityInfo.CityRanks.FirstOrDefault(cell => cell.Name == it.Key);
                 if (foundCell != null)
                 {
-                    foundCell.CitizensRanks = it.Value;
-                }
-                else
-                {
-                    CityInfo.CitizensRanks.Add(new RankCellElement(it.Key, it.Value));
+                    CityInfo.CityRanks.Remove(foundCell);
                 }
             }
         }

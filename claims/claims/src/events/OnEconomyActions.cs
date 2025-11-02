@@ -1,9 +1,9 @@
-﻿using caneconomy.src.implementations.RealMoney;
+﻿using System.Collections.Generic;
+using caneconomy.src.implementations.RealMoney;
 using claims.src.auxialiry;
 using claims.src.messages;
 using claims.src.part;
 using claims.src.part.structure;
-using System.Collections.Generic;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;

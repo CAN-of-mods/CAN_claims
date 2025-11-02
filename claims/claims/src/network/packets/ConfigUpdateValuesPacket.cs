@@ -1,9 +1,6 @@
-﻿using ProtoBuf;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using claims.src.rights;
+using ProtoBuf;
 using Vintagestory.API.Datastructures;
 
 namespace claims.src.network.packets
@@ -37,6 +34,8 @@ namespace claims.src.network.packets
         public HashSet<int> POSSIBLE_BUILD_ITEMS_IN_WILDERNESS = new HashSet<int>();
         [ProtoMember(13)]
         public HashSet<string> ALWAYS_ACCESS_BLOCKS = new HashSet<string>();
+        [ProtoMember(14)]
+        public HashSet<EnumPlayerPermissions> AVAILABLE_CITY_PERMISSIONS;
 
     }
 }

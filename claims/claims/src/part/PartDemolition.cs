@@ -1,19 +1,13 @@
-﻿using claims.src.auxialiry;
+﻿using System.Linq;
+using claims.src.auxialiry;
 using claims.src.delayed.invitations;
 using claims.src.gui.playerGui.structures;
 using claims.src.messages;
 using claims.src.network.packets;
 using claims.src.part.structure;
 using claims.src.part.structure.conflict;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Vintagestory.API.Common;
-using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Datastructures;
-using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 
 namespace claims.src.part

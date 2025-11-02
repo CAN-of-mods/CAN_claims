@@ -1,12 +1,5 @@
 ﻿using claims.src.messages;
-using claims.src.part;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Vintagestory.API.Common;
-using Vintagestory.API.Server;
 
 namespace claims.src.commands
 {

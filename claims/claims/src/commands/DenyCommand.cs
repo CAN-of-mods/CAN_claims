@@ -1,13 +1,7 @@
-﻿using claims.src.auxialiry;
+﻿using System.Collections.Generic;
 using claims.src.gui.playerGui.structures;
 using claims.src.network.packets;
 using claims.src.part;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Vintagestory.API.Common;
 using Vintagestory.API.Server;
 

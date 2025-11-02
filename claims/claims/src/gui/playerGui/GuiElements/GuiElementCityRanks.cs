@@ -1,23 +1,11 @@
-﻿using Cairo;
-using claims.src.auxialiry;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static OpenTK.Graphics.OpenGL.GL;
+using Cairo;
+using claims.src.gui.playerGui.structures.cellElements;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
-using Vintagestory.API.Util;
-using System.Collections;
-using Vintagestory.API.Config;
-using System.Reflection.Emit;
 using static claims.src.gui.playerGui.CANClaimsGui;
-using System.Reflection;
-using Vintagestory.Client.NoObf;
-using claims.src.gui.playerGui.structures.cellElements;
 
 namespace claims.src.gui.playerGui.GuiElements
 {
@@ -33,7 +21,7 @@ namespace claims.src.gui.playerGui.GuiElements
         }
         public static double unscaledRightBoxWidth = 40.0;
 
-        private RankCellElement rankCell;
+        private CityRankCellElement rankCell;
 
         private bool showModifyIcons = true;
 
@@ -70,7 +58,7 @@ namespace claims.src.gui.playerGui.GuiElements
         {
             base.ComposeElements(ctx, surface);
         }
-        public GuiElementCityRanks(ICoreClientAPI capi, RankCellElement rankCell, ElementBounds bounds)
+        public GuiElementCityRanks(ICoreClientAPI capi, CityRankCellElement rankCell, ElementBounds bounds)
             : base(capi, "", null, bounds)
         {
             this.rankCell = rankCell;
@@ -81,7 +69,7 @@ namespace claims.src.gui.playerGui.GuiElements
             approveIcon = capi.Assets.Get(new AssetLocation("claims:textures/icons/check-mark.svg"));
 
             this.capi = capi;
-            this.text = rankCell.RankName;
+            this.text = rankCell.Name;
 
 
 
@@ -94,9 +82,9 @@ namespace claims.src.gui.playerGui.GuiElements
             var height = unScaledButtonCellHeight;
             var font = CairoFont.WhiteDetailText();
             var offY = (height - font.UnscaledFontsize) / 2.0;
-            TextExtents textExtents = CairoFont.WhiteMediumText().GetTextExtents(rankCell.RankName);
+            TextExtents textExtents = CairoFont.WhiteMediumText().GetTextExtents(rankCell.Name);
             var labelTextBounds = ElementBounds.Fixed(0.0, 0.0, textExtents.Width + 10, height).WithParent(Bounds);
-            this.richTextElem = new GuiElementRichtext(capi, VtmlUtil.Richtextify(capi, this.rankCell.RankName, CairoFont.WhiteMediumText()), labelTextBounds);
+            this.richTextElem = new GuiElementRichtext(capi, VtmlUtil.Richtextify(capi, this.rankCell.Name, CairoFont.WhiteMediumText()), labelTextBounds);
             var addRankBounds = labelTextBounds.RightCopy().WithFixedSize(25, 25);
             addRankBounds.fixedY += 5;
             addRankButton = new GuiElementToggleButton(capi, "plus", "", font, (bool t) =>
@@ -104,16 +92,16 @@ namespace claims.src.gui.playerGui.GuiElements
                 if (t)
                 {
                     claims.CANCityGui.CreateNewCityState = EnumUpperWindowSelectedState.CITY_RANK_ADD;
-                    claims.CANCityGui.firstValueCollected = this.rankCell.RankName;
+                    claims.CANCityGui.firstValueCollected = this.rankCell.Name;
                     claims.CANCityGui.BuildUpperWindow();
                 }
             }, addRankBounds);
 
             double offsetY = 35;
             double offsetX = 0;
-            if (rankCell.CitizensRanks.Count > 0)
+            if (rankCell.Citizens.Count > 0)
             {
-                foreach (var it in rankCell.CitizensRanks)
+                foreach (var it in rankCell.Citizens)
                 {
                     textExtents = Font.GetTextExtents(it);
                     if ((textExtents.Width + 40 + offsetX + 20) > bounds.fixedWidth + this.Bounds.fixedX)
@@ -125,7 +113,7 @@ namespace claims.src.gui.playerGui.GuiElements
                     buttons.Add(new GuiElementButtonWithAdditionalText(capi, it, this.Font, this.Font, new ActionConsumable(() =>
                     {
                         claims.CANCityGui.CreateNewCityState = EnumUpperWindowSelectedState.CITY_RANK_REMOVE_CONFIRM;
-                        claims.CANCityGui.firstValueCollected = this.rankCell.RankName;
+                        claims.CANCityGui.firstValueCollected = this.rankCell.Name;
                         claims.CANCityGui.secondValueCollected = it;
                         claims.CANCityGui.BuildUpperWindow();
                         return true;
@@ -294,16 +282,26 @@ namespace claims.src.gui.playerGui.GuiElements
 
             int x = api.Input.MouseX;
             int y = api.Input.MouseY;
-
-            foreach(var it in buttons)
+            Vec2d vec2d1 = Bounds.PositionInside(x, y);
+            foreach (var it in buttons)
             {
-                it.OnMouseUpOnElement(api, args);
+                if (it.IsPositionInside(x, y))
+                {
+                    it.OnMouseUpOnElement(api, args);
+                    return;
+                }
             }
-            addRankButton.OnMouseUpOnElement(api, args);
-
+            if(addRankButton.IsPositionInside(x, y)){
+                addRankButton.OnMouseUpOnElement(api, args);
+                return;
+            }
             int mouseX = api.Input.MouseX;
             int mouseY = api.Input.MouseY;
             Vec2d vec2d = Bounds.PositionInside(mouseX, mouseY);
+            claims.CANCityGui.SelectedTab = EnumSelectedTab.RankInfoPage;
+            claims.CANCityGui.selectedString = this.rankCell.Name;
+            claims.CANCityGui.BuildMainWindow();
+            api.Gui.PlaySound("menubutton_press");
             api.Gui.PlaySound("menubutton_press");
             if (vec2d.X > Bounds.InnerWidth - GuiElement.scaled(GuiElementMainMenuCell.unscaledRightBoxWidth) * 2 &&
                     vec2d.X < Bounds.InnerWidth - GuiElement.scaled(GuiElementMainMenuCell.unscaledRightBoxWidth))
@@ -339,14 +337,20 @@ namespace claims.src.gui.playerGui.GuiElements
 
             int x = api.Input.MouseX;
             int y = api.Input.MouseY;
+            Vec2d vec2d1 = Bounds.PositionInside(x, y);
             foreach (var it in buttons)
             {
-                if (it.Bounds.PointInside(x, y))
+                if (it.IsPositionInside(x, y))
                 {
                     it.OnMouseDownOnElement(api, args);
+                    return;
                 }
             }
-            addRankButton.OnMouseDownOnElement(api, args);
+            if (addRankButton.IsPositionInside(x, y))
+            {
+                addRankButton.OnMouseDownOnElement(api, args);
+                return;
+            }
         }      
     }
 }

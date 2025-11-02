@@ -1,4 +1,5 @@
-﻿using caneconomy.src.accounts;
+﻿using System.Collections.Generic;
+using System.Linq;
 using claims.src.auxialiry;
 using claims.src.cityplotsgroups;
 using claims.src.delayed.invitations;
@@ -6,11 +7,6 @@ using claims.src.part.interfaces;
 using claims.src.part.structure;
 using claims.src.perms;
 using claims.src.rights;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Vintagestory.API.Config;
 
 namespace claims.src.part
@@ -82,6 +78,10 @@ namespace claims.src.part
         public void removeCityTitle(string title)
         {
             cityTitles.Remove(title);
+        }
+        public bool hasCityTitle(string title)
+        {
+            return cityTitles.Contains(title);
         }
         public bool hasAfterName()
         {

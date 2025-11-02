@@ -49,23 +49,14 @@ namespace claims.src.bb
         }
         public override WorldInteraction[] GetPlacedBlockInteractionHelp(IWorldAccessor world, BlockSelection selection, IPlayer forPlayer, ref EnumHandling handling)
         {
-            return new WorldInteraction[3] {
+            return new WorldInteraction[1] {
                     new () {
-                        ActionLangCode = "blockhelp-flag-pullup",
-                        MouseButton    = EnumMouseButton.Right,
-                    }, // ..
-                    new () {
-                        ActionLangCode = "blockhelp-flag-pulldown",
-                        MouseButton    = EnumMouseButton.Right,
-                        HotKeyCode     = "ctrl",
-                    }, // ..
-                    new () {
-                        ActionLangCode = "blockhelp-flag-set",
+                        ActionLangCode = "claims:blockhelp-flag-set",
                         MouseButton    = EnumMouseButton.Right,
                         Itemstacks     = this.bannerStacks
-                    } // ..
-                }; // ..
-        } // ..
+                    }
+                };
+        }
 
 
         public override bool OnBlockInteractStart(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel, ref EnumHandling handling

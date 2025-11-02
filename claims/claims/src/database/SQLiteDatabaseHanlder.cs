@@ -1,4 +1,11 @@
-﻿using claims.src.auxialiry;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Data;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using claims.src.auxialiry;
 using claims.src.auxialiry.converters;
 using claims.src.messages;
 using claims.src.part;
@@ -7,14 +14,6 @@ using claims.src.part.structure.conflict;
 using claims.src.part.structure.plots;
 using Microsoft.Data.Sqlite;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Data;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
 
@@ -264,6 +263,19 @@ namespace claims.src.database
                 catch
                 {
                     command.CommandText = "ALTER TABLE PLOTS ADD COLUMN wascaptured INTEGER DEFAULT 0";
+                    command.ExecuteNonQuery();
+                }
+
+                //city ranks
+                try
+                {
+                    command.CommandText = "SELECT ranks FROM CITIES LIMIT 1";
+                    command.ExecuteNonQuery();
+
+                }
+                catch
+                {
+                    command.CommandText = "ALTER TABLE CITIES ADD COLUMN ranks TEXT DEFAULT \"\"";
                     command.ExecuteNonQuery();
                 }
 
@@ -585,6 +597,7 @@ namespace claims.src.database
 
         public override bool saveCity(City city, bool update = true)
         {
+            var c = JsonConvert.SerializeObject(city.CustomCityRanks);
             Dictionary<string, object> tmpDict = new Dictionary<string, object> {
                 { "@name", city.GetPartName() },
                 { "@guid", city.Guid},
@@ -606,7 +619,8 @@ namespace claims.src.database
                 { "@bonusplots", city.getBonusPlots() },
                 { "@extrachunksbought", city.Extrachunksbought },
                 { "@citycolor", city.cityColor },
-                { "@templerespawnpoints", JsonConvert.SerializeObject(city.TempleRespawnPoints) }
+                { "@templerespawnpoints", JsonConvert.SerializeObject(city.TempleRespawnPoints) },
+                { "@ranks", JsonConvert.SerializeObject(city.CustomCityRanks) }
             };
 
             queryQueue.Enqueue(new QuerryInfo("CITIES", update ? QuerryType.UPDATE : QuerryType.INSERT, tmpDict));
@@ -634,7 +648,15 @@ namespace claims.src.database
             }
             else
             {
-                city.setMayor(null);
+                if (it["mayor"].ToString().Length != 0)
+                {
+                    claims.dataStorage.getPlayerByUid(it["mayor"].ToString(), out PlayerInfo playerInfo);
+                    city.setMayor(playerInfo);
+                }
+                else
+                {
+                    city.setMayor(null);
+                }
             }
             city.TimeStampCreated = long.Parse(it["timestampcreated"].ToString());
             city.DebtBalance = int.Parse(it["debtbalance"].ToString());
@@ -718,6 +740,24 @@ namespace claims.src.database
                 claims.dataStorage.getCityByGUID(str, out City city1);
                 city.ComradeCities.Add(city1);
             }
+
+            string ranksString = it["ranks"].ToString();
+            if (ranksString.Length != 0)
+            {
+                city.CustomCityRanks = JsonConvert.DeserializeObject<Dictionary<string, CustomCityRank>>(ranksString);
+            }
+
+            foreach(var citizen in city.getCityCitizens())
+            {
+                foreach(var title in citizen.getCityTitles())
+                {
+                    if(city.CustomCityRanks.TryGetValue(title, out var rank))
+                    {
+                        rank.CitizensNames.Add(citizen.GetPartName());
+                    }
+                }
+            }
+
             MessageHandler.sendDebugMsg("loadCity::load city" + city.GetPartName());
             return true;
 

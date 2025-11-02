@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace claims.src.perms.type
+﻿namespace claims.src.perms.type
 {
     public enum PermType
     {

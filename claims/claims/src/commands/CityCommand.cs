@@ -1,36 +1,29 @@
-﻿using claims.src.agreement;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using claims.src.agreement;
 using claims.src.auxialiry;
 using claims.src.cityplotsgroups;
 using claims.src.delayed.cooldowns;
 using claims.src.delayed.invitations;
 using claims.src.delayed.teleportation;
+using claims.src.gui.playerGui.structures;
+using claims.src.gui.playerGui.structures.cellElements;
 using claims.src.messages;
+using claims.src.network.packets;
 using claims.src.part;
 using claims.src.part.structure;
 using claims.src.part.structure.plots;
 using claims.src.perms;
-using claims.src.perms.type;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+using claims.src.rights;
+using Newtonsoft.Json;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
-using claims.src;
-using claims.src.network.packets;
-using claims.src.gui.playerGui.structures;
-using Newtonsoft.Json;
-using HarmonyLib;
-using Vintagestory.Server;
-using System.Reflection;
-using Vintagestory.GameContent;
-using Vintagestory.Common;
-using claims.src.gui.playerGui.structures.cellElements;
 
 namespace claims.src.commands
 {
@@ -1107,6 +1100,7 @@ namespace claims.src.commands
                 tcr.StatusMessage = "claims:player_already_has_rank";
                 return tcr;
             }
+            city.GrantPlayerRank(rank_name, targetPlayer);
             targetPlayer.addCityTitle(rank_name);
             RightsHandler.reapplyRights(targetPlayer);
             MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:rank_added_to_player", targetPlayer.GetPartName(), rank_name));
@@ -1135,7 +1129,7 @@ namespace claims.src.commands
                 return tcr;
             }
 
-            if (!HelperFunctionRank(player, rank_and_player_name[0], rank_and_player_name[1], out _, out PlayerInfo targetPlayer, tcr))
+            if (!HelperFunctionRank(player, rank_and_player_name[0], rank_and_player_name[1], out City city, out PlayerInfo targetPlayer, tcr))
             {
                 return tcr;
             }
@@ -1144,6 +1138,7 @@ namespace claims.src.commands
                 tcr.StatusMessage = "claims:player_doesnt_have_this_title";
                 return tcr;
             }
+            city.RevokePlayerRank(rank_and_player_name[0], targetPlayer);
             targetPlayer.removeCityTitle(rank_and_player_name[0]);
             RightsHandler.reapplyRights(targetPlayer);
             MessageHandler.sendMsgToPlayerInfo(targetPlayer, Lang.Get("claims:rank_was_deleted", rank_and_player_name[0], targetPlayer.GetPartName()));
@@ -1152,6 +1147,187 @@ namespace claims.src.commands
             UsefullPacketsSend.AddToQueueCityInfoUpdate(targetPlayer.Guid, EnumPlayerRelatedInfo.PLAYER_PERMISSIONS);
             UsefullPacketsSend.AddToQueuePlayerInfoUpdate(player.PlayerUID, EnumPlayerRelatedInfo.CITY_CITIZENS_RANKS);
             return SuccessWithParams("claims:rank_removed_from_player", new object[] { rank_and_player_name[0], targetPlayer.GetPartName() });
+        }
+        /*NEW RANKS*/
+        public static TextCommandResult CityRankCreateCustom(TextCommandCallingArgs args)
+        {
+            IServerPlayer player = args.Caller.Player as IServerPlayer;
+            TextCommandResult tcr = new TextCommandResult();
+            tcr.Status = EnumCommandStatus.Success;
+            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            {
+                return TextCommandResult.Success("claims:no_such_player_info");
+            }
+            string rank_name = (string)args.Parsers[0].GetValue();
+
+            if(!playerInfo.hasCity())
+            {
+                tcr.StatusMessage = "claims:you_dont_have_city";
+                return tcr;
+            }
+
+            City city = playerInfo.City;
+
+           /* if(!city.isMayor(playerInfo))
+            {
+                tcr.StatusMessage = "claims:not_a_mayor";
+                return tcr;
+            }*/
+
+            if (city.HasCityRank(rank_name))
+            {
+                tcr.StatusMessage = "claims:rank_already_exists";
+                return tcr;
+            }
+
+            city.AddNewCityRank(rank_name, new CustomCityRank() { Name = rank_name , Permissions = new()});
+            city.saveToDatabase();
+            UsefullPacketsSend.AddToQueuePlayerInfoUpdate(player.PlayerUID, EnumPlayerRelatedInfo.CITY_CITIZENS_RANKS);
+            tcr.StatusMessage = "claims:rank_added";
+            return tcr;
+        }
+        public static TextCommandResult CityRankDeleteCustom(TextCommandCallingArgs args)
+        {
+            IServerPlayer player = args.Caller.Player as IServerPlayer;
+            TextCommandResult tcr = new TextCommandResult();
+            tcr.Status = EnumCommandStatus.Success;
+            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            {
+                return TextCommandResult.Success("claims:no_such_player_info");
+            }
+            string rank_name = (string)args.Parsers[0].GetValue();
+
+            if (!playerInfo.hasCity())
+            {
+                tcr.StatusMessage = "claims:you_dont_have_city";
+                return tcr;
+            }
+
+            City city = playerInfo.City;
+
+            /* if(!city.isMayor(playerInfo))
+             {
+                 tcr.StatusMessage = "claims:not_a_mayor";
+                 return tcr;
+             }*/
+
+            if (!city.HasCityRank(rank_name))
+            {
+                tcr.StatusMessage = "claims:no_such_rank";
+                return tcr;
+            }
+
+            city.RemoveCityRank(rank_name);
+            city.saveToDatabase();
+            UsefullPacketsSend.AddToQueuePlayerInfoUpdate(player.PlayerUID, EnumPlayerRelatedInfo.CITY_CITIZENS_RANKS);
+            tcr.StatusMessage = "claims:rank_removed";
+            return tcr;
+        }
+        public static TextCommandResult CityRankAddPermissions(TextCommandCallingArgs args)
+        {
+            IServerPlayer player = args.Caller.Player as IServerPlayer;
+            TextCommandResult tcr = new TextCommandResult();
+            tcr.Status = EnumCommandStatus.Success;
+            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            {
+                return TextCommandResult.Success("claims:no_such_player_info");
+            }
+            if(!playerInfo.hasCity())
+            {
+                return TextCommandResult.Success("claims:you_dont_have_city");
+            }
+            City city = playerInfo.City;
+            string rankName = args.Parsers[0].GetValue().ToString();
+            if(!city.CustomCityRanks.TryGetValue(rankName, out var foundRank))
+            {
+                return TextCommandResult.Success("claims:no_such_rank");
+            }
+            string[] allPermissions = args.Parsers[1].GetValue().ToString().Split(' ');
+            List<EnumPlayerPermissions> permissionList = new();
+            foreach(var it in allPermissions)
+            {
+                try
+                {
+                    var tmpVal = (EnumPlayerPermissions)Enum.Parse(typeof(EnumPlayerPermissions), it);
+                    permissionList.Add(tmpVal);
+                } 
+                catch(ArgumentException)
+                {
+                    continue;
+                }
+
+            }
+            bool newPermWasAdded = false;
+            foreach(var it in permissionList)
+            {
+                newPermWasAdded |= foundRank.Permissions.Add(it);
+            }
+            if(newPermWasAdded)
+            {
+                foreach(var citizen in city.getCityCitizens())
+                {
+                    if(citizen.hasCityTitle(rankName))
+                    {
+                        RightsHandler.reapplyRights(citizen);
+                    }
+                }
+            }
+            UsefullPacketsSend.AddToQueuePlayerInfoUpdate(player.PlayerUID, EnumPlayerRelatedInfo.CITY_CITIZENS_RANKS);
+            city.saveToDatabase();
+            return tcr;
+        }
+        public static TextCommandResult CityRankRemovePermissions(TextCommandCallingArgs args)
+        {
+            IServerPlayer player = args.Caller.Player as IServerPlayer;
+            TextCommandResult tcr = new TextCommandResult();
+            tcr.Status = EnumCommandStatus.Success;
+            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            {
+                return TextCommandResult.Success("claims:no_such_player_info");
+            }
+            if (!playerInfo.hasCity())
+            {
+                return TextCommandResult.Success("claims:you_dont_have_city");
+            }
+            City city = playerInfo.City;
+            string rankName = args.Parsers[0].GetValue().ToString();
+            if (!city.CustomCityRanks.TryGetValue(rankName, out var foundRank))
+            {
+                return TextCommandResult.Success("claims:no_such_rank");
+            }
+            string[] allPermissions = args.Parsers[1].GetValue().ToString().Split(' ');
+            List<EnumPlayerPermissions> permissionList = new();
+            foreach (var it in allPermissions)
+            {
+                try
+                {
+                    var tmpVal = (EnumPlayerPermissions)Enum.Parse(typeof(EnumPlayerPermissions), it);
+                    permissionList.Add(tmpVal);
+                }
+                catch (ArgumentException)
+                {
+                    continue;
+                }
+
+            }
+            bool permWasRemove = false;
+            foreach (var it in permissionList)
+            {
+                permWasRemove |= foundRank.Permissions.Remove(it);
+            }
+            if (permWasRemove)
+            {
+                foreach (var citizen in city.getCityCitizens())
+                {
+                    if (citizen.hasCityTitle(rankName))
+                    {
+                        RightsHandler.reapplyRights(citizen);
+                    }
+                }
+            }
+            UsefullPacketsSend.AddToQueuePlayerInfoUpdate(player.PlayerUID, EnumPlayerRelatedInfo.CITY_CITIZENS_RANKS);
+            city.saveToDatabase();
+            return tcr;
         }
         /*==============================================================================================*/
         /*=====================================PRISON===================================================*/
@@ -1360,7 +1536,7 @@ namespace claims.src.commands
                 tcr.StatusMessage = "claims:invalid_player_name";
                 return false;
             }
-            if (!RightsHandler.ExistCityRank(rankName))
+            if(!city.HasCityRank(rankName))
             {
                 tcr.StatusMessage = "claims:no_such_city_rank";
                 return false;

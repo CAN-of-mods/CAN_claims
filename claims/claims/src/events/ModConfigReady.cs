@@ -1,24 +1,18 @@
-﻿using caneconomy.src.accounts;
-using caneconomy.src.implementations.RealMoney;
-using caneconomy.src.implementations.VirtualMoney;
+﻿using System;
+using System.Collections.Generic;
 using claims.src.auxialiry;
 using claims.src.commands;
 using claims.src.gui.playerGui.structures.cellElements;
 using claims.src.messages;
-using claims.src.part;
 using claims.src.part.structure;
 using claims.src.part.structure.conflict;
 using claims.src.part.structure.war;
 using claims.src.rights;
-using System;
-using System.Collections.Generic;
-using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.CommandAbbr;
 using Vintagestory.API.Config;
 using Vintagestory.API.Server;
 using Vintagestory.API.Util;
-using Vintagestory.GameContent;
 
 namespace claims.src.events
 {

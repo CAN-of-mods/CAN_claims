@@ -1,10 +1,5 @@
-﻿using claims.src.part.structure;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Vintagestory.API.MathTools;
+﻿using System.Collections.Generic;
+using claims.src.part.structure;
 
 namespace claims.src.clientMapHandling
 {

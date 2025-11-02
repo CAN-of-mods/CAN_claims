@@ -1,10 +1,4 @@
-﻿using claims.src.messages;
-using claims.src.rights;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using claims.src.rights;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.CommandAbbr;
 using Vintagestory.API.Config;
@@ -466,7 +460,7 @@ namespace claims.src.commands.register
                      .EndSub()
                       ////////
                      .BeginSub("rank")
-                            .BeginSub("list")
+                        .BeginSub("list")
                               .WithPreCondition((TextCommandCallingArgs args) => {
                                   if (args.Caller.Player is IServerPlayer player)
                                   {
@@ -522,6 +516,82 @@ namespace claims.src.commands.register
                              .HandleWith(commands.CityCommand.CityRankRemove)
                              .WithDesc("Remove rank from player.")
                              .WithArgs(parsers.OptionalAll("rank playerName"))
+                         .EndSub()
+                         .BeginSub("create")
+                              .WithPreCondition((TextCommandCallingArgs args) => {
+                                  if (args.Caller.Player is IServerPlayer player)
+                                  {
+                                      if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.CITY_CREATE_CITY_RANK }))
+                                      {
+                                          return TextCommandResult.Success();
+                                      }
+                                      else
+                                      {
+                                          return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                      }
+                                  }
+                                  return TextCommandResult.Error("");
+                              })
+                             .HandleWith(commands.CityCommand.CityRankCreateCustom)
+                             .WithDesc("Create a new rank.")
+                             .WithArgs(parsers.Word("rankName"))
+                         .EndSub()
+                         .BeginSub("delete")
+                              .WithPreCondition((TextCommandCallingArgs args) => {
+                                  if (args.Caller.Player is IServerPlayer player)
+                                  {
+                                      if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.CITY_DELETE_CITY_RANK }))
+                                      {
+                                          return TextCommandResult.Success();
+                                      }
+                                      else
+                                      {
+                                          return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                      }
+                                  }
+                                  return TextCommandResult.Error("");
+                              })
+                             .HandleWith(commands.CityCommand.CityRankDeleteCustom)
+                             .WithDesc("Create a new rank.")
+                             .WithArgs(parsers.Word("rankName"))
+                         .EndSub()
+                         .BeginSub("addperm")
+                              .WithPreCondition((TextCommandCallingArgs args) => {
+                                  if (args.Caller.Player is IServerPlayer player)
+                                  {
+                                      if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.CITY_ADD_PERMISSION_TO_RANK }))
+                                      {
+                                          return TextCommandResult.Success();
+                                      }
+                                      else
+                                      {
+                                          return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                      }
+                                  }
+                                  return TextCommandResult.Error("");
+                              })
+                             .HandleWith(commands.CityCommand.CityRankAddPermissions)
+                             .WithDesc("Add permission to a rank.")
+                             .WithArgs(parsers.Word("rankName"), parsers.All("permissions"))
+                         .EndSub()
+                         .BeginSub("removeperm")
+                              .WithPreCondition((TextCommandCallingArgs args) => {
+                                  if (args.Caller.Player is IServerPlayer player)
+                                  {
+                                      if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.CITY_REMOVE_PERMISSION_FROM_RANK }))
+                                      {
+                                          return TextCommandResult.Success();
+                                      }
+                                      else
+                                      {
+                                          return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                      }
+                                  }
+                                  return TextCommandResult.Error("");
+                              })
+                             .HandleWith(commands.CityCommand.CityRankRemovePermissions)
+                             .WithDesc("Add permission to a rank.")
+                             .WithArgs(parsers.Word("rankName"), parsers.All("permissions"))
                          .EndSub()
                      .EndSub()
                      /////////
@@ -728,26 +798,26 @@ namespace claims.src.commands.register
                                  })
                                  .HandleWith(commands.CityCommand.CitySummonSetName)
                                  .WithArgs(parsers.Word("summonPointName"))
-                                .EndSub()
-                                .BeginSub("cname")
-                                     .WithDesc("Set plot's summon point name by coords.")
-                                     .WithPreCondition((TextCommandCallingArgs args) => {
-                                         if (args.Caller.Player is IServerPlayer player)
-                                         {
-                                             if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.CITY_SET_SUMMON }))
-                                             {
-                                                 return TextCommandResult.Success();
-                                             }
-                                             else
-                                             {
-                                                 return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
-                                             }
-                                         }
-                                         return TextCommandResult.Error("");
-                                     })
-                                     .HandleWith(commands.CityCommand.CitySummonSetNameByCoords)
-                                     .WithArgs(parsers.OptionalVec3i("pointPos"), parsers.Word("summonPointName"))
-                                .EndSub()
+                            .EndSub()
+                            .BeginSub("cname")
+                                    .WithDesc("Set plot's summon point name by coords.")
+                                    .WithPreCondition((TextCommandCallingArgs args) => {
+                                        if (args.Caller.Player is IServerPlayer player)
+                                        {
+                                            if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.CITY_SET_SUMMON }))
+                                            {
+                                                return TextCommandResult.Success();
+                                            }
+                                            else
+                                            {
+                                                return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                            }
+                                        }
+                                        return TextCommandResult.Error("");
+                                    })
+                                    .HandleWith(commands.CityCommand.CitySummonSetNameByCoords)
+                                    .WithArgs(parsers.OptionalVec3i("pointPos"), parsers.Word("summonPointName"))
+                            .EndSub()
                          .EndSub()
                          .BeginSub("use")
                              .WithDesc("Try to teleport on summon point.")

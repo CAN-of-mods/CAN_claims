@@ -1,23 +1,18 @@
-﻿using Cairo;
-using claims.src.clientMapHandling;
-using claims.src.part.structure;
-using claims.src.playerMovements;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Cairo;
+using claims.src.clientMapHandling;
+using claims.src.playerMovements;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
-using Vintagestory.API.Server;
 using Vintagestory.API.Util;
 using Vintagestory.GameContent;
-using Vintagestory.ServerMods;
-using System.Drawing;
-using System.Security.Claims;
 
 namespace claims.src.claimsext.map
 {

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace claims.src.database
+﻿namespace claims.src.database
 {
     public class SQLiteTables
     {
@@ -31,6 +25,7 @@ namespace claims.src.database
             "extrachunksbought INTEGER," +
             "citycolor INTEGER," +
             "templerespawnpoints TEXT" +
+            "ranks TEXT" +
              ");";
 
         public static string playerTable =

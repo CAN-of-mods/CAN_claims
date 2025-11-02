@@ -1,19 +1,7 @@
-﻿using claims.src.auxialiry;
-using claims.src.clientMapHandling;
-using claims.src.events;
-using claims.src.part;
-using claims.src.part.structure;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using claims.src.auxialiry;
 using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
-using Vintagestory.API.MathTools;
-using Vintagestory.API.Server;
 
 namespace claims.src.clextentions
 {

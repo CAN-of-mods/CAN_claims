@@ -1,23 +1,10 @@
-﻿using claims.src.auxialiry;
-using claims.src.auxialiry.innerclaims;
-using claims.src.clientMapHandling;
-using claims.src.events;
+﻿using System;
+using claims.src.auxialiry;
 using claims.src.gui.playerGui.structures;
-using claims.src.messages;
 using claims.src.part;
 using claims.src.part.structure;
 using claims.src.part.structure.plots;
-using claims.src.perms;
-using claims.src.perms.type;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Vintagestory.API.Common;
-using Vintagestory.API.Config;
-using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 
 namespace claims.src.commands
@@ -509,28 +496,7 @@ namespace claims.src.commands
                     return tcr;
             }
             return tcr;
-        }
-        public static TextCommandResult plotBorders(TextCommandCallingArgs args)
-        {
-            IServerPlayer player = args.Caller.Player as IServerPlayer;
-            TextCommandResult tcr = new TextCommandResult();
-            tcr.Status = EnumCommandStatus.Success;
-
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
-            if (((string)args.LastArg).Equals("on", StringComparison.OrdinalIgnoreCase) && playerInfo != null)
-            {
-                playerInfo.showBorders = true;
-                PlotPosition.makeChunkHighlight(claims.sapi.World, player);
-                return tcr;
-            }
-            else if (((string)args.LastArg).Equals("off", StringComparison.OrdinalIgnoreCase) && playerInfo != null)
-            {
-                playerInfo.showBorders = false;
-                PlotPosition.clearChunkHighlight(claims.sapi.World, player);
-                return tcr;
-            }
-            return tcr;
-        }
+        }       
         public static TextCommandResult processInnerClaim(TextCommandCallingArgs args)
         {
             TextCommandResult tcr = new TextCommandResult();

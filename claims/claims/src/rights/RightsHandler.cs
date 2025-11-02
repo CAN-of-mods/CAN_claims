@@ -1,19 +1,15 @@
-﻿using claims.src.auxialiry;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using claims.src.auxialiry;
 using claims.src.messages;
 using claims.src.part;
 using claims.src.part.structure;
 using claims.src.part.structure.conflict;
 using claims.src.rights;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Vintagestory.API.Config;
 using Vintagestory.API.Server;
-using Vintagestory.Client.NoObf;
 
 namespace claims.src
 {
@@ -75,7 +71,13 @@ namespace claims.src
                         EnumPlayerPermissions.CITY_PLOTSGROUP_SET_FIRE,
                         EnumPlayerPermissions.CITY_PLOTSGROUP_SET_PVP,
                         EnumPlayerPermissions.CITY_PLOTSGROUP_SET_BLAST,
-                        EnumPlayerPermissions.CITY_WITHDRAW_MONEY
+                        EnumPlayerPermissions.CITY_WITHDRAW_MONEY,
+                        EnumPlayerPermissions.CITY_CREATE_CITY_RANK,
+                        EnumPlayerPermissions.CITY_DELETE_CITY_RANK,
+                        EnumPlayerPermissions.CITY_SEE_CITY_RANKS,
+                        EnumPlayerPermissions.CITY_ADD_PERMISSION_TO_RANK,
+                        EnumPlayerPermissions.CITY_REMOVE_PERMISSION_FROM_RANK,
+                        EnumPlayerPermissions.CITY_SET_PLOT_ACCESS_PERMISSIONS
                     }
                 },
 
@@ -157,11 +159,17 @@ namespace claims.src
                         playerInfo.PlayerPermissionsHandler.AddPermissions(mayorPerms);
                     }
                 }
-                foreach (string str in playerInfo.getCityTitles())
+                if (playerInfo.hasCity())
                 {
-                    if (PlayerPermissionsByGroups.TryGetValue("CITY_" + str, out HashSet<EnumPlayerPermissions> titlePerms))
+                    foreach (string str in playerInfo.getCityTitles())
                     {
-                        playerInfo.PlayerPermissionsHandler.AddPermissions(titlePerms);
+                        if(playerInfo.City.CustomCityRanks.TryGetValue(str, out var rank))
+                        {
+                            foreach(var it in rank.Permissions)
+                            {
+                                playerInfo.PlayerPermissionsHandler.AddPermission(it);
+                            }
+                        }
                     }
                 }
             }

@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using claims.src.gui.playerGui.structures.cellElements;
 using claims.src.perms;
 
@@ -19,8 +16,9 @@ namespace claims.src.gui.playerGui.structures
         public string Prefix { get; set; }
         public string AfterName { get; set; }
         public HashSet<string> CityTitles { get; set; } = new();
-        public List<RankCellElement> CitizensRanks { get; set; } = new();
-        public HashSet<string> PossibleCityRanks { get; set; }
+        public List<CityRankCellElement> CityRanks { get; set; } = new();
+        //public List<RankCellElement> CitizensRanks { get; set; } = new();
+        //public HashSet<string> PossibleCityRanks { get; set; }
         public int PlotsColor;
         public double CityBalance { get; set; }
         public double CityDebt { get; set; }
@@ -34,11 +32,13 @@ namespace claims.src.gui.playerGui.structures
         public List<ClientConflictCellElement> ClientConflictCellElements { get; set; } = new();
         public List<ClientConflictLetterCellElement> ClientConflictLetterCellElements { get; set; } = new();
         public List<ClientWarRangeCellElement> ClientWarRangeCellElements { get; set; } = new();
+        public List<ClientTwoWarRangesCellElement> ClientTwoWarRangesCellElement { get; set; } = new();
         public CityInfo()
         {
             Name = "";
-            PossibleCityRanks = new HashSet<string>();
+            //PossibleCityRanks = new HashSet<string>();
             this.ClientWarRangeCellElements = CreateDefaultWarRangeForWeek();
+            this.ClientTwoWarRangesCellElement = CreateDefaultTwoWarRangesForWeek();
         }
         public CityInfo(string cityName, string mayorName, long timeStampCreated, HashSet<string> citizens, int maxCountPlots, int countPlots,
             string prefix, string afterName, HashSet<string> cityTitles, int plotsColor, double cityBalance, HashSet<string> criminals)
@@ -64,6 +64,17 @@ namespace claims.src.gui.playerGui.structures
             {
                 bool[] defaultRange = new bool[48];
                 warRanges.Add(new ClientWarRangeCellElement(day, defaultRange));
+            }
+            return warRanges;
+        }
+        public static List<ClientTwoWarRangesCellElement> CreateDefaultTwoWarRangesForWeek()
+        {
+            var warRanges = new List<ClientTwoWarRangesCellElement>();
+            foreach (DayOfWeek day in Enum.GetValues(typeof(DayOfWeek)))
+            {
+                bool[] defaultRange = new bool[48];
+                bool[] defaultRange2 = new bool[48];
+                warRanges.Add(new ClientTwoWarRangesCellElement(day, defaultRange, defaultRange2));
             }
             return warRanges;
         }

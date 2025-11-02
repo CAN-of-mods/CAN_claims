@@ -1,4 +1,7 @@
-﻿using claims.src.auxialiry;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using claims.src.auxialiry;
 using claims.src.clientMapHandling;
 using claims.src.events;
 using claims.src.gui.playerGui.structures;
@@ -8,13 +11,7 @@ using claims.src.part;
 using claims.src.part.structure;
 using claims.src.part.structure.conflict;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Vintagestory.API.Common;
-using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
 
 namespace claims.src.network.handlers

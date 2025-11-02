@@ -20,6 +20,10 @@
       <HintPath>..\..\..\..\..\AppData\Roaming\Vintagestory\Lib\OpenTK.Graphics.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="RustyShell">
+      <HintPath>..\..\..\..\..\libs\RustyShell.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="SkiaSharp">
       <HintPath>..\..\..\..\..\AppData\Roaming\Vintagestory\Lib\SkiaSharp.dll</HintPath>
       <Private>False</Private>
