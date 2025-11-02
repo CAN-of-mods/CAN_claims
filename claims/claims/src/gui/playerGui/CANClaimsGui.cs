@@ -1963,15 +1963,17 @@ namespace claims.src.gui.playerGui
                     }
                 }, uninviteCitizenButtonBounds);
 
-                currentBounds = currentBounds.BelowCopy(0, 5);
-
-                if (claims.clientDataStorage.clientPlayerInfo.PlayerPermissions.HasPermission(rights.EnumPlayerPermissions.CITY_SEE_BALANCE))
+                if (claims.config.SELECTED_ECONOMY_HANDLER == "VIRTUAL_MONEY")
                 {
-                    SingleComposer.AddStaticText(Lang.Get("claims:gui-city-balance", clientInfo.CityInfo.CityBalance),
-                        cityTabFont,
-                        currentBounds, "cityBalance");
+                    currentBounds = currentBounds.BelowCopy(0, 5);
+
+                    if (claims.clientDataStorage.clientPlayerInfo.PlayerPermissions.HasPermission(rights.EnumPlayerPermissions.CITY_SEE_BALANCE))
+                    {
+                        SingleComposer.AddStaticText(Lang.Get("claims:gui-city-balance", clientInfo.CityInfo.CityBalance),
+                            cityTabFont,
+                            currentBounds, "cityBalance");
+                    }
                 }
-                
                 if (clientInfo.CityInfo.CityDebt > 0)
                 {
                     currentBounds = currentBounds.BelowCopy(0, 5);

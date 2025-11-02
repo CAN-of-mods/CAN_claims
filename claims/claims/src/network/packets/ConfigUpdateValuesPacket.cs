@@ -36,6 +36,7 @@ namespace claims.src.network.packets
         public HashSet<string> ALWAYS_ACCESS_BLOCKS = new HashSet<string>();
         [ProtoMember(14)]
         public HashSet<EnumPlayerPermissions> AVAILABLE_CITY_PERMISSIONS;
-
+        [ProtoMember(15)]
+        public string SELECTED_ECONOMY_HANDLER;
     }
 }

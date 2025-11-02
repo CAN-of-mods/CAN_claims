@@ -176,8 +176,7 @@ namespace claims.src
         public int AREA_REGION_SIZE = 512;
         public int AREA_MAP_SIZE = 2000;
 
-
-        public string SELECTED_ECONOMY_HANDLER = "VIRTUAL_MONEY";
+        public string SELECTED_ECONOMY_HANDLER = "";
         public string CITY_ACCOUNT_STRING_PREFIX = "#city_";
         public string ALLIANCE_ACCOUNT_STRING_PREFIX = "#alliance_";
 

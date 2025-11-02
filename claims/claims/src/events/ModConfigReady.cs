@@ -36,7 +36,8 @@ namespace claims.src.events
                 world = new WorldInfo(claims.sapi.World.Seed.ToString(), Guid.NewGuid().ToString());
                 world.saveToDatabase();
             }
-            if(caneconomy.caneconomy.config.SELECTED_ECONOMY_HANDLER == "REAL_MONEY")
+            claims.config.SELECTED_ECONOMY_HANDLER = caneconomy.caneconomy.config.SELECTED_ECONOMY_HANDLER;
+            if (caneconomy.caneconomy.config.SELECTED_ECONOMY_HANDLER == "REAL_MONEY")
             {
                 claims.economyHandler = caneconomy.caneconomy.getHandler();
                 //new RealMoneyEconomyHandler();

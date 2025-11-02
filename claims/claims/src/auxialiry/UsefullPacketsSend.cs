@@ -165,7 +165,8 @@ namespace claims.src.auxialiry
                        NewAllianceCost = claims.config.NEW_ALLIANCE_COST,
                        SummonPayment = claims.config.SUMMON_PAYMENT,
                        ALWAYS_ACCESS_BLOCKS = claims.config.ALWAYS_ACCESS_BLOCKS,
-                       AVAILABLE_CITY_PERMISSIONS = claims.config.AVAILABLE_CITY_PERMISSIONS
+                       AVAILABLE_CITY_PERMISSIONS = claims.config.AVAILABLE_CITY_PERMISSIONS,
+                       SELECTED_ECONOMY_HANDLER = claims.config.SELECTED_ECONOMY_HANDLER,
                    }
                    , player);
         }

@@ -200,8 +200,9 @@ namespace claims.src.network.handlers
                 claims.config.SUMMON_PAYMENT = packet.SummonPayment;
                 claims.config.ALWAYS_ACCESS_BLOCKS = packet.ALWAYS_ACCESS_BLOCKS;
                 claims.config.AVAILABLE_CITY_PERMISSIONS = packet.AVAILABLE_CITY_PERMISSIONS;
+                claims.config.SELECTED_ECONOMY_HANDLER = packet.SELECTED_ECONOMY_HANDLER;
 
-                if(claims.config.AVAILABLE_CITY_PERMISSIONS == null)
+                if (claims.config.AVAILABLE_CITY_PERMISSIONS == null)
                 {
                     claims.config.AVAILABLE_CITY_PERMISSIONS = new();
                 }
