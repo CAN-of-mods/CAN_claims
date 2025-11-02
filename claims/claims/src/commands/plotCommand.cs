@@ -509,28 +509,7 @@ namespace claims.src.commands
                     return tcr;
             }
             return tcr;
-        }
-        public static TextCommandResult plotBorders(TextCommandCallingArgs args)
-        {
-            IServerPlayer player = args.Caller.Player as IServerPlayer;
-            TextCommandResult tcr = new TextCommandResult();
-            tcr.Status = EnumCommandStatus.Success;
-
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
-            if (((string)args.LastArg).Equals("on", StringComparison.OrdinalIgnoreCase) && playerInfo != null)
-            {
-                playerInfo.showBorders = true;
-                PlotPosition.makeChunkHighlight(claims.sapi.World, player);
-                return tcr;
-            }
-            else if (((string)args.LastArg).Equals("off", StringComparison.OrdinalIgnoreCase) && playerInfo != null)
-            {
-                playerInfo.showBorders = false;
-                PlotPosition.clearChunkHighlight(claims.sapi.World, player);
-                return tcr;
-            }
-            return tcr;
-        }
+        }       
         public static TextCommandResult processInnerClaim(TextCommandCallingArgs args)
         {
             TextCommandResult tcr = new TextCommandResult();

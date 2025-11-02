@@ -49,9 +49,15 @@ namespace claims.src.harmony
             bool blastEV = claims.dataStorage.getWorldInfo().blastEverywhere;
             if (blastEV)
             {
+                __result = true;
+                return false;
+            }
+            if (claims.dataStorage.getWorldInfo().blastForbidden)
+            {
                 __result = false;
                 return false;
             }
+
             for (int i = -1; i < 2; ++i)
             {
                 for (int j = -1; j < 2; ++j)
@@ -157,12 +163,18 @@ namespace claims.src.harmony
 
             int tmpX = __instance.Pos.X;
             int tmpZ = __instance.Pos.Z;
-            bool blastEV = claims.dataStorage.getWorldInfo().blastEverywhere;
-            if (blastEV)
+            if (claims.dataStorage.getWorldInfo().blastEverywhere)
+            {
+                __result = true;
+                return false;
+            }
+            if(claims.dataStorage.getWorldInfo().blastForbidden)
             {
                 __result = false;
                 return false;
             }
+
+
             for (int i = -1; i < 2; ++i)
             {
                 for (int j = -1; j < 2; ++j)

@@ -1,37 +1,23 @@
-﻿using Cairo;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Cairo;
 using claims.src.auxialiry;
 using claims.src.gui.playerGui.GuiElements;
 using claims.src.gui.playerGui.structures;
 using claims.src.gui.playerGui.structures.cellElements;
-using claims.src.network.handlers;
 using claims.src.network.packets;
-using claims.src.part;
 using claims.src.part.structure;
 using claims.src.part.structure.conflict;
 using claims.src.part.structure.plots;
 using claims.src.rights;
-using HarmonyLib;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
-using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
-using Vintagestory.API.Util;
-using Vintagestory.Client;
 using Vintagestory.Client.NoObf;
-using Vintagestory.Common;
-using Vintagestory.GameContent;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace claims.src.gui.playerGui
 {
@@ -75,6 +61,10 @@ namespace claims.src.gui.playerGui
         public int claimsPerPage = 3;
         private int selectedColor = -1;
         private int SelectedTabGroup = 0;
+        public enum EnumSelectedWarRangesTab
+        {
+            APPROVED, SUGGESTIONS
+        }
 
         private ElementBounds clippingInvitationsBounds;
         private ElementBounds listInvitationsBounds;
@@ -2687,7 +2677,9 @@ namespace claims.src.gui.playerGui
 
             ElementBounds multiSelectBoundsRemove = multiSelectBounds.RightCopy(0, 0);
 
-            EnumPlayerPermissions[] availableToRemove = claims.config.AVAILABLE_CITY_PERMISSIONS.Where(v => cell.Permissions.Contains(v)).ToArray();
+            EnumPlayerPermissions[] availableToRemove = claims.config.AVAILABLE_CITY_PERMISSIONS == null 
+                                            ? new EnumPlayerPermissions[] { } 
+                                            : claims.config.AVAILABLE_CITY_PERMISSIONS.Where(v => cell.Permissions.Contains(v)).ToArray();
 
             var availableToRemoveStrings = availableToRemove.Select(s => s.ToString()).ToArray();
 
@@ -3933,7 +3925,7 @@ namespace claims.src.gui.playerGui
                                                         {
                                                             return;
                                                         }
-                                                        if (value == 0)
+                                                        if (value == (int)EnumSelectedWarRangesTab.APPROVED)
                                                         {                                                            
                                                             FillWarRangeArrays(cell.WarRanges);                                                           
                                                         }
@@ -3941,11 +3933,11 @@ namespace claims.src.gui.playerGui
                                                         {
                                                             if (claims.clientDataStorage.clientPlayerInfo.AllianceInfo.Name.Equals(cell.FirstAllianceName))
                                                             {
-                                                                FillWarRangeArrays(cell.FirstWarRanges);
+                                                                FillTwoWarRangesArrays(cell.FirstWarRanges, cell.SecondWarRanges);
                                                             }
                                                             else
                                                             {
-                                                                FillWarRangeArrays(cell.SecondWarRanges);
+                                                                FillTwoWarRangesArrays(cell.SecondWarRanges, cell.FirstWarRanges);
                                                             }
                                                         }
                                                         BuildMainWindow();
@@ -3954,29 +3946,56 @@ namespace claims.src.gui.playerGui
                                             }, CairoFont.WhiteSmallText(), CairoFont.WhiteSmallText(), "groupTabs");
             SingleComposer.GetHorizontalTabs("groupTabs").activeElement = SelectedTabGroup;
             this.clippingRansksBounds = insetBounds.ForkContainingChild(3.0, 3.0, 3.0, 3.0);
-            SingleComposer.BeginChildElements(currentBounds)
-                .BeginClip(clippingBounds)
-                .AddInset(insetBounds, 3)
-                .AddCellList(this.listRanksBounds = this.clippingRansksBounds.
-                ForkContainingChild(0.0, 0.0, 0.0, -3.0).WithFixedPadding(5.0),
-                (ClientWarRangeCellElement cell, ElementBounds bounds) =>
-                {
-                    return new GuiElementWarRangeCell(capi, cell, bounds, SelectedTabGroup != 0)
+            if (SelectedTabGroup == (int)EnumSelectedWarRangesTab.APPROVED)
+            {
+                SingleComposer.BeginChildElements(currentBounds)
+                    .BeginClip(clippingBounds)
+                    .AddInset(insetBounds, 3)
+                    .AddCellList(this.listRanksBounds = this.clippingRansksBounds.
+                    ForkContainingChild(0.0, 0.0, 0.0, -3.0).WithFixedPadding(5.0),
+                    (ClientWarRangeCellElement cell, ElementBounds bounds) =>
                     {
-                        On = true
-                    };
-                },
-                claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientWarRangeCellElements, "conflicscells")
-                .EndClip()
-                .AddVerticalScrollbar((float value) =>
-                {
-                    ElementBounds bounds = SingleComposer.GetCellList<ClientWarRangeCellElement>("conflicscells").Bounds;
-                    bounds.fixedY = (double)(0f - value);
-                    bounds.CalcWorldBounds();
-                }, scrollbarBounds, "scrollbar")
-                .EndChildElements();
-            var c = SingleComposer.GetCellList<ClientWarRangeCellElement>("conflicscells");
-            c.BeforeCalcBounds();
+                        return new GuiElementWarRangeCell(capi, cell, bounds, SelectedTabGroup != 0)
+                        {
+                            On = true
+                        };
+                    },
+                    claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientWarRangeCellElements, "conflicscells")
+                    .EndClip()
+                    .AddVerticalScrollbar((float value) =>
+                    {
+                        ElementBounds bounds = SingleComposer.GetCellList<ClientWarRangeCellElement>("conflicscells").Bounds;
+                        bounds.fixedY = (double)(0f - value);
+                        bounds.CalcWorldBounds();
+                    }, scrollbarBounds, "scrollbar")
+                    .EndChildElements();
+                SingleComposer.GetCellList<ClientWarRangeCellElement>("conflicscells").BeforeCalcBounds();
+            }
+            else
+            {
+                SingleComposer.BeginChildElements(currentBounds)
+                   .BeginClip(clippingBounds)
+                   .AddInset(insetBounds, 3)
+                   .AddCellList(this.listRanksBounds = this.clippingRansksBounds.
+                   ForkContainingChild(0.0, 0.0, 0.0, -3.0).WithFixedPadding(5.0),
+                   (ClientTwoWarRangesCellElement cell, ElementBounds bounds) =>
+                   {
+                       return new GuiElementTwoWarRangesCell(capi, cell, bounds)
+                       {
+                           On = true
+                       };
+                   },
+                   claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientTwoWarRangesCellElement, "conflicscells")
+                   .EndClip()
+                   .AddVerticalScrollbar((float value) =>
+                   {
+                       ElementBounds bounds = SingleComposer.GetCellList<ClientTwoWarRangesCellElement>("conflicscells").Bounds;
+                       bounds.fixedY = (double)(0f - value);
+                       bounds.CalcWorldBounds();
+                   }, scrollbarBounds, "scrollbar")
+                   .EndChildElements();
+                SingleComposer.GetCellList<ClientTwoWarRangesCellElement>("conflicscells").BeforeCalcBounds();
+            }
 
             currentBounds = insetBounds.BelowCopy(0, 10).WithFixedSize(25, 25);
             SingleComposer.AddIconButton("line", (bool t) =>
@@ -4001,8 +4020,8 @@ namespace claims.src.gui.playerGui
 
                     for (int day = 0; day < 8; day++)
                     {
-                        var currDay = claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientWarRangeCellElements[day % 7];
-                        var warRange = currDay.WarRangeArray;
+                        var currDay = claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientTwoWarRangesCellElement[day % 7];
+                        var warRange = currDay.OurWarRangeArray;
                         for (int i = 0; i < 48; i++)
                         {
                             //find start of the range
@@ -4027,7 +4046,7 @@ namespace claims.src.gui.playerGui
                     bool firstStart = true;
                     for (int day = 0; day < 8; day++) 
                     {
-                        ClientWarRangeCellElement it = claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientWarRangeCellElements[((int)startDay + day) % 7];
+                        ClientTwoWarRangesCellElement it = claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientTwoWarRangesCellElement[((int)startDay + day) % 7];
 
                         for (int i = (startIndex.HasValue && firstStart) ? startIndex.Value : 0; i < 48; i++)
                         {
@@ -4052,7 +4071,7 @@ namespace claims.src.gui.playerGui
                                     goto searchedAll;
                                 }
                             }
-                            if (it.WarRangeArray[i])
+                            if (it.OurWarRangeArray[i])
                             {
                                 if (startIndex == null)
                                 {
@@ -4123,18 +4142,68 @@ namespace claims.src.gui.playerGui
             SingleComposer.Compose();
 
         }
-        public void FillWarRangeArrays(List<SelectedWarRange> ranges)
+        public void FillListValues(List<SelectedWarRange> ranges, bool forEnemy = false)
         {
-            //if(ranges.Count)
+            foreach (var range in ranges)
             {
+                int slotCount = (int)(range.Duration.TotalMinutes / claims.config.MIN_RANGE_CELL_DURATION_MINUTES);
+                int startSlot = (int)(range.StartTime.TotalMinutes / claims.config.MIN_RANGE_CELL_DURATION_MINUTES);
 
-                foreach(var it in claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientWarRangeCellElements) { 
-                    for(int i = 0; i < it.WarRangeArray.Length; i++)
+                for (int i = (int)range.StartDay, k = 0; ; i++, k++)
+                {
+                    if (k > 6)
                     {
-                        it.WarRangeArray[i] = false;
+                        break;
+                    }
+                    int dayIndex = i % 7;
+                    ClientTwoWarRangesCellElement cell = claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientTwoWarRangesCellElement.FirstOrDefault(c => c.DayOfWeek == (DayOfWeek)dayIndex);
+                    if (cell == null)
+                    {
+                        continue;
+                    }
+                    int startPoint = dayIndex == (int)range.StartDay ? startSlot : 0;
+                    for (int j = startPoint; j < 48; j++)
+                    {
+                        if (forEnemy)
+                        {
+                            cell.EnemyWarRangeArray[j] = true;
+                        }
+                        else
+                        {
+                            cell.OurWarRangeArray[j] = true;
+                        }
+                        slotCount--;
+                        if (slotCount <= 0)
+                        {
+                            goto finshedRange;
+                        }
                     }
                 }
+            finshedRange:
+                ;
             }
+        }
+        public void FillTwoWarRangesArrays(List<SelectedWarRange> ourRanges, List<SelectedWarRange> enemyRanges)
+        {
+            foreach (var it in claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientTwoWarRangesCellElement)
+            {
+                for (int i = 0; i < it.OurWarRangeArray.Length; i++)
+                {
+                    it.OurWarRangeArray[i] = false;
+                    it.EnemyWarRangeArray[i] = false;
+                }
+            }
+            FillListValues(ourRanges);
+            FillListValues(enemyRanges, true);
+        }
+        public void FillWarRangeArrays(List<SelectedWarRange> ranges)
+        {
+            foreach(var it in claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientWarRangeCellElements) { 
+                for(int i = 0; i < it.WarRangeArray.Length; i++)
+                {
+                    it.WarRangeArray[i] = false;
+                }
+            }        
             foreach(var range in ranges)
             {
                 int slotCount = (int)(range.Duration.TotalMinutes / claims.config.MIN_RANGE_CELL_DURATION_MINUTES);
@@ -4186,11 +4255,11 @@ namespace claims.src.gui.playerGui
                 {
                     if (claims.clientDataStorage.clientPlayerInfo.AllianceInfo.Name.Equals(cell.FirstAllianceName))
                     {
-                        FillWarRangeArrays(cell.FirstWarRanges);
+                        FillTwoWarRangesArrays(cell.FirstWarRanges, cell.SecondWarRanges);
                     }
                     else
                     {
-                        FillWarRangeArrays(cell.SecondWarRanges);
+                        FillTwoWarRangesArrays(cell.SecondWarRanges, cell.FirstWarRanges);
                     }
                 }
                 BuildMainWindow();

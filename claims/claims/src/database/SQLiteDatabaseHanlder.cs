@@ -17,6 +17,7 @@ using System.Linq;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
+using Vintagestory.GameContent;
 
 namespace claims.src.database
 {
@@ -649,7 +650,15 @@ namespace claims.src.database
             }
             else
             {
-                city.setMayor(null);
+                if (it["mayor"].ToString().Length != 0)
+                {
+                    claims.dataStorage.getPlayerByUid(it["mayor"].ToString(), out PlayerInfo playerInfo);
+                    city.setMayor(playerInfo);
+                }
+                else
+                {
+                    city.setMayor(null);
+                }
             }
             city.TimeStampCreated = long.Parse(it["timestampcreated"].ToString());
             city.DebtBalance = int.Parse(it["debtbalance"].ToString());

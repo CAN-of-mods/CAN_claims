@@ -1,23 +1,11 @@
-﻿using Cairo;
-using claims.src.auxialiry;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static OpenTK.Graphics.OpenGL.GL;
+using Cairo;
+using claims.src.gui.playerGui.structures.cellElements;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
-using Vintagestory.API.Util;
-using System.Collections;
-using Vintagestory.API.Config;
-using System.Reflection.Emit;
 using static claims.src.gui.playerGui.CANClaimsGui;
-using System.Reflection;
-using Vintagestory.Client.NoObf;
-using claims.src.gui.playerGui.structures.cellElements;
 
 namespace claims.src.gui.playerGui.GuiElements
 {

@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using Cairo;
 using Vintagestory.API.Client;
 using claims.src.gui.playerGui.structures.cellElements;
+using Vintagestory.API.Common;
 
 namespace claims.src.gui.playerGui.GuiElements
 {
-    public class GuiElementWarRangeCell : GuiElementTextBase, IGuiElementCell, IDisposable
+    public class GuiElementTwoWarRangesCell : GuiElementTextBase, IGuiElementCell, IDisposable
     {
         public static double unscaledRightBoxWidth = 40.0;
 
-        public ClientWarRangeCellElement cell;
+        public ClientTwoWarRangesCellElement Cell;
         DayOfWeek DayOfWeek { get; set; }
 
         public bool On;
@@ -20,38 +21,68 @@ namespace claims.src.gui.playerGui.GuiElements
         internal double unscaledSwitchSize = 25.0;
 
         private LoadedTexture modcellTexture;
-        private bool buttonToggble = true;
 
         ElementBounds IGuiElementCell.Bounds => Bounds;
-        private List<GuiElementToggleButton> ToggleButtons = new List<GuiElementToggleButton>();
-        private List<GuiElementHoverText> HoverTexts = new List<GuiElementHoverText>();
-
-        public GuiElementWarRangeCell(ICoreClientAPI capi, ClientWarRangeCellElement cell, ElementBounds bounds, bool toggble = true)
+        private List<CANGuiElementToggleButton> ToggleButtons = new();
+        private List<GuiElementHoverText> HoverTexts = new();
+        private List<GuiElementRichtext> texts;
+        public GuiElementTwoWarRangesCell(ICoreClientAPI capi, ClientTwoWarRangesCellElement cell, ElementBounds bounds)
             : base(capi, "", null, bounds)
         {
-            this.buttonToggble = toggble;
             this.DayOfWeek = cell.DayOfWeek;
-            this.cell = cell;
+            this.Cell = cell;
             this.Font = CairoFont.WhiteSmallishText();
             modcellTexture = new LoadedTexture(capi);
 
             var font = CairoFont.WhiteDetailText();
             ElementBounds bu = ElementBounds.Fixed(130, 10, 18, 18).WithParent(Bounds);
             ElementBounds currentBounds = bu;
+           // ElementBounds textBounds = bu.FlatCopy();
+            //textBounds.fixedOffsetX -= 20;
+            currentBounds.fixedOffsetY += 10;
             var savedX = currentBounds.fixedX;
+            string our = "Our";
+            TextExtents textExtents = CairoFont.WhiteMediumText().GetTextExtents(our);
+            ElementBounds textBounds = ElementBounds.Fixed(10, 10, textExtents.Width + 40, 25).WithParent(Bounds);
+            textBounds.fixedOffsetX -= 20;
+            texts = new List<GuiElementRichtext>();
+
+            texts.Add(new GuiElementRichtext(capi, VtmlUtil.Richtextify(capi, our, CairoFont.WhiteMediumText().WithFontSize(25)), textBounds));
             for (int j = 0; j < 3; j++)
             {
                 for (int i = 0; i < 16; i++)
                 {
                     int p = i + j * 16;
-                    ToggleButtons.Add(new GuiElementToggleButton(capi, "claims:stairs-goal", "", font, (bool t) =>
-                    {                       
-                        this.cell.WarRangeArray[p] = !this.cell.WarRangeArray[p];
-                    }, currentBounds, true));
-                    if(this.cell.WarRangeArray[p])
+                    ToggleButtons.Add(new CANGuiElementToggleButton(capi, "claims:stairs-goal", (bool t) =>
+                    {
+                        this.Cell.OurWarRangeArray[p] = !this.Cell.OurWarRangeArray[p];
+                    }, currentBounds, true, true));
+                    if (this.Cell.OurWarRangeArray[p])
                     {
                         ToggleButtons[p].On = true;
                     }
+                    HoverTexts.Add(new GuiElementHoverText(capi, string.Format("{0:00}:{1:00} - {2:00}:{3:00}", Math.Floor(p * 0.5), (p * 0.5) % 1 * 60, Math.Floor((p + 1) * 0.5), ((p + 1) * 0.5) % 1 * 60), font, 120, currentBounds));
+                    currentBounds = currentBounds.RightCopy();
+                }
+                currentBounds = currentBounds.BelowCopy();
+                currentBounds.fixedX = savedX;
+            }
+            currentBounds.fixedOffsetY += 10;
+            //currentBounds.BelowCopy(10, 15);
+            for (int j = 0; j < 3; j++)
+            {
+                for (int i = 0; i < 16; i++)
+                {
+                    int p = i + j * 16;
+                    ToggleButtons.Add(new CANGuiElementToggleButton(capi, "claims:stairs-goal", (bool t) =>
+                    {
+                        this.Cell.EnemyWarRangeArray[p] = !this.Cell.EnemyWarRangeArray[p];
+                    }, currentBounds, true));
+                    if (this.Cell.EnemyWarRangeArray[p])
+                    {
+                        ToggleButtons[p + 48].On = true;                       
+                    }
+                    ToggleButtons[p + 48].Toggleable = false;
                     HoverTexts.Add(new GuiElementHoverText(capi, string.Format("{0:00}:{1:00} - {2:00}:{3:00}", Math.Floor(p * 0.5), (p * 0.5) % 1 * 60, Math.Floor((p + 1) * 0.5), ((p + 1) * 0.5) % 1 * 60), font, 120, currentBounds));
                     currentBounds = currentBounds.RightCopy();
                 }
@@ -68,36 +99,14 @@ namespace claims.src.gui.playerGui.GuiElements
             double num = GuiElement.scaled(unscaledRightBoxWidth);
             Bounds.CalcWorldBounds();
 
-            //string cellName = string.Format("{0} x {1}", cell.FirstAllianceName, cell.SecondAllianceName);
             TextExtents textExtents = Font.GetTextExtents(DayOfWeek.ToString());
             textUtil.AutobreakAndDrawMultilineTextAt(context, Font, DayOfWeek.ToString(), Bounds.absPaddingX, Bounds.absPaddingY + GuiElement.scaled(10), textExtents.Width + 1.0, EnumTextOrientation.Left);
-            //string expDate = TimeFunctions.getDateFromEpochSecondsWithHoursMinutes(cell.TimeStampCreated, true).ToString();
-            //textExtents = Font.GetTextExtents(expDate);
-           // textUtil.AutobreakAndDrawMultilineTextAt(context, CairoFont.WhiteDetailText(), expDate, Bounds.absPaddingX, Bounds.absPaddingY + GuiElement.scaled(36), textExtents.Width + 1.0, EnumTextOrientation.Left);
-
-            //make border as button
             EmbossRoundRectangleElement(context, 0.0, 0.0, Bounds.OuterWidth, Bounds.OuterHeight, inverse: false, (int)GuiElement.scaled(4.0), 0);
 
             double num5 = GuiElement.scaled(unscaledSwitchSize);
             double num6 = GuiElement.scaled(unscaledSwitchPadding);
             double num7 = Bounds.absPaddingX + Bounds.InnerWidth - GuiElement.scaled(0.0) - num5 - num6;
             double num8 = Bounds.absPaddingY + Bounds.absPaddingY;
-
-           /* capi.Gui.DrawSvg(cancelIcon, imageSurface, (int)(num7 - GuiElement.scaled(3.0)),
-                                                            (int)(num8 + GuiElement.scaled(15.0)),
-                                                            (int)GuiElement.scaled(30.0),
-                                                            (int)GuiElement.scaled(30.0),
-                                                            ColorUtil.ColorFromRgba(255, 128, 0, 255));
-            if (claims.clientDataStorage.clientPlayerInfo.AllianceInfo?.Guid?.Equals(this.cell.Guid) ?? false)
-            {
-                capi.Gui.DrawSvg(approveIcon, imageSurface,
-                (int)(num7 - GuiElement.scaled(unscaledRightBoxWidth) - GuiElement.scaled(10.0)),
-                (int)(num8 + GuiElement.scaled(15.0)),
-                (int)GuiElement.scaled(30.0),
-                (int)GuiElement.scaled(30.0),
-                ColorUtil.ColorFromRgba(0, 153, 0, 255));
-            }*/
-
 
             generateTexture(imageSurface, ref modcellTexture);
 
@@ -116,6 +125,13 @@ namespace claims.src.gui.playerGui.GuiElements
             {
                 it.ComposeElements(context, imageSurface);
             }
+            if (texts != null)
+            {
+                foreach (var it in texts)
+                {
+                    it.Compose();
+                }
+            }
             context2.Dispose();
             imageSurface2.Dispose();
         }
@@ -133,9 +149,13 @@ namespace claims.src.gui.playerGui.GuiElements
         public void UpdateCellHeight()
         {
             Bounds.CalcWorldBounds();
-            if (Bounds.fixedHeight < 73.0)
+            foreach (var it in texts)
             {
-                Bounds.fixedHeight = 73.0;
+                it.BeforeCalcBounds();
+            }
+            if (Bounds.fixedHeight < 150)
+            {
+                Bounds.fixedHeight = 150;
             }
         }
 
@@ -158,6 +178,10 @@ namespace claims.src.gui.playerGui.GuiElements
             {
                 it.RenderInteractiveElements(deltaTime);
             }
+            foreach (var it in texts)
+            {
+                //it.RenderInteractiveElements(deltaTime);
+            }
         }
 
         public override void Dispose()
@@ -169,6 +193,10 @@ namespace claims.src.gui.playerGui.GuiElements
                 it.Dispose();
             }
             foreach (var it in HoverTexts)
+            {
+                it.Dispose();
+            }
+            foreach (var it in texts)
             {
                 it.Dispose();
             }
@@ -210,7 +238,7 @@ namespace claims.src.gui.playerGui.GuiElements
             int mouseY = api.Input.MouseY;
             foreach (var it in ToggleButtons)
             {
-                if(this.buttonToggble && it.IsPositionInside(mouseX, mouseY))
+                if(it.Toggleable && it.IsPositionInside(mouseX, mouseY))
                 {
                     it.OnMouseDownOnElement(api, args);
                 }

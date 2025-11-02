@@ -80,7 +80,8 @@ namespace claims.src
                         EnumPlayerPermissions.CITY_DELETE_CITY_RANK,
                         EnumPlayerPermissions.CITY_SEE_CITY_RANKS,
                         EnumPlayerPermissions.CITY_ADD_PERMISSION_TO_RANK,
-                        EnumPlayerPermissions.CITY_REMOVE_PERMISSION_FROM_RANK
+                        EnumPlayerPermissions.CITY_REMOVE_PERMISSION_FROM_RANK,
+                        EnumPlayerPermissions.CITY_SET_PLOT_ACCESS_PERMISSIONS
                     }
                 },
 

@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Cairo;
-using Vintagestory.API.Client;
-using static claims.src.gui.playerGui.CANClaimsGui;
-using Vintagestory.API.Common;
-using Vintagestory.API.Config;
-using Vintagestory.API.MathTools;
-using Vintagestory.Client.NoObf;
 using claims.src.gui.playerGui.structures.cellElements;
+using Vintagestory.API.Client;
+using Vintagestory.API.Common;
+using Vintagestory.API.MathTools;
+using static claims.src.gui.playerGui.CANClaimsGui;
 
 namespace claims.src.gui.playerGui.GuiElements
 {

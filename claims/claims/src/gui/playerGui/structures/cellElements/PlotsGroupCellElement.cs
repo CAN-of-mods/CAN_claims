@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using claims.src.part;
+﻿using System.Collections.Generic;
 using claims.src.perms;
-using Vintagestory.API.MathTools;
 
 namespace claims.src.gui.playerGui.structures.cellElements
 {

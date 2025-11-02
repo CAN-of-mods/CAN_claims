@@ -239,6 +239,7 @@
     //BATTLE
     "battle_started_with": "Battle started with alliance {0}.",
     "battle_ended_with": "Battle ended with alliance {0}.",
+    "blockhelp-flag-set": "Attach a banner",
     //TELEPORTATION
     "teleportation_canceled": "Teleporation has been canceled",
 

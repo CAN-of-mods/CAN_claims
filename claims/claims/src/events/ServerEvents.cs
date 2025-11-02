@@ -1,9 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Security.AccessControl;
-using Vintagestory.API.Common;
 using Vintagestory.API.Server;
 using Vintagestory.API.Util;
-using Vintagestory.Server;
 
 namespace claims.src.events
 {

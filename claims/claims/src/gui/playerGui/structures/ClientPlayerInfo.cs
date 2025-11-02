@@ -1,21 +1,15 @@
-﻿using claims.src.gui.playerGui.structures.cellElements;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using claims.src.gui.playerGui.structures.cellElements;
 using claims.src.part;
 using claims.src.part.structure;
 using claims.src.part.structure.conflict;
 using claims.src.perms;
 using claims.src.rights;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Security;
-using System.Text;
-using System.Threading.Tasks;
-using Vintagestory.API.Client;
-using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
-using static claims.src.gui.playerGui.CANClaimsGui;
 
 namespace claims.src.gui.playerGui.structures
 {

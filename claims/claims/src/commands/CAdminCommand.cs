@@ -663,7 +663,7 @@ namespace claims.src.commands
             }
             city.getPlayerInfos().Add(playerInfo);
             playerInfo.setCity(city);
-            if (!city.isTechnicalCity())
+            if (city.HasMayor())
             {
                 PlayerInfo tmpPlayer = city.getMayor();
                 city.getMayor().clearCity();
@@ -673,6 +673,7 @@ namespace claims.src.commands
             city.setMayor(playerInfo);
             RightsHandler.reapplyRights(playerInfo);
             city.saveToDatabase();
+            UsefullPacketsSend.SendPlayerRelatedInfoOnCityJoined(playerInfo);
             return tcr;
         }
         public static TextCommandResult citySetBonusPlots(TextCommandCallingArgs args)

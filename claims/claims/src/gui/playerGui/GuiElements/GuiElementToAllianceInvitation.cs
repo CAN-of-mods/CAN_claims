@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Cairo;
 using claims.src.auxialiry;
 using claims.src.gui.playerGui.structures.cellElements;

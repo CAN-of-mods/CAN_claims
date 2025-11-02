@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using claims.src.part.structure.conflict;
-using claims.src.part.structure;
+﻿using claims.src.part.structure.conflict;
 
 namespace claims.src.gui.playerGui.structures.cellElements
 {

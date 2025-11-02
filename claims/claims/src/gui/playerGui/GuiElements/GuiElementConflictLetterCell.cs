@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Cairo;
 using claims.src.auxialiry;
 using claims.src.gui.playerGui.structures.cellElements;
@@ -129,15 +125,15 @@ namespace claims.src.gui.playerGui.GuiElements
             Bounds.CalcWorldBounds();
             if (this.cell.Purpose == part.structure.conflict.LetterPurpose.END_CONFLICT)
             {
-                capi.Gui.Icons.DrawIcon(context2, "claims:peace-dove", (int)(num7 - GuiElement.scaled(unscaledRightBoxWidth) - GuiElement.scaled(10.0)),
-                    (int)(num8 + GuiElement.scaled(15.0)),
+                capi.Gui.Icons.DrawIcon(context2, "claims:peace-dove", 0,
+                    0,
                     (int)GuiElement.scaled(64),
                     (int)GuiElement.scaled(64), new double[] { 0, 153, 0, 255 });
             }
             else
             {
                 capi.Gui.Icons.DrawIcon(context2, "claims:sword-brandish", (int)(num7 - GuiElement.scaled(unscaledRightBoxWidth) - GuiElement.scaled(10.0)),
-                    (int)(num8 + GuiElement.scaled(15.0)),
+                    (int)(num7 + GuiElement.scaled(15.0)),
                     (int)GuiElement.scaled(64),
                     (int)GuiElement.scaled(64), new double[] { 0, 153, 0, 255 });
             }
@@ -217,14 +213,15 @@ namespace claims.src.gui.playerGui.GuiElements
             ElementBounds imageBounds = ElementBounds.Fixed(Bounds.absX + 10, Bounds.absY + 10, 32, 32);
             //imageBounds.CalcWorldBounds();
 
-           
-            api.Render.Render2DTexturePremultipliedAlpha(
-                normalTexture.TextureId,
-                this.Bounds.renderX/ 1.5, this.Bounds.renderY / 1.05
-                , (double)this.Bounds.OuterWidthInt, (double)this.Bounds.OuterHeightInt
-            );
+            /*api.Render.Render2DTexturePremultipliedAlpha(
+                 normalTexture.TextureId,
+                 this.Bounds.renderX / 1.2, this.Bounds.renderY / 1.05
+                 , (double)this.Bounds.OuterWidthInt, (double)this.Bounds.OuterHeightInt
+             );*/
+            api.Render.Render2DLoadedTexture(normalTexture, (float)(this.Bounds.renderX + this.Bounds.InnerWidth / 2), (float)this.Bounds.renderY + 5);
 
             api.Render.Render2DTexturePremultipliedAlpha(modcellTexture.TextureId, (int)Bounds.absX, (int)Bounds.absY, Bounds.OuterWidthInt, Bounds.OuterHeightInt);
+            
             int mouseX = api.Input.MouseX;
             int mouseY = api.Input.MouseY;
             Vec2d vec2d = Bounds.PositionInside(mouseX, mouseY);

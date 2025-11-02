@@ -804,26 +804,26 @@ namespace claims.src.commands.register
                                  })
                                  .HandleWith(commands.CityCommand.CitySummonSetName)
                                  .WithArgs(parsers.Word("summonPointName"))
-                                .EndSub()
-                                .BeginSub("cname")
-                                     .WithDesc("Set plot's summon point name by coords.")
-                                     .WithPreCondition((TextCommandCallingArgs args) => {
-                                         if (args.Caller.Player is IServerPlayer player)
-                                         {
-                                             if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.CITY_SET_SUMMON }))
-                                             {
-                                                 return TextCommandResult.Success();
-                                             }
-                                             else
-                                             {
-                                                 return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
-                                             }
-                                         }
-                                         return TextCommandResult.Error("");
-                                     })
-                                     .HandleWith(commands.CityCommand.CitySummonSetNameByCoords)
-                                     .WithArgs(parsers.OptionalVec3i("pointPos"), parsers.Word("summonPointName"))
-                                .EndSub()
+                            .EndSub()
+                            .BeginSub("cname")
+                                    .WithDesc("Set plot's summon point name by coords.")
+                                    .WithPreCondition((TextCommandCallingArgs args) => {
+                                        if (args.Caller.Player is IServerPlayer player)
+                                        {
+                                            if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.CITY_SET_SUMMON }))
+                                            {
+                                                return TextCommandResult.Success();
+                                            }
+                                            else
+                                            {
+                                                return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                            }
+                                        }
+                                        return TextCommandResult.Error("");
+                                    })
+                                    .HandleWith(commands.CityCommand.CitySummonSetNameByCoords)
+                                    .WithArgs(parsers.OptionalVec3i("pointPos"), parsers.Word("summonPointName"))
+                            .EndSub()
                          .EndSub()
                          .BeginSub("use")
                              .WithDesc("Try to teleport on summon point.")

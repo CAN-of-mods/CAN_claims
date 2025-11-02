@@ -181,7 +181,7 @@ namespace claims.src.beb
             {
                 if (this.updateRef == null)
                 {
-                    if (!claims.dataStorage.getPlayerByUid(byPlayer.PlayerUID, out var playerInfo))
+                    if (!claims.dataStorage.getPlayerByUid(byPlayer.PlayerUID, out var playerInfo) || !playerInfo.HasAlliance())
                     {
                         return;
                     }
