@@ -2,24 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using claims.src.auxialiry;
 using claims.src.bb;
-using claims.src.part.structure.conflict;
+using claims.src.gui.playerGui.structures;
+using claims.src.messages;
+using claims.src.part;
 using claims.src.part.structure;
+using claims.src.part.structure.conflict;
+using claims.src.part.structure.war;
 using claims.src.renderer;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
-using Vintagestory.API.Server;
-using Vintagestory.API.Util;
-using Vintagestory.GameContent;
-using claims.src.part;
-using claims.src.part.structure.war;
-using claims.src.gui.playerGui.structures;
-using static OpenTK.Graphics.OpenGL.GL;
 
 namespace claims.src.beb
 {
@@ -170,6 +166,23 @@ namespace claims.src.beb
                         {
                             this.Api.World.BlockAccessor.BreakBlock(this.Pos, null);
                         }, 1000);
+                        if (claims.config.SEND_ANNOUNCEMENTS_PLOT_WAS_CAPTURED)
+                        {
+                            StringBuilder sb = new();
+                            if (claims.config.SEND_COORDS_OF_PLOT_WAS_CAPTURED)
+                            {
+                                var localPos = PosFunctions.TranslateCoordsToLocalVec3d(this.Api, this.Pos);
+                                sb.Append(Lang.Get("claims:our_city_is_under_attack_on_pos", defenderCity.GetPartName(), localPos.X, localPos.Y, localPos.Z));
+                            }
+                            else
+                            {
+                                sb.Append(Lang.Get("claims:our_city_is_under_attack", defenderCity.GetPartName()));
+                            }
+                            if (defenderCity.HasAlliance())
+                            {
+                                MessageHandler.SendMsgInAlliance(defenderCity.Alliance, sb.ToString());
+                            }
+                        }
                         return;
                     }
                 }
@@ -245,6 +258,21 @@ namespace claims.src.beb
                             client.Event.RegisterRenderer(this.renderer, EnumRenderStage.Opaque, "flag");
 
                         }
+                    }
+                    if (claims.config.SEND_ANNOUNCEMENTS_PLOT_IN_UNDER_ATTACK)
+                    {
+                        StringBuilder sb = new();
+                        if(claims.config.SEND_COORDS_OF_PLOT_IN_UNDER_ATTACK)
+                        {
+                            var localPos = PosFunctions.TranslateCoordsToLocalVec3d(this.Api, this.Pos);
+                            sb.Append(Lang.Get("claims:our_city_is_under_attack_on_pos", plotHere.getCity().GetPartName(), localPos.X, localPos.Y, localPos.Z));
+                        }
+                        else
+                        {
+                            sb.Append(Lang.Get("claims:our_city_is_under_attack", plotHere.getCity().GetPartName()));
+                        }
+
+                        MessageHandler.SendMsgInAlliance(alliance, sb.ToString());
                     }
                 }
             }

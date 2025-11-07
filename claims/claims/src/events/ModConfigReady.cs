@@ -132,7 +132,6 @@ namespace claims.src.events
                 }
                 else
                 {
-                    var f = it?.getMayor()?.GetPartName() ?? "";
                     CityStatsCashe.Add(it.Guid, new ClientCityInfoCellElement(it.getCityCitizens().Count, it.getMayor()?.GetPartName() ?? "",
                         it.getCityPlots().Count, it.Alliance?.GetPartName() ?? "", it.TimeStampCreated, it.GetPartName(), it.openCity,
                         it.invMsg, it.Guid));

@@ -18,15 +18,7 @@ namespace claims.src.renderer
 
         public Matrixf ModelMat = new();
 
-
-        public FlagRenderer(
-            ICoreClientAPI coreClientAPI,
-            MeshData mesh,
-            BlockPos pos,
-            BlockEntityBehaviorFlag blockEntity,
-            float poleTop,
-            float poleBottom
-        )
+        public FlagRenderer(ICoreClientAPI coreClientAPI, MeshData mesh, BlockPos pos, BlockEntityBehaviorFlag blockEntity, float poleTop, float poleBottom)
         {
 
             this.api = coreClientAPI;
@@ -36,17 +28,12 @@ namespace claims.src.renderer
             this.poleTop = poleTop;
             this.poleBottom = poleBottom;
 
-        } // VerticalFlagRenderer ..
-
+        }
 
         public double RenderOrder => 0.5;
         public int RenderRange => 24;
 
-
-        public virtual void OnRenderFrame(
-            float deltaTime,
-            EnumRenderStage stage
-        )
+        public virtual void OnRenderFrame(float deltaTime, EnumRenderStage stage)
         {
 
             if (this.meshRef == null) return;
@@ -74,9 +61,7 @@ namespace claims.src.renderer
             rpi.RenderMesh(meshRef);
             prog.Stop();
 
-        } // void ..
-
-
+        }
 
         public void Dispose()
         {
@@ -84,6 +69,6 @@ namespace claims.src.renderer
             this.api.Event.UnregisterRenderer(this, EnumRenderStage.Opaque);
             this.meshRef.Dispose();
 
-        } // void ..
-    } // class ..
+        }
+    }
 }

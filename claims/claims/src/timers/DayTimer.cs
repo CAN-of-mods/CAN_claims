@@ -15,7 +15,7 @@ namespace claims.src.timers
         public static Dictionary<City, List<Plot>> citiesPlots = new();
         public static Dictionary<PlayerInfo, decimal> playerSumFee = new();
         public static List<(City, string)> toDeleteCities = new();
-        static List<Alliance> toDeleteAlliancies = new List<Alliance>();
+        static List<Alliance> toDeleteAlliancies = new();
 
         public void Run(bool scheduleNewDayAfter)
         {
@@ -46,7 +46,7 @@ namespace claims.src.timers
 
             ProcessAlliancesCare();
 
-            MessageHandler.sendGlobalMsg("New day here.");
+            MessageHandler.sendGlobalMsg(Lang.Get("clams:new_day_log_msg"));
             MessageHandler.sendDebugMsg("[claims] DayTimer::new day here");
             if (scheduleNewDayAfter)
             {
@@ -89,7 +89,7 @@ namespace claims.src.timers
                 {
                     if (city.DebtBalance > claims.config.CITY_MAX_DEBT)
                     {
-                        toDeleteCities.Add((city, string.Format("City debt is too high - {0}", city.DebtBalance)));
+                        toDeleteCities.Add((city, Lang.Get("claims:city_delete_reason_debt_is_too_high", city.DebtBalance)));
                     }
                 }
                 UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid, gui.playerGui.structures.EnumPlayerRelatedInfo.CITY_DEBT);

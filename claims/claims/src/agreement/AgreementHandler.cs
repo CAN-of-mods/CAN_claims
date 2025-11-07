@@ -1,20 +1,13 @@
-﻿using claims.src.messages;
-using claims.src.part;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
+using claims.src.messages;
 using Vintagestory.API.Config;
-using Vintagestory.API.Datastructures;
 using Vintagestory.API.Server;
 
 namespace claims.src.agreement
 {
-
-	//FOR PLAYER AGREE TO CREATE NEW CITY, VILLAGE, ALLIANCE
+	//Player can agree to create a new city, alliance
     public class AgreementHandler
     {
         public static ConcurrentDictionary<string, Agreement> agreements = new ConcurrentDictionary<string, Agreement>();

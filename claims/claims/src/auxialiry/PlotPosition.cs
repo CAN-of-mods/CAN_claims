@@ -1,11 +1,6 @@
-﻿using claims.src.part;
+﻿using System.Collections.Generic;
+using claims.src.part;
 using claims.src.part.structure;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.MathTools;

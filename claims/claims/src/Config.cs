@@ -184,6 +184,10 @@ namespace claims.src
         public OrderedDictionary<int, double> ID_TO_COINS_VALUES = new OrderedDictionary<int, double>();
 
         public bool VERBOSE_LOGGING = true;
+        public bool SEND_ANNOUNCEMENTS_PLOT_IN_UNDER_ATTACK = true;
+        public bool SEND_COORDS_OF_PLOT_IN_UNDER_ATTACK = true;
+        public bool SEND_ANNOUNCEMENTS_PLOT_WAS_CAPTURED = true;
+        public bool SEND_COORDS_OF_PLOT_WAS_CAPTURED = true;
         public HashSet<EnumPlayerPermissions> AVAILABLE_CITY_PERMISSIONS = new() {
         };
         public static void AddDefaultValues()

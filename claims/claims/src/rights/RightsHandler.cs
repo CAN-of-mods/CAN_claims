@@ -80,19 +80,6 @@ namespace claims.src
                         EnumPlayerPermissions.CITY_SET_PLOT_ACCESS_PERMISSIONS
                     }
                 },
-
-                { 
-                    "CITY_ASSISTANT", new HashSet<EnumPlayerPermissions>
-                    {
-                        EnumPlayerPermissions.CITY_CLAIM_PLOT,
-                        EnumPlayerPermissions.CITY_UNCLAIM_PLOT,
-                        EnumPlayerPermissions.CITY_KICK,
-                        EnumPlayerPermissions.CITY_INVITE,
-                        EnumPlayerPermissions.CITY_UNINVITE,
-                        EnumPlayerPermissions.CITY_SET_PLOTS_COLOR,
-                        EnumPlayerPermissions.CITY_SEE_BALANCE
-                    }
-                },
                 {
                     "LEADER", new HashSet<EnumPlayerPermissions>
                     {
@@ -109,33 +96,6 @@ namespace claims.src
 
             };
             return outDict;
-        }
-        public static bool ExistCityRank(string val)
-        {
-            foreach(var it in PlayerPermissionsByGroups)
-            {
-                if(it.Key.StartsWith("CITY_"))
-                {
-                    string withoutPrefix = it.Key.Substring(5);
-                    if(val.Equals(withoutPrefix) || val.ToLower().Equals(withoutPrefix.ToLower()))
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-        public static List<string> GetCityRanks()
-        {
-            var list = new List<string>();
-            foreach (var it in PlayerPermissionsByGroups)
-            {
-                if (it.Key.StartsWith("CITY_"))
-                {
-                    list.Add(it.Key.Substring(5));
-                }
-            }
-            return list;
         }
         public static void reapplyRights(PlayerInfo playerInfo)
         {
@@ -190,10 +150,6 @@ namespace claims.src
                 }
             }
             UsefullPacketsSend.AddToQueuePlayerInfoUpdate(playerInfo.Guid, gui.playerGui.structures.EnumPlayerRelatedInfo.PLAYER_PERMISSIONS);
-        }
-        public static HashSet<string> playersRights(string playerUID)
-        {
-            return (claims.sapi.World.PlayerByUid(playerUID) as IServerPlayer).ServerData.PermaPrivileges;
         }
         public class StringEnumConverter : JsonConverter
         {

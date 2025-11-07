@@ -1,21 +1,17 @@
-﻿using claims.src.part;
-using claims.src.gui.playerGui.structures;
-using Newtonsoft.Json;
+﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
-using Vintagestory.API.Server;
-using System.Linq;
-using claims.src.network.packets;
-using claims.src.delayed.invitations;
-using System.Collections.Concurrent;
-using Vintagestory.API.Util;
-using Vintagestory.API.Client;
-using claims.src.part.structure;
-using ProtoBuf;
-using claims.src.part.structure.plots;
-using Vintagestory.API.Datastructures;
-using caneconomy.src.interfaces;
-using claims.src.gui.playerGui.structures.cellElements;
 using System.Globalization;
+using System.Linq;
+using claims.src.delayed.invitations;
+using claims.src.gui.playerGui.structures;
+using claims.src.gui.playerGui.structures.cellElements;
+using claims.src.network.packets;
+using claims.src.part;
+using claims.src.part.structure;
+using claims.src.part.structure.plots;
+using Newtonsoft.Json;
+using Vintagestory.API.Server;
+using Vintagestory.API.Util;
 
 namespace claims.src.auxialiry
 {
@@ -68,7 +64,7 @@ namespace claims.src.auxialiry
                 }
 
                 infoToUpdateCity.AddRange([EnumPlayerRelatedInfo.CITY_CREATED_TIMESTAMP, EnumPlayerRelatedInfo.CITY_MEMBERS,
-                                           EnumPlayerRelatedInfo.MAX_COUNT_PLOTS, EnumPlayerRelatedInfo.CLAIMED_PLOTS, EnumPlayerRelatedInfo.CITY_POSSIBLE_RANKS,
+                                           EnumPlayerRelatedInfo.MAX_COUNT_PLOTS, EnumPlayerRelatedInfo.CLAIMED_PLOTS,
                                            EnumPlayerRelatedInfo.CITY_PLOTS_COLOR, EnumPlayerRelatedInfo.CITY_DEBT, EnumPlayerRelatedInfo.CITY_DAY_PAYMENT,
                                            EnumPlayerRelatedInfo.CITY_PERMISSIONS_UPDATED, EnumPlayerRelatedInfo.CITY_BALANCE, EnumPlayerRelatedInfo.CITY_CRIMINALS_LIST,
                                            EnumPlayerRelatedInfo.CITY_PRISON_CELL_ALL, EnumPlayerRelatedInfo.CITY_SUMMON_POINT_ALL, EnumPlayerRelatedInfo.CITY_PLOTS_GROUPS_ALL]);
@@ -601,9 +597,6 @@ namespace claims.src.auxialiry
                                 }
                                 result[pair.Key] = JsonConvert.SerializeObject(plotsgroupCellElements);
                             }
-                            break;
-                        case EnumPlayerRelatedInfo.CITY_POSSIBLE_RANKS:
-                            result[pair.Key] = JsonConvert.SerializeObject(RightsHandler.GetCityRanks());
                             break;
                         default:
                             if (pair.Value?.TryGetValue("value", out var list) ?? false)

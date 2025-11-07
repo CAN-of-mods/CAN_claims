@@ -13,7 +13,6 @@ namespace claims.src.events
             capi.Event.LevelFinalize += pmlc.onPlayerJoin;
             capi.Event.OnTestBlockAccess += TestBlockAccessDelegate_1;
         }
-        //IPlayer player, BlockSelection blockSel, EnumBlockAccessFlags accessType, ref string claimant, EnumWorldAccessResponse response
         public static EnumWorldAccessResponse TestBlockAccessDelegate_1(IPlayer player, BlockSelection blockSel, EnumBlockAccessFlags accessType, ref string claimant, EnumWorldAccessResponse response)
         {
             if(claimant == null)

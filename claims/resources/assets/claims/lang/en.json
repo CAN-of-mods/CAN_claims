@@ -84,6 +84,7 @@
     "city_name_changed_to": "City's name was changed to {0}",
     "gui-city-debt": "Debt: {0}",
     "gui-city-payment": "Next city payment: {0}",
+    "city_delete_reason_debt_is_too_high": "City debt is too high - {0}",
     //ALLIANCE
     "alliance_was_deleted": "Alliance {0} was deleted.",
     "alliance_fee_too_high": "Fee is too high, maximum is {0}.",
@@ -126,6 +127,9 @@
     "cannot_leave_during_battle": "Cannot leave alliance during a battle.",
     "cannot_delete_alliance_during_battle": "Cannot delete alliance during a battle.",
     "cannot_kick_from_alliance_during_battle": "Cannot kick from alliance during a battle.",
+    "our_city_is_under_attack_on_pos": "Our city {0} is under attack at {1}/{2}/{3}",
+    "our_city_is_under_attack": "Our city {0} is under attack.",
+    "our_city_plot_was_captured_on_pos": "Our city plot {0} was captured at {1}/{2}/{3}",
     //INVITATION
     "player_disagreed_with_invitation_to_city": "Player {0} dissagreed with invitation to city {1}.",
     "player_already_invited_to_city": "Player is already invited to the city.",
@@ -225,6 +229,7 @@
     "pvp_flag_set_to": "PVP flag was set to {0}.",
     "fire_flag_set_to": "Firespread flag was set to {0}.",
     "blast_flag_set_to": "Blast flag was set to {0}.",
+    "new_day_log_msg": "New day is here",
 
     //AGREEMENT
     "agreement_timeout": "Agreement timeout",

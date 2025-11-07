@@ -46,11 +46,6 @@ namespace claims.src.gui.playerGui.GuiElements
 
         private ICoreClientAPI capi;
 
-        public Action<int> OnMouseDownOnCellLeft;
-        public Action<int> OnMouseDownOnCellMiddle;
-        public Action<int> OnMouseDownOnCellRight;
-
-
         ElementBounds IGuiElementCell.Bounds => Bounds;
 
 
@@ -303,22 +298,6 @@ namespace claims.src.gui.playerGui.GuiElements
             claims.CANCityGui.BuildMainWindow();
             api.Gui.PlaySound("menubutton_press");
             api.Gui.PlaySound("menubutton_press");
-            if (vec2d.X > Bounds.InnerWidth - GuiElement.scaled(GuiElementMainMenuCell.unscaledRightBoxWidth) * 2 &&
-                    vec2d.X < Bounds.InnerWidth - GuiElement.scaled(GuiElementMainMenuCell.unscaledRightBoxWidth))
-            {
-                OnMouseDownOnCellMiddle?.Invoke(elementIndex);
-                args.Handled = true;
-            }
-            else if (vec2d.X > Bounds.InnerWidth - GuiElement.scaled(GuiElementMainMenuCell.unscaledRightBoxWidth))
-            {
-                OnMouseDownOnCellRight?.Invoke(elementIndex);
-                args.Handled = true;
-            }
-            else
-            {
-                OnMouseDownOnCellLeft?.Invoke(elementIndex);
-                args.Handled = true;
-            }
         }
 
         public void OnMouseMoveOnElement(MouseEvent args, int elementIndex)

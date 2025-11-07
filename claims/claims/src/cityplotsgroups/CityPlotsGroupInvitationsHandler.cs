@@ -9,8 +9,6 @@ namespace claims.src.cityplotsgroups
     {
         //city: group: invites
         public static ConcurrentDictionary<string, Dictionary<string, HashSet<CityPlotsGroupInvitation>>> cityPlotsGroupInvitations = new ConcurrentDictionary<string, Dictionary<string, HashSet<CityPlotsGroupInvitation>>>();
-        //public static HashSet<CityPlotsGroupInvitation> cityPlotsGroupInvitations = new HashSet<CityPlotsGroupInvitation>();
-
         public static bool addNewCityPlotGroupInvitation(CityPlotsGroupInvitation invitation)
         {
             if(cityPlotsGroupInvitations.TryGetValue(invitation.Sender.Guid, out var cityInvites))

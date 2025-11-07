@@ -9,38 +9,28 @@ namespace claims.src.rustyshellfork
     {
         public static Harmony harmonyInstance;
         public const string harmonyID = "claims.RustyShellFork.Patches";
-        public static Mod ModPC;
         public override double ExecuteOrder()
         {
             return 3;
         }
-        /*public override bool ShouldLoad(EnumAppSide forSide)
+        public override bool ShouldLoad(ICoreAPI api)
         {
-            if(forSide == EnumAppSide.Client)
+            if (base.ShouldLoad(api))
             {
-                if(claims.src.claims.capi)
+                if (api.Side == EnumAppSide.Client || !api.ModLoader.IsModEnabled("rustyshellfork"))
+                {
+                    return false;
+                }
+                return true;
             }
-            if(claims.api == null)
-            {
-                return false;
-            }
-            return dummyplayer.api.ModLoader.IsModEnabled("playercorpse");
-        }*/
+            return false;
+        }
         public override void StartServerSide(ICoreServerAPI api)
         {
-
-            if(!api.ModLoader.IsModEnabled("rustyshellfork"))
-            {
-                return;
-            }
             harmonyInstance = new Harmony(harmonyID);
-            var c = typeof(BlastExtensions).GetMethodNames();
-            //api.World.CommonBlast
             harmonyInstance.Patch(typeof(BlastExtensions).GetMethod("CommonBlast"), prefix: new HarmonyMethod(typeof(harmPatch).GetMethod("Prefix_IServerWorldAccessor_CommonBlast")));
             harmonyInstance.Patch(typeof(BlastExtensions).GetMethod("GasBlast"), prefix: new HarmonyMethod(typeof(harmPatch).GetMethod("Prefix_IServerWorldAccessor_GasBlast")));
-            harmonyInstance.Patch(typeof(BlastExtensions).GetMethod("IncendiaryBlast"), prefix: new HarmonyMethod(typeof(harmPatch).GetMethod("Prefix_IServerWorldAccessor_IncendiaryBlast")));
-            //ModPC = api.ModLoader.GetModSystem<PlayerCorpse.Systems.DeathContentManager>().Mod;
-            //harmonyInstance.Patch(typeof(DeathContentManager).GetMethod("OnEntityDeath", BindingFlags.NonPublic | BindingFlags.Instance), prefix: new HarmonyMethod(typeof(harmPatch).GetMethod("Prefix_DeathContentManager_OnEntityDeath")));
+            harmonyInstance.Patch(typeof(BlastExtensions).GetMethod("IncendiaryBlast"), prefix: new HarmonyMethod(typeof(harmPatch).GetMethod("Prefix_IServerWorldAccessor_IncendiaryBlast")));           
         }
     }
 }

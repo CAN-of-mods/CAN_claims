@@ -44,11 +44,6 @@ namespace claims.src.gui.playerGui.GuiElements
 
         private ICoreClientAPI capi;
 
-        public Action<int> OnMouseDownOnCellLeft;
-        public Action<int> OnMouseDownOnCellMiddle;
-        public Action<int> OnMouseDownOnCellRight;
-
-
         ElementBounds IGuiElementCell.Bounds => Bounds;
 
         public GuiElementPlotsGroupInvitation(ICoreClientAPI capi, ClientToPlotsGroupInvitation cell, ElementBounds bounds)

@@ -9,12 +9,10 @@ namespace claims.src.gui.plotMovementGui
     {
         public override EnumDialogType DialogType => EnumDialogType.HUD;
         public long timeStampShouldBeClosed = 0;
-
         public ClaimsPlayerMovementGUI(ICoreClientAPI capi) : base(capi)
         {
             SetupDialog();
         }
-
         public override string ToggleKeyCombinationCode => "claimsplayermovementgui";
         public override void OnRenderGUI(float deltaTime)
         {

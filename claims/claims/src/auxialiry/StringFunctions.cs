@@ -1,13 +1,13 @@
-﻿using claims.src.cityplotsgroups;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using claims.src.cityplotsgroups;
 using claims.src.delayed.invitations;
 using claims.src.part;
 using claims.src.part.structure;
 using claims.src.part.structure.plots;
 using SkiaSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Vintagestory.API.MathTools;
 
 namespace claims.src.auxialiry

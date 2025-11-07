@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using claims.src.auxialiry;
 using claims.src.part.structure;
 using HarmonyLib;

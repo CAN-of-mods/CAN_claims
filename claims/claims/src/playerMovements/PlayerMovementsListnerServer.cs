@@ -219,7 +219,7 @@ namespace claims.src
              }*/
 
         }        
-        public static void checkPlayerMove(float dt)
+        public void checkPlayerMove(float dt)
         {
             foreach (var it in claims.sapi.World.AllOnlinePlayers)
             {

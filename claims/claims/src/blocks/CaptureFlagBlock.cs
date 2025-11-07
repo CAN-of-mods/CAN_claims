@@ -1,18 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using claims.src.auxialiry;
-using claims.src.beb;
-using claims.src.part.structure;
-using claims.src.part.structure.conflict;
-using claims.src.part.structure.war;
+﻿using claims.src.beb;
 using Vintagestory.API.Common;
-using Vintagestory.API.Common.Entities;
-using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
-using Vintagestory.GameContent;
 
 namespace claims.src.blocks
 {

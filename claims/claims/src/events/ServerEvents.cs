@@ -8,7 +8,7 @@ namespace claims.src.events
     {
         public static void AddEvents(ICoreServerAPI sapi)
         {
-            sapi.Event.RegisterGameTickListener(PlayerMovementsListnerServer.checkPlayerMove, claims.config.DELTA_TIME_PLAYER_POSITION_CHECK);
+            sapi.Event.RegisterGameTickListener(claims.serverPlayerMovementListener.checkPlayerMove, claims.config.DELTA_TIME_PLAYER_POSITION_CHECK);
             sapi.Event.RegisterEventBusListener(claims.serverPlayerMovementListener.onPlayerChangePlotEvent, 0.5, "claimsPlayerChangePlot");
 
             sapi.Event.PlayerJoin += events.OnPlayerJoin.Event_OnPlayerJoin;
