@@ -89,7 +89,7 @@ namespace claims.src.part
                 }
                 collector.Add(EnumPlayerRelatedInfo.CITY_CREATED_TIMESTAMP, city.TimeStampCreated.ToString());
                 collector.Add(EnumPlayerRelatedInfo.CITY_MEMBERS, JsonConvert.SerializeObject(StringFunctions.getNamesOfCitizens(city)));
-                collector.Add(EnumPlayerRelatedInfo.MAX_COUNT_PLOTS, Settings.getMaxNumberOfPlotForCity(city).ToString());
+                collector.Add(EnumPlayerRelatedInfo.MAX_COUNT_PLOTS, JsonConvert.SerializeObject(Settings.getPossibleAmountOfPlotsDictForCity(city)));
                 collector.Add(EnumPlayerRelatedInfo.CLAIMED_PLOTS, city.getCityPlots().Count.ToString());
                 collector.Add(EnumPlayerRelatedInfo.PLAYER_PREFIX, creator.Prefix);
                 collector.Add(EnumPlayerRelatedInfo.PLAYER_AFTER_NAME, creator.AfterName);

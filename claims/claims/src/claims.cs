@@ -67,6 +67,7 @@ namespace claims.src
         WorldMapManager mapmgr;
         public static CANClaimsGui CANCityGui { get; set; }
         public static CityInfo playerCityInfo;
+        public static bool DebugValSet = false;
 
         public static ClaimsPlayerMovementGUI movementClaimGui { get; set; }             
         /*==============================================================================================*/

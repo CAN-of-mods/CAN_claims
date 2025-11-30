@@ -13,7 +13,31 @@ namespace claims.src.events
             var hostile = properties.Server?.SpawnConditions?.Runtime?.Group.Equals("hostile");
             if(hostile.HasValue && hostile.Value)
             {
-                if(claims.dataStorage.getPlot(PlotPosition.fromXZ((int)spawnPosition.X, (int)spawnPosition.Z), out Plot plot))
+                if(claims.dataStorage == null)
+                {
+                    if(claims.DebugValSet)
+                    {
+                        return true;
+                    }
+
+                    claims.sapi?.Logger.Debug("Event_OnTrySpawnEntity datastorage was null");
+
+                    claims.DebugValSet = true;
+                    return true;
+                }
+                if (spawnPosition == null)
+                {
+                    if (claims.DebugValSet)
+                    {
+                        return true;
+                    }
+
+                    claims.sapi?.Logger.Debug("Event_OnTrySpawnEntity spawnPosition was null");
+
+                    claims.DebugValSet = true;
+                    return true;
+                }
+                if (claims.dataStorage.getPlot(PlotPosition.fromXZ((int)spawnPosition.X, (int)spawnPosition.Z), out Plot plot))
                 {
                     //TODO 
                     //check for plot/city flags

@@ -11,7 +11,7 @@ namespace claims.src.gui.playerGui.structures
         public string MayorName { get; set; }
         public long TimeStampCreated { get; set; }
         public HashSet<string> PlayersNames;
-        public int MaxCountPlots { get; set; }
+        public Dictionary<string, int> MaxCountPlots { get; set; } = new();
         public int CountPlots { get; set; }
         public string Prefix { get; set; }
         public string AfterName { get; set; }
@@ -40,7 +40,7 @@ namespace claims.src.gui.playerGui.structures
             this.ClientWarRangeCellElements = CreateDefaultWarRangeForWeek();
             this.ClientTwoWarRangesCellElement = CreateDefaultTwoWarRangesForWeek();
         }
-        public CityInfo(string cityName, string mayorName, long timeStampCreated, HashSet<string> citizens, int maxCountPlots, int countPlots,
+        public CityInfo(string cityName, string mayorName, long timeStampCreated, HashSet<string> citizens, Dictionary<string, int> maxCountPlots, int countPlots,
             string prefix, string afterName, HashSet<string> cityTitles, int plotsColor, double cityBalance, HashSet<string> criminals)
         {
             Name = cityName;

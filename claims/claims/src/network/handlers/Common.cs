@@ -8,16 +8,15 @@ namespace claims.src.network.handlers
     {
         public static void RegisterMessageTypes(INetworkChannel channel, ICoreAPI api)
         {
+            channel.RegisterMessageType(typeof(SavedPlotsPacket));
+            channel.RegisterMessageType(typeof(PlayerGuiRelatedInfoPacket));
+            channel.RegisterMessageType(typeof(ConfigUpdateValuesPacket));
             if (claims.config.VERBOSE_LOGGING)
             {
-                api.Logger.VerboseDebug("[claims] RegisterMessageType(SavedPlotsPacket)");
-                channel.RegisterMessageType(typeof(SavedPlotsPacket));
-
-                api.Logger.VerboseDebug("[claims] RegisterMessageType(PlayerGuiRelatedInfoPacket)");
-                channel.RegisterMessageType(typeof(PlayerGuiRelatedInfoPacket));
-
+                api.Logger.VerboseDebug("[claims] RegisterMessageType(SavedPlotsPacket)");               
+                api.Logger.VerboseDebug("[claims] RegisterMessageType(PlayerGuiRelatedInfoPacket)");              
                 api.Logger.VerboseDebug("[claims] RegisterMessageType(ConfigUpdateValuesPacket)");
-                channel.RegisterMessageType(typeof(ConfigUpdateValuesPacket));
+                
             }
         }
     }

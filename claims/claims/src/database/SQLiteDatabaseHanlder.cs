@@ -658,8 +658,8 @@ namespace claims.src.database
                     city.setMayor(null);
                 }
             }
-            city.TimeStampCreated = long.Parse(it["timestampcreated"].ToString());
-            city.DebtBalance = int.Parse(it["debtbalance"].ToString());
+            city.TimeStampCreated = long.Parse(it["timestampcreated"].ToString(), CultureInfo.InvariantCulture);
+            city.DebtBalance = double.Parse(it["debtbalance"].ToString(), CultureInfo.InvariantCulture);
             city.getPermsHandler().setPerms(it["perm"].ToString());
             foreach (string str in it["plotgroups"].ToString().Split(';'))
             {
@@ -685,7 +685,7 @@ namespace claims.src.database
                     city.Alliance = alliance;
                 }
             }
-            city.setDefaultPlotCost(int.Parse(it["defaultplotcost"].ToString()));          
+            city.setDefaultPlotCost(int.Parse(it["defaultplotcost"].ToString(), CultureInfo.InvariantCulture));          
             foreach (string str in it["criminals"].ToString().Split(';'))
             {
                 if (str.Length == 0)
@@ -701,11 +701,11 @@ namespace claims.src.database
             city.fee = int.Parse(it["fee"].ToString());
             city.invMsg = it["invMsg"].ToString();
             city.openCity = it["opencity"].ToString().Equals("0") ? false : true;
-            city.setBonusPlots(int.Parse(it["bonusplots"].ToString()));
-            city.Extrachunksbought = int.Parse(it["extrachunksbought"].ToString());
+            city.setBonusPlots(int.Parse(it["bonusplots"].ToString(), CultureInfo.InvariantCulture));
+            city.Extrachunksbought = int.Parse(it["extrachunksbought"].ToString(), CultureInfo.InvariantCulture);
             try
             {
-                city.cityColor = int.Parse(it["citycolor"].ToString());
+                city.cityColor = int.Parse(it["citycolor"].ToString(), CultureInfo.InvariantCulture);
             }
             catch 
             {

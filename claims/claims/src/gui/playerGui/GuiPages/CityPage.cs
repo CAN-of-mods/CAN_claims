@@ -45,7 +45,31 @@ namespace claims.src.gui.playerGui.GuiPages
                 currentBounds = currentBounds.BelowCopy();
                 currentBounds.fixedWidth /= 2;
                 currentBounds.WithAlignment(EnumDialogArea.LeftTop);
-                compo.AddStaticText(Lang.Get("claims:gui-claimed-max-plots", clientInfo.CityInfo.CountPlots, clientInfo.CityInfo.MaxCountPlots),
+
+                clientInfo.CityInfo.MaxCountPlots.TryGetValue("base", out int baseAmount);
+                clientInfo.CityInfo.MaxCountPlots.TryGetValue("bonus", out int bonus);
+                clientInfo.CityInfo.MaxCountPlots.TryGetValue("alliance", out int alliance);
+                string langVal;
+                if (bonus > 0 && alliance > 0)
+                {
+                    langVal = Lang.Get("claims:gui-claimed-max-plots-with-bonus-alliance",
+                        clientInfo.CityInfo.CountPlots, baseAmount + bonus + alliance, bonus, alliance);
+                }
+                else if (bonus > 0)
+                {
+                    langVal = Lang.Get("claims:gui-claimed-max-plots-with-bonus",
+                        clientInfo.CityInfo.CountPlots, baseAmount + bonus + alliance, bonus);
+                }
+                else if (alliance > 0)
+                {
+                    langVal = Lang.Get("claims:gui-claimed-max-plots-with-alliance",
+                        clientInfo.CityInfo.CountPlots, baseAmount + bonus + alliance, alliance);
+                }
+                else
+                {
+                    langVal = Lang.Get("claims:gui-claimed-max-plots", clientInfo.CityInfo.CountPlots, baseAmount);
+                }
+                compo.AddStaticText(langVal,
                     cityTabFont,
                     currentBounds, "claimedPlotsToMax");
 
@@ -94,7 +118,7 @@ namespace claims.src.gui.playerGui.GuiPages
 
 
 
-                currentBounds = currentBounds.BelowCopy(0, 5);
+                currentBounds = currentBounds.BelowCopy(0, 25);
 
                 compo.AddStaticText(Lang.Get("claims:gui-city-population", clientInfo.CityInfo.PlayersNames.Count),
                     cityTabFont,

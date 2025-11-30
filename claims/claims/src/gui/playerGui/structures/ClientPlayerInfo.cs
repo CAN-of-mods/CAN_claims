@@ -86,7 +86,7 @@ namespace claims.src.gui.playerGui.structures
             AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_DAY_PAYMENT, OnCityDayPayment);
             AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_PERMISSIONS_UPDATED, OnCityPermissionsUpdated);
         }
-        public ClientPlayerInfo(string cityName, string mayorName, long timeStampCreated, HashSet<string> citizens, int maxCountPlots, int countPlots, string prefix,
+        public ClientPlayerInfo(string cityName, string mayorName, long timeStampCreated, HashSet<string> citizens, Dictionary<string, int> maxCountPlots, int countPlots, string prefix,
             string afterName, HashSet<string> cityTitles, EnumShowPlotMovement showPlotMovement, int PlotColor, double cityBalance, HashSet<string> criminals)
         {
             CityInfo = new CityInfo(cityName, mayorName, timeStampCreated, citizens, maxCountPlots, countPlots, prefix, afterName, cityTitles, PlotColor, cityBalance, criminals);
@@ -107,7 +107,7 @@ namespace claims.src.gui.playerGui.structures
 
             HashSet<string> citizenList = JsonConvert.DeserializeObject<HashSet<string>>(citizens);
 
-            int.TryParse(maxCountPlots, out int maxCountInt);
+            Dictionary<string, int> maxCountPlotsDict = JsonConvert.DeserializeObject<Dictionary<string, int>>(maxCountPlots);
             int.TryParse(countPlots, out int curCountPlotInt);
 
             HashSet<string> titles = JsonConvert.DeserializeObject<HashSet<string>>(cityTitles);
@@ -116,7 +116,7 @@ namespace claims.src.gui.playerGui.structures
 
             HashSet<string> criminals = JsonConvert.DeserializeObject<HashSet<string>>(cityCriminals);
 
-            CityInfo = new CityInfo(cityName, mayorName, longStamp, citizenList, maxCountInt, curCountPlotInt, prefix, afterName, titles, PlotColor, cityBalance, criminals);
+            CityInfo = new CityInfo(cityName, mayorName, longStamp, citizenList, maxCountPlotsDict, curCountPlotInt, prefix, afterName, titles, PlotColor, cityBalance, criminals);
             ShowPlotMovement = (EnumShowPlotMovement)showInt;
         }
 
@@ -127,7 +127,7 @@ namespace claims.src.gui.playerGui.structures
 
             HashSet<string> citizenList = JsonConvert.DeserializeObject<HashSet<string>>(citizens);
 
-            int.TryParse(maxCountPlots, out int maxCountInt);
+            Dictionary<string, int> maxCountPlotsDict = JsonConvert.DeserializeObject<Dictionary<string, int>>(maxCountPlots);
             int.TryParse(countPlots, out int curCountPlotInt);
 
             HashSet<string> titles = JsonConvert.DeserializeObject<HashSet<string>>(cityTitles);
@@ -139,7 +139,7 @@ namespace claims.src.gui.playerGui.structures
 
             HashSet<string> criminals = JsonConvert.DeserializeObject<HashSet<string>>(cityCriminals);
 
-            CityInfo cityInfo = new CityInfo(cityName, mayorName, longStamp, citizenList, maxCountInt, curCountPlotInt, prefix, afterName, titles, PlotColor, cityBalance, criminals);
+            CityInfo cityInfo = new CityInfo(cityName, mayorName, longStamp, citizenList, maxCountPlotsDict, curCountPlotInt, prefix, afterName, titles, PlotColor, cityBalance, criminals);
 
             return new ClientPlayerInfo(cityInfo, friends, receivedInvitations, (EnumShowPlotMovement)showInt);
         }
@@ -174,8 +174,7 @@ namespace claims.src.gui.playerGui.structures
         }
         private void OnMaxCountPlots(string val)
         {
-            int.TryParse(val, out int maxPlot);
-            CityInfo.MaxCountPlots = maxPlot;
+            CityInfo.MaxCountPlots = JsonConvert.DeserializeObject<Dictionary<string, int>>(val);
         }
         private void OnClaimedPlots(string val)
         {

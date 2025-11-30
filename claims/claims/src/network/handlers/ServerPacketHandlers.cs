@@ -13,6 +13,7 @@ using claims.src.part.structure.conflict;
 using Newtonsoft.Json;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
+using Vintagestory.Server;
 
 namespace claims.src.network.handlers
 {
@@ -99,6 +100,7 @@ namespace claims.src.network.handlers
                     }
                     if (preparedData.Count > 0)
                     {
+
                         string serializedZones = JsonConvert.SerializeObject(preparedData);
 
                         claims.serverChannel.SendPacket(new SavedPlotsPacket()
@@ -107,6 +109,11 @@ namespace claims.src.network.handlers
                             data = serializedZones
 
                         }, player);
+                        
+                        if (ServerMain.FrameProfiler.Enabled)
+                        {
+                            ServerMain.FrameProfiler.Mark("can-claims-packet-city-zone");
+                        }
                     }
                 }
                 else if(packet.type == PacketsContentEnum.CURRENT_PLOT_CLIENT_REQUEST)
@@ -117,13 +124,17 @@ namespace claims.src.network.handlers
                         CurrentPlotInfo cpi = new CurrentPlotInfo(plot.GetPartName(), plot.getPlotOwner()?.GetPartName() ?? "",
                             plot.Type, plot.getCustomTax(), plot.Price, plot.getPermsHandler(), plot.extraBought, plot.getPos());
                         string serializedZones = JsonConvert.SerializeObject(cpi);
-
+                        
                         claims.serverChannel.SendPacket(new SavedPlotsPacket()
                         {
                             type = PacketsContentEnum.CURRENT_PLOT_INFO,
                             data = serializedZones
 
                         }, player);
+                        if (ServerMain.FrameProfiler.Enabled)
+                        {
+                            ServerMain.FrameProfiler.Mark("can-claims-packet-current-plot-info");
+                        }
                     }                                      
                 }
                 else if (packet.type == PacketsContentEnum.CITY_CITIZENS_RANKS_REQUEST)

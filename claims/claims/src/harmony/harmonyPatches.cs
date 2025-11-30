@@ -149,7 +149,7 @@ namespace claims.src.harmony
                 return true;
             }
             BlockEntity be = __instance.Api.World.BlockAccessor.GetBlockEntity(__instance.FirePos.DownCopy(1));
-            if (!(be is BlockEntityPitKiln))
+            if (be is not BlockEntityPitKiln && (__instance.Blockentity != null && __instance.Blockentity is not BlockEntityGroundStorage))
             {
                 __instance.KillFire(false);
                 return false;

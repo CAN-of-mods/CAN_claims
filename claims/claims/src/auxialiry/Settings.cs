@@ -221,6 +221,15 @@ namespace claims.src.auxialiry
                                                                         ? GetAllianceLevelInfo(city.Alliance.Cities.Count).AdditionalAmountOfPlots
                                                                         : 0);
         }
+        public static Dictionary<string, int> getPossibleAmountOfPlotsDictForCity(City city)
+        {
+            CityLevelInfo cityLevel = getCityLevelInfo(city.getCityCitizens().Count);
+            Dictionary<string, int> res = new Dictionary<string, int>();
+            res["base"] = cityLevel.AmountOfPlots;
+            res["bonus"] = city.getBonusPlots();
+            res["alliance"] = city.HasAlliance() ? GetAllianceLevelInfo(city.Alliance.Cities.Count).AdditionalAmountOfPlots : 0;
+            return res;
+        }
         public static int getMaxNumberOfExtraChunksBought(City city)
         {
             CityLevelInfo cityLevel = getCityLevelInfo(city.getCityCitizens().Count);

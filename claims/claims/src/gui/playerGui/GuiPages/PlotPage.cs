@@ -5,6 +5,7 @@ using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.Client.NoObf;
+using Vintagestory.Server;
 using static claims.src.gui.playerGui.CANClaimsGui;
 
 namespace claims.src.gui.playerGui.GuiPages
@@ -25,6 +26,7 @@ namespace claims.src.gui.playerGui.GuiPages
             //compo.AddInset(currentBounds);
             ElementBounds refreshPlotButtonBounds = currentBounds.RightCopy();
             refreshPlotButtonBounds.WithFixedSize(35, 35);
+            
             compo.AddIconButton("redo", (bool t) =>
             {
                 if (t)
@@ -36,6 +38,7 @@ namespace claims.src.gui.playerGui.GuiPages
                     });
                 }
             }, refreshPlotButtonBounds);
+            
 
 
             /*==============================================================================================*/

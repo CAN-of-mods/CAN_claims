@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net.Sockets;
+using System.Threading;
 using claims.src.delayed.invitations;
 using claims.src.gui.playerGui.structures;
 using claims.src.gui.playerGui.structures.cellElements;
@@ -12,6 +14,7 @@ using claims.src.part.structure.plots;
 using Newtonsoft.Json;
 using Vintagestory.API.Server;
 using Vintagestory.API.Util;
+using Vintagestory.Server;
 
 namespace claims.src.auxialiry
 {
@@ -117,7 +120,7 @@ namespace claims.src.auxialiry
                     }
                     collector.Add(EnumPlayerRelatedInfo.CITY_CREATED_TIMESTAMP, city.TimeStampCreated.ToString());
                     collector.Add(EnumPlayerRelatedInfo.CITY_MEMBERS, JsonConvert.SerializeObject(StringFunctions.getNamesOfCitizens(city)));
-                    collector.Add(EnumPlayerRelatedInfo.MAX_COUNT_PLOTS, Settings.getMaxNumberOfPlotForCity(city).ToString());
+                    collector.Add(EnumPlayerRelatedInfo.MAX_COUNT_PLOTS, JsonConvert.SerializeObject(Settings.getPossibleAmountOfPlotsDictForCity(city)));
                     collector.Add(EnumPlayerRelatedInfo.CLAIMED_PLOTS, city.getCityPlots().Count.ToString());
                     collector.Add(EnumPlayerRelatedInfo.PLAYER_PREFIX, playerInfo.Prefix);
                     collector.Add(EnumPlayerRelatedInfo.PLAYER_AFTER_NAME, playerInfo.AfterName);
@@ -321,8 +324,11 @@ namespace claims.src.auxialiry
                             type = PacketsContentEnum.ON_SOME_CITY_PARAMS_UPDATED
                         },
                         citizen as IServerPlayer
-                    );                    
+                    );
+                    if (ServerMain.FrameProfiler.Enabled)
+                    {
                         ServerMain.FrameProfiler.Mark("can-claims-packet-city-updates");
+                    }
                 }
             }
 
@@ -350,6 +356,10 @@ namespace claims.src.auxialiry
                                 type = PacketsContentEnum.ON_SOME_CITY_PARAMS_UPDATED
                             }
                             , player as IServerPlayer);
+                    }
+                    if (ServerMain.FrameProfiler.Enabled)
+                    {
+                        ServerMain.FrameProfiler.Mark("can-claims-packet-player-updates");
                     }
                 }                                  
             }
@@ -519,7 +529,7 @@ namespace claims.src.auxialiry
                             result[pair.Key] = city.GetPartName();
                             break;
                         case EnumPlayerRelatedInfo.MAX_COUNT_PLOTS:
-                            result[pair.Key] = Settings.getMaxNumberOfPlotForCity(city).ToString();
+                            result[pair.Key] = JsonConvert.SerializeObject(Settings.getPossibleAmountOfPlotsDictForCity(city));
                             break;
                         case EnumPlayerRelatedInfo.CLAIMED_PLOTS:
                             result[pair.Key] = city.getCityPlots().Count.ToString();
