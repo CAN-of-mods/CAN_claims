@@ -322,6 +322,7 @@ namespace claims.src.auxialiry
                         },
                         citizen as IServerPlayer
                     );                    
+                        ServerMain.FrameProfiler.Mark("can-claims-packet-city-updates");
                 }
             }
 
