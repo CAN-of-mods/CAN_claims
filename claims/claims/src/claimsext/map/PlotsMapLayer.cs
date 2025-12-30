@@ -413,15 +413,22 @@ namespace claims.src.claimsext.map
                 pivot = 512;
             }
             int place = 0;
-            for (int i = 0; i < 16; i++)
+            if (claims.config.CITY_AREA_VISIBILITY_STATE != Config.CITY_AREA_VISIBILITY.WITHOUT_INNER)
             {
-                for (int j = 0; j < 16; j++)
+                for (int i = 0; i < 16; i++)
                 {
-                    place = i * 32 + j + pivot;
-                    
+                    for (int j = 0; j < 16; j++)
+                    {
+                        place = i * 32 + j + pivot;
+
                         pixels[place] = color;
-                        continue;                                      
+                        continue;
+                    }
                 }
+            }
+            if (claims.config.CITY_AREA_VISIBILITY_STATE == Config.CITY_AREA_VISIBILITY.WITHOUT_BORDER)
+            {
+                return;
             }
             var copyVec = tmpVec.Copy();
             copyVec.X--;

@@ -170,7 +170,7 @@ namespace claims.src.gui.playerGui.GuiPages
                             currentBounds, "cityBalance");
                     }
                 }
-                if (clientInfo.CityInfo.CityDebt > 0)
+                if (claims.config.GUI_SHOW_DEBT && clientInfo.CityInfo.CityDebt > 0)
                 {
                     currentBounds = currentBounds.BelowCopy(0, 5);
                     compo.AddStaticText(Lang.Get("claims:gui-city-debt", clientInfo.CityInfo.CityDebt),

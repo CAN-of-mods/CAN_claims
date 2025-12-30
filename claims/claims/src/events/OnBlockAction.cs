@@ -1,4 +1,5 @@
-﻿using claims.src.auxialiry;
+﻿using System;
+using claims.src.auxialiry;
 using claims.src.part;
 using claims.src.part.structure;
 using claims.src.part.structure.conflict;

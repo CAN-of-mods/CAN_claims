@@ -161,6 +161,11 @@ namespace claims.src.events
                             MessageHandler.sendMsgToPlayer(player as IServerPlayer, Lang.Get("claims:economy_chest_bank_already_set_here"));
                             return;
                         }
+                        else
+                        {
+                            MessageHandler.sendMsgToPlayer(player as IServerPlayer, Lang.Get("claims:economy_chest_bank_already_set_there", RBIchestCoords.X, RBIchestCoords.Y, RBIchestCoords.Z));
+                            return;
+                        }
                     }
                     else
                     {

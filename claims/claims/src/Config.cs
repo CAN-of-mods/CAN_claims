@@ -155,7 +155,9 @@ namespace claims.src
         public HashSet<string> BLOCKED_NAMES = new HashSet<string> { };
         public HashSet<string> CITY_PLOTS_COLOR_AVAILABLE_COLORS_GUI = new HashSet<string>();
         public HashSet<string> ALWAYS_ACCESS_BLOCKS = new HashSet<string> { "canmailbox:CANBlockGenericTypedContainer",
-            "canmarket:BlockCANMarket", "canmarket:BlockCANMarketSingle", "canmarket:BlockCANStall" };
+            "canmarket:BlockCANMarket", "canmarket:BlockCANMarketSingle", "canmarket:BlockCANStall",
+             "vinconomy:BlockVLiquidContainer","vinconomy:BlockVDualLiquidContainer", "vinconomy:BlockVContainer",
+            "vinconomy:BlockVPurchaseContainer", "vinconomy:BlockVGacha", "vinconomy:BlockVClothingDisplay"};
         public HashSet<Type> blockTypesAccess = new HashSet<Type>();
 
         public int[] PLOT_COLORS;
@@ -188,8 +190,11 @@ namespace claims.src
         public bool SEND_COORDS_OF_PLOT_IN_UNDER_ATTACK = true;
         public bool SEND_ANNOUNCEMENTS_PLOT_WAS_CAPTURED = true;
         public bool SEND_COORDS_OF_PLOT_WAS_CAPTURED = true;
+        public bool GUI_SHOW_DEBT = true;
+        public CITY_AREA_VISIBILITY CITY_AREA_VISIBILITY_STATE = CITY_AREA_VISIBILITY.ALL;
         public HashSet<EnumPlayerPermissions> AVAILABLE_CITY_PERMISSIONS = new() {
         };
+        public HashSet<string> ROLE_CODES_WITH_ADMIN_RIGHTS = new HashSet<string>();
         public static void AddDefaultValues()
         {
             claims.config.DAYTIME_MAKE_BACKUP = new HashSet<string> { "6:00", "12:00", "18:00", "0:00" };
@@ -260,7 +265,7 @@ namespace claims.src
             EnumPlayerPermissions.CITY_SEE_CITY_RANKS,
             EnumPlayerPermissions.CITY_ADD_PERMISSION_TO_RANK,
             EnumPlayerPermissions.CITY_REMOVE_PERMISSION_FROM_RANK};
-
+            claims.config.ROLE_CODES_WITH_ADMIN_RIGHTS = new HashSet<string> { "admin" };
         }
         public static void LoadConfig(ICoreAPI api)
         {
@@ -289,6 +294,10 @@ namespace claims.src
                     return;
                 }
             }
+        }
+        public enum CITY_AREA_VISIBILITY
+        {
+            ALL, WITHOUT_BORDER, WITHOUT_INNER
         }
     }
 

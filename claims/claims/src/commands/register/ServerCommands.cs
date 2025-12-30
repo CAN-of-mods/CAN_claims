@@ -1607,7 +1607,7 @@ namespace claims.src.commands.register
 
                          if (args.Caller.Player is IServerPlayer player)
                          {
-                             if (!player.Role.Code.Equals("admin"))
+                             if(!claims.config.ROLE_CODES_WITH_ADMIN_RIGHTS.Contains(player.Role.Code))
                              {
                                  return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
                              }
@@ -1624,7 +1624,7 @@ namespace claims.src.commands.register
 
                          if (args.Caller.Player is IServerPlayer player)
                          {
-                             if (!player.Role.Code.Equals("admin"))
+                             if (!claims.config.ROLE_CODES_WITH_ADMIN_RIGHTS.Contains(player.Role.Code))
                              {
                                  return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
                              }
@@ -1644,7 +1644,7 @@ namespace claims.src.commands.register
 
                                    if (args.Caller.Player is IServerPlayer player)
                                    {
-                                       if (!player.Role.Code.Equals("admin"))
+                                       if (!claims.config.ROLE_CODES_WITH_ADMIN_RIGHTS.Contains(player.Role.Code))
                                        {
                                            return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
                                        }
@@ -1661,7 +1661,7 @@ namespace claims.src.commands.register
 
                                  if (args.Caller.Player is IServerPlayer player)
                                  {
-                                     if (!player.Role.Code.Equals("admin"))
+                                     if (!claims.config.ROLE_CODES_WITH_ADMIN_RIGHTS.Contains(player.Role.Code))
                                      {
                                          return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
                                      }
@@ -1679,7 +1679,7 @@ namespace claims.src.commands.register
 
                                  if (args.Caller.Player is IServerPlayer player)
                                  {
-                                     if (!player.Role.Code.Equals("admin"))
+                                     if (!claims.config.ROLE_CODES_WITH_ADMIN_RIGHTS.Contains(player.Role.Code))
                                      {
                                          return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
                                      }
@@ -1697,7 +1697,7 @@ namespace claims.src.commands.register
 
                                  if (args.Caller.Player is IServerPlayer player)
                                  {
-                                     if (!player.Role.Code.Equals("admin"))
+                                     if (!claims.config.ROLE_CODES_WITH_ADMIN_RIGHTS.Contains(player.Role.Code))
                                      {
                                          return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
                                      }
@@ -1716,7 +1716,7 @@ namespace claims.src.commands.register
 
                             if (args.Caller.Player is IServerPlayer player)
                             {
-                                if (!player.Role.Code.Equals("admin"))
+                                if (!claims.config.ROLE_CODES_WITH_ADMIN_RIGHTS.Contains(player.Role.Code))
                                 {
                                     return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
                                 }
@@ -1733,7 +1733,7 @@ namespace claims.src.commands.register
 
                             if (args.Caller.Player is IServerPlayer player)
                             {
-                                if (!player.Role.Code.Equals("admin"))
+                                if (!claims.config.ROLE_CODES_WITH_ADMIN_RIGHTS.Contains(player.Role.Code))
                                 {
                                     return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
                                 }
@@ -1750,7 +1750,7 @@ namespace claims.src.commands.register
 
                              if (args.Caller.Player is IServerPlayer player)
                              {
-                                 if (!player.Role.Code.Equals("admin"))
+                                 if (!claims.config.ROLE_CODES_WITH_ADMIN_RIGHTS.Contains(player.Role.Code))
                                  {
                                      return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
                                  }
@@ -1769,7 +1769,7 @@ namespace claims.src.commands.register
 
                              if (args.Caller.Player is IServerPlayer player)
                              {
-                                 if (!player.Role.Code.Equals("admin"))
+                                 if (!claims.config.ROLE_CODES_WITH_ADMIN_RIGHTS.Contains(player.Role.Code))
                                  {
                                      return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
                                  }
@@ -1787,7 +1787,7 @@ namespace claims.src.commands.register
 
                             if (args.Caller.Player is IServerPlayer player)
                             {
-                                if (!player.Role.Code.Equals("admin"))
+                                if (!claims.config.ROLE_CODES_WITH_ADMIN_RIGHTS.Contains(player.Role.Code))
                                 {
                                     return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
                                 }
@@ -1805,7 +1805,7 @@ namespace claims.src.commands.register
 
                             if (args.Caller.Player is IServerPlayer player)
                             {
-                                if (!player.Role.Code.Equals("admin"))
+                                if (!claims.config.ROLE_CODES_WITH_ADMIN_RIGHTS.Contains(player.Role.Code))
                                 {
                                     return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
                                 }
@@ -1823,7 +1823,7 @@ namespace claims.src.commands.register
 
                             if (args.Caller.Player is IServerPlayer player)
                             {
-                                if (!player.Role.Code.Equals("admin"))
+                                if (!claims.config.ROLE_CODES_WITH_ADMIN_RIGHTS.Contains(player.Role.Code))
                                 {
                                     return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
                                 }
@@ -1841,7 +1841,7 @@ namespace claims.src.commands.register
 
                              if (args.Caller.Player is IServerPlayer player)
                              {
-                                 if (!player.Role.Code.Equals("admin"))
+                                 if (!claims.config.ROLE_CODES_WITH_ADMIN_RIGHTS.Contains(player.Role.Code))
                                  {
                                      return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
                                  }
@@ -1859,7 +1859,7 @@ namespace claims.src.commands.register
 
                               if (args.Caller.Player is IServerPlayer player)
                               {
-                                  if (!player.Role.Code.Equals("admin"))
+                                  if (!claims.config.ROLE_CODES_WITH_ADMIN_RIGHTS.Contains(player.Role.Code))
                                   {
                                       return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
                                   }
@@ -1878,7 +1878,7 @@ namespace claims.src.commands.register
 
                               if (args.Caller.Player is IServerPlayer player)
                               {
-                                  if (!player.Role.Code.Equals("admin"))
+                                  if (!claims.config.ROLE_CODES_WITH_ADMIN_RIGHTS.Contains(player.Role.Code))
                                   {
                                       return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
                                   }
@@ -1898,7 +1898,7 @@ namespace claims.src.commands.register
 
                                 if (args.Caller.Player is IServerPlayer player)
                                 {
-                                    if (!player.Role.Code.Equals("admin"))
+                                    if (!claims.config.ROLE_CODES_WITH_ADMIN_RIGHTS.Contains(player.Role.Code))
                                     {
                                         return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
                                     }
@@ -1915,7 +1915,7 @@ namespace claims.src.commands.register
 
                                 if (args.Caller.Player is IServerPlayer player)
                                 {
-                                    if (!player.Role.Code.Equals("admin"))
+                                    if (!claims.config.ROLE_CODES_WITH_ADMIN_RIGHTS.Contains(player.Role.Code))
                                     {
                                         return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
                                     }
@@ -1932,7 +1932,7 @@ namespace claims.src.commands.register
 
                                 if (args.Caller.Player is IServerPlayer player)
                                 {
-                                    if (!player.Role.Code.Equals("admin"))
+                                    if (!claims.config.ROLE_CODES_WITH_ADMIN_RIGHTS.Contains(player.Role.Code))
                                     {
                                         return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
                                     }
@@ -1949,7 +1949,7 @@ namespace claims.src.commands.register
 
                                 if (args.Caller.Player is IServerPlayer player)
                                 {
-                                    if (!player.Role.Code.Equals("admin"))
+                                    if (!claims.config.ROLE_CODES_WITH_ADMIN_RIGHTS.Contains(player.Role.Code))
                                     {
                                         return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
                                     }
@@ -1966,7 +1966,7 @@ namespace claims.src.commands.register
 
                                 if (args.Caller.Player is IServerPlayer player)
                                 {
-                                    if (!player.Role.Code.Equals("admin"))
+                                    if (!claims.config.ROLE_CODES_WITH_ADMIN_RIGHTS.Contains(player.Role.Code))
                                     {
                                         return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
                                     }
@@ -1983,7 +1983,7 @@ namespace claims.src.commands.register
 
                                  if (args.Caller.Player is IServerPlayer player)
                                  {
-                                     if (!player.Role.Code.Equals("admin"))
+                                     if (!claims.config.ROLE_CODES_WITH_ADMIN_RIGHTS.Contains(player.Role.Code))
                                      {
                                          return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
                                      }
@@ -2000,7 +2000,7 @@ namespace claims.src.commands.register
 
                                  if (args.Caller.Player is IServerPlayer player)
                                  {
-                                     if (!player.Role.Code.Equals("admin"))
+                                     if (!claims.config.ROLE_CODES_WITH_ADMIN_RIGHTS.Contains(player.Role.Code))
                                      {
                                          return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
                                      }
@@ -2017,7 +2017,7 @@ namespace claims.src.commands.register
 
                                  if (args.Caller.Player is IServerPlayer player)
                                  {
-                                     if (!player.Role.Code.Equals("admin"))
+                                     if (!claims.config.ROLE_CODES_WITH_ADMIN_RIGHTS.Contains(player.Role.Code))
                                      {
                                          return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
                                      }
@@ -2034,7 +2034,7 @@ namespace claims.src.commands.register
 
                                  if (args.Caller.Player is IServerPlayer player)
                                  {
-                                     if (!player.Role.Code.Equals("admin"))
+                                     if (!claims.config.ROLE_CODES_WITH_ADMIN_RIGHTS.Contains(player.Role.Code))
                                      {
                                          return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
                                      }
@@ -2057,7 +2057,7 @@ namespace claims.src.commands.register
 
                         if (args.Caller.Player is IServerPlayer player)
                         {
-                            if (!player.Role.Code.Equals("admin"))
+                            if (!claims.config.ROLE_CODES_WITH_ADMIN_RIGHTS.Contains(player.Role.Code))
                             {
                                 return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
                             }
@@ -2071,7 +2071,7 @@ namespace claims.src.commands.register
 
                                  if (args.Caller.Player is IServerPlayer player)
                                  {
-                                     if (!player.Role.Code.Equals("admin"))
+                                     if (!claims.config.ROLE_CODES_WITH_ADMIN_RIGHTS.Contains(player.Role.Code))
                                      {
                                          return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
                                      }
@@ -2087,7 +2087,7 @@ namespace claims.src.commands.register
 
                                  if (args.Caller.Player is IServerPlayer player)
                                  {
-                                     if (!player.Role.Code.Equals("admin"))
+                                     if (!claims.config.ROLE_CODES_WITH_ADMIN_RIGHTS.Contains(player.Role.Code))
                                      {
                                          return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
                                      }
@@ -2111,7 +2111,7 @@ namespace claims.src.commands.register
 
                         if (args.Caller.Player is IServerPlayer player)
                         {
-                            if (!player.Role.Code.Equals("admin"))
+                            if (!claims.config.ROLE_CODES_WITH_ADMIN_RIGHTS.Contains(player.Role.Code))
                             {
                                 return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
                             }

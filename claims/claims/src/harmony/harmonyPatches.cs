@@ -214,7 +214,7 @@ namespace claims.src.harmony
             }
             if (commandName == "land")
             {
-                if (!player.Role.Code.Equals("admin"))
+                if (!claims.config.ROLE_CODES_WITH_ADMIN_RIGHTS.Contains(player.Role.Code))
                 {
                     player.SendMessage(0, "This command is blocked by a mod.", EnumChatType.Notification);
                     return false;

@@ -2,6 +2,7 @@
 using claims.src.rights;
 using ProtoBuf;
 using Vintagestory.API.Datastructures;
+using static claims.src.Config;
 
 namespace claims.src.network.packets
 {
@@ -38,5 +39,9 @@ namespace claims.src.network.packets
         public HashSet<EnumPlayerPermissions> AVAILABLE_CITY_PERMISSIONS;
         [ProtoMember(15)]
         public string SELECTED_ECONOMY_HANDLER;
+        [ProtoMember(16)]
+        public bool GUI_SHOW_DEBT;
+        [ProtoMember(17)]
+        public CITY_AREA_VISIBILITY CITY_AREA_VISIBILITY_STATE;
     }
 }

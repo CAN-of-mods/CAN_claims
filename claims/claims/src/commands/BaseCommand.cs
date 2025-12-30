@@ -21,7 +21,7 @@ namespace claims.src.commands
         }
         public static bool isOwnerOfPlotMayorAdmin(Plot plot, PlayerInfo playerInfo, IServerPlayer player)
         {
-            if (player.Role.Code.Equals("admin"))
+            if(claims.config.ROLE_CODES_WITH_ADMIN_RIGHTS.Contains(player.Role.Code))
             {
                 return true;
             }

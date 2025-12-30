@@ -319,6 +319,7 @@
     "economy_different_name_city_plot_sign": "Name on the sign is not the name of plot's city.",
     "economy_you_need_to_be_mayor": "You are not a mayor of the city.",
     "economy_chest_bank_already_set_here": "Chest bank is already set here.",
+    "economy_chest_bank_already_set_there": "Chest bank is already set on {0}/{1}/{2}.",
     "economy_city_chest_bank_removed": "City's bank chest has been deleted.",
     "economy_city_chest_bank_created": "City's bank chest has been created.",
     "economy_make_only_own_chest": "You can make only your own chest bank.",

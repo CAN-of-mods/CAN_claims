@@ -166,6 +166,8 @@ namespace claims.src.auxialiry
                        ALWAYS_ACCESS_BLOCKS = claims.config.ALWAYS_ACCESS_BLOCKS,
                        AVAILABLE_CITY_PERMISSIONS = claims.config.AVAILABLE_CITY_PERMISSIONS,
                        SELECTED_ECONOMY_HANDLER = claims.config.SELECTED_ECONOMY_HANDLER,
+                       GUI_SHOW_DEBT = claims.config.GUI_SHOW_DEBT,
+                       CITY_AREA_VISIBILITY_STATE = claims.config.CITY_AREA_VISIBILITY_STATE
                    }
                    , player);
         }
