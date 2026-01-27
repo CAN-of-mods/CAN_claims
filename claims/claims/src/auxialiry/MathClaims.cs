@@ -9,6 +9,9 @@ namespace claims.src.auxialiry
         {
             return (int)Math.Sqrt(Math.Pow(checkPos.X - cityPlotPos.X, 2) + Math.Pow(checkPos.Y - cityPlotPos.Y, 2));
         }
-
+        public static int distanceBetween(Vec2i cityPlotPos, Vec3d checkPos)
+        {
+            return (int)Math.Sqrt(Math.Pow(checkPos.X - cityPlotPos.X, 2) + Math.Pow(checkPos.Z - cityPlotPos.Y, 2));
+        }
     }
 }

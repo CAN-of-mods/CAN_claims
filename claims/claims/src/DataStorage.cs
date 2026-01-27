@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using claims.src.auxialiry;
+using claims.src.auxialiry.ClaimLimiter;
 using claims.src.auxialiry.innerclaims;
 using claims.src.clientMapHandling;
 using claims.src.gui.playerGui.structures;
@@ -46,6 +47,7 @@ namespace claims.src
         protected WorldInfo world = null;
         protected Dictionary<Vec2i, ServerZoneInfo> PlotZones = new Dictionary<Vec2i, ServerZoneInfo>();
         public Dictionary<Vec2i, long> serverZonesTimestamps = new Dictionary<Vec2i, long>();
+        public List<ClaimLimiter> ClaimLimiters = new List<ClaimLimiter>();
         //CLIENT SIDE
         //############################################
         //############################################
@@ -86,6 +88,20 @@ namespace claims.src
         /*==============================================================================================*/
         /*=====================================PLOTS====================================================*/
         /*==============================================================================================*/
+        public bool CheckClaimLimiters(PlayerInfo playerInfo, PlotPosition plotPosition)
+        {
+            if (claims.config.CLAIM_LIMITERS_ENABLED)
+            {
+                foreach (var it in this.ClaimLimiters)
+                {
+                    if (!it.CanClaimHere(playerInfo, plotPosition))
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
         public bool getPlot(PlotPosition plotPosition, out Plot plot)
         {
             if (claimedPlots.TryGetValue(plotPosition, out plot))

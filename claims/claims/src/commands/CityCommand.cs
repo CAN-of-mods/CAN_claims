@@ -97,7 +97,10 @@ namespace claims.src.commands
             {
                 return TextCommandResult.Error("claims:plot_already_claimed");
             }
-
+            if (!claims.dataStorage.CheckClaimLimiters(playerInfo, currentPlotPosition))
+            {
+                return TextCommandResult.Error("claims:too_close_to_forbidden_area");
+            }
             string newCityName = Filter.filterName((string)args.LastArg);
             if (claims.dataStorage.cityExistsByName(newCityName))
             {
@@ -227,6 +230,12 @@ namespace claims.src.commands
             {
                 return TextCommandResult.Error("claims:too_close_to_another_city");
             }
+
+            if(!claims.dataStorage.CheckClaimLimiters(playerInfo, currentPlotPosition))
+            {
+                return TextCommandResult.Error("claims:too_close_to_forbidden_area");
+            }
+
             if (!CheckForAtleastOneClaimedPlotOnBorderSameCity(plotHere))
             {
                 return TextCommandResult.Error("claims:should_be_on_the_border_with_another_claimed_plot");
@@ -340,8 +349,11 @@ namespace claims.src.commands
             {
                 return TextCommandResult.Error("claims:too_close_to_another_city");
             }
-
-            if(claims.economyHandler.withdraw(city.MoneyAccountName, (decimal)claims.config.OUTPOST_PLOT_COST).ResultState != caneconomy.src.implementations.OperationResult.EnumOperationResultState.SUCCCESS)
+            if (!claims.dataStorage.CheckClaimLimiters(playerInfo, currentPlotPosition))
+            {
+                return TextCommandResult.Error("claims:too_close_to_forbidden_area");
+            }
+            if (claims.economyHandler.withdraw(city.MoneyAccountName, (decimal)claims.config.OUTPOST_PLOT_COST).ResultState != caneconomy.src.implementations.OperationResult.EnumOperationResultState.SUCCCESS)
             {
                 return TextCommandResult.Error("claims:economy_money_transaction_error");
             }

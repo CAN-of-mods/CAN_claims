@@ -4,6 +4,7 @@ using System.Linq;
 using Cairo;
 using caneconomy.src.interfaces;
 using claims.src.auxialiry;
+using claims.src.auxialiry.ClaimLimiter;
 using claims.src.bb;
 using claims.src.beb;
 using claims.src.blocks;
@@ -176,7 +177,6 @@ namespace claims.src
             //STORAGE WITH CITIES/PLAYERS/OTHER
             dataStorage = new DataStorage();
 
-            sapi.Logger.Event("[claims] RegisterChannel(claimsExt)");
             serverChannel = sapi.Network.RegisterChannel("claimsExt");
             Common.RegisterMessageTypes(serverChannel, sapi);
 
@@ -200,7 +200,33 @@ namespace claims.src
             TimerGeneral.StartServerTimers(sapi);
 
             ServerPacketHandlers.RegisterHandlers();
+            InitLimiters();
         }   
+        public static void InitLimiters()
+        {
+            if (claims.config.CLAIM_LIMITERS_ENABLED)
+            {
+                foreach (var it in claims.config.CLAIM_LIMITERS)
+                {
+                    if(it.Key == "NearClaimLimiter")
+                    {
+                        NearClaimLimiter limiter = new NearClaimLimiter(it.Value);
+                        if (limiter.Zones != null)
+                        {
+                            dataStorage.ClaimLimiters.Add(limiter);
+                        }
+                    }
+                    else if(it.Key == "DistantClaimLimiter")
+                    {
+                        DistantClaimLimiter limiter = new DistantClaimLimiter(it.Value);
+                        if (limiter.Zones != null)
+                        {
+                            dataStorage.ClaimLimiters.Add(limiter);
+                        }
+                    }
+                }
+            }
+        }
         public static void NullOnServerExit()
         {
             dataStorage = null;
@@ -273,7 +299,7 @@ namespace claims.src
         public static void ShutDownServer()
         {
             ServerEvents.onShutdown();
-            harmonyInstance.UnpatchAll(harmonyID);
+            harmonyInstance?.UnpatchAll(harmonyID);
             harmonyInstance = null;
             modInstance = null;
             

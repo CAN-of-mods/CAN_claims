@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using claims.src.auxialiry.ClaimLimiter;
 using claims.src.rights;
 using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
+using Vintagestory.API.MathTools;
 
 namespace claims.src
 {
@@ -195,6 +197,8 @@ namespace claims.src
         public HashSet<EnumPlayerPermissions> AVAILABLE_CITY_PERMISSIONS = new() {
         };
         public HashSet<string> ROLE_CODES_WITH_ADMIN_RIGHTS = new HashSet<string>();
+        public bool CLAIM_LIMITERS_ENABLED = false;
+        public Dictionary<string, Dictionary<string, object>> CLAIM_LIMITERS = new Dictionary<string, Dictionary<string, object>>();
         public static void AddDefaultValues()
         {
             claims.config.DAYTIME_MAKE_BACKUP = new HashSet<string> { "6:00", "12:00", "18:00", "0:00" };
@@ -266,6 +270,33 @@ namespace claims.src
             EnumPlayerPermissions.CITY_ADD_PERMISSION_TO_RANK,
             EnumPlayerPermissions.CITY_REMOVE_PERMISSION_FROM_RANK};
             claims.config.ROLE_CODES_WITH_ADMIN_RIGHTS = new HashSet<string> { "admin" };
+            var c = new BlockPos(0, 0, 0);
+            /* public Vec3i ToLocalPosition(ICoreAPI api)
+    {
+        return new Vec3i(X - api.World.DefaultSpawnPosition.XInt, Y, Z - api.World.DefaultSpawnPosition.ZInt);
+    }
+            c.ToLocalPosition*/
+            claims.config.CLAIM_LIMITERS = new Dictionary<string, Dictionary<string, object>>()
+            {
+                { "NearClaimLimiter", new Dictionary<string, object>()
+                    {
+                        { "Zones", new List<(Vec2i, int)>()
+                            {
+                                (new Vec2i(0, 0), 500)
+                            }
+                        }
+                    }
+                },
+                { "DistantClaimLimiter", new Dictionary<string, object>()
+                    {
+                        { "Zones", new List<(Vec2i, int)>()
+                            {
+                                (new Vec2i(0, 0), 1500)
+                            }
+                        }
+                    }
+                }
+            };
         }
         public static void LoadConfig(ICoreAPI api)
         {

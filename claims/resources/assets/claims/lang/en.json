@@ -424,6 +424,7 @@
     "block-flagpole": "Flagpole",
     //DISCOVERY
     "ingamediscovery-battle-start": "Battle started with {0}",
-    "ingamediscovery-battle-end": "Battle ended with {0}"
+    "ingamediscovery-battle-end": "Battle ended with {0}",
+    "too_close_to_forbidden_area": "Too close to forbidden area"
 
 }

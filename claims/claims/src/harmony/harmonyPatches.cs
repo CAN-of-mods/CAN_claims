@@ -202,7 +202,7 @@ namespace claims.src.harmony
             claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
             if (playerInfo == null)
             {
-                return true;
+                return false;
             }
             claims.dataStorage.getPlot(PlotPosition.fromEntityyPos(player.Entity.ServerPos), out Plot tmpPlot);
             if (playerInfo.isPrisoned() && playerInfo.PrisonedIn.Plot.Equals(tmpPlot))
