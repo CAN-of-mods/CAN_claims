@@ -5,8 +5,9 @@
   "authors": [ "KenigVovan" ],
   "description": "Land protection mod",
   "version": "4.1.25",
-  "dependencies": {
-    "game": "",
-    "caneconomy": "1.0.8"
-  }
+    "dependencies": {
+        "game": "",
+        "caneconomy": "1.0.8",
+        "vsimgui": ""
+    }
 }
