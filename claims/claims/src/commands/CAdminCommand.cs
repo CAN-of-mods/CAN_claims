@@ -261,6 +261,18 @@ namespace claims.src.commands
                 return tcr;
             }
 
+            if(city.HasAlliance())
+            {
+                if (city.Equals(city.Alliance.MainCity))
+                {
+                    PartDemolition.DemolishAlliance(city.Alliance);
+                }
+                else
+                {
+                    city.Alliance.Cities.Remove(city);
+                }
+            }
+
             PartDemolition.demolishCity(city, string.Format("Deleted by admin player {0}", player.PlayerName));
 
             return tcr;
