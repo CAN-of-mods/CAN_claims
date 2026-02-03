@@ -151,7 +151,7 @@ namespace claims.src
 
             capi.Event.RegisterEventBusListener(onPlayerChangePlotEvent, 0.5, "claimsPlayerChangePlot");
 
-            api.Input.RegisterHotKey("canclaimsgui", "CAN Claims GUI", GlKeys.U, HotkeyType.GUIOrOtherControls, ctrlPressed: true);
+            api.Input.RegisterHotKey("canclaimsgui", "CAN Claims GUI", GlKeys.U, HotkeyType.GUIOrOtherControls, ctrlPressed: true, shiftPressed: true);
             api.Input.SetHotKeyHandler("canclaimsgui", new ActionConsumable<KeyCombination>(this.OnHotKeySkillDialog));
 
             api.Input.RegisterHotKey("claimsplayermovementgui", "Plot info GUI", GlKeys.K, HotkeyType.GUIOrOtherControls);

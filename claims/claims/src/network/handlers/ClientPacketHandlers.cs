@@ -110,6 +110,8 @@ namespace claims.src.network.handlers
                         }
                         break;
                     case PacketsContentEnum.AGREE_NEEDED_ON_NEW_CITY_CREATION:
+                        //TODO Delete after
+                        claims.capi.ModLoader.GetModSystem<claimsGui>().secondaryWindowTab = gui.prettyGui.EnumSecondaryWindowTab.NEED_AGREE;
                         claims.CANCityGui.CreateNewCityState = gui.playerGui.CANClaimsGui.EnumUpperWindowSelectedState.NEED_AGREE;
                         claims.CANCityGui.collectedNewCityName = packet.data;
                         if (claims.CANCityGui?.IsOpened() ?? false)

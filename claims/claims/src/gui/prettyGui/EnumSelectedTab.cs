@@ -8,10 +8,7 @@ namespace claims.src.gui.prettyGui
 {
     public enum EnumSelectedTab
     {
-        CITY,
-        
-        
-        Player, Prices, Plot, Prison, Summon, PlotsGroup, PlotsGroupReceivedInvites, RANKS, RankInfoPage, CityPlotsColorSelector, PlotsGroupInfoPage,
-        AllianceInfoPage, CitiesListPage, ConflictLettersPage, ConflictsPage, ConflictInfoPage     
+        CITY, PLAYER, PRICES, PLOT, PRISON, SUMMON, PlotsGroup, PLOTSGROUPRECEIVEDINVITES, RANKS, RANKINFOPAGE, CityPlotsColorSelector, PlotsGroupInfoPage,
+        AllianceInfoPage, CITIESLISTPAGE, ConflictLettersPage, ConflictsPage, ConflictInfoPage     
     }
 }

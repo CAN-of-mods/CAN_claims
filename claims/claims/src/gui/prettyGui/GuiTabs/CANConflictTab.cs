@@ -1,0 +1,86 @@
+﻿using System.Numerics;
+using claims.src.auxialiry;
+using ImGuiNET;
+using Vintagestory.API.Client;
+using Vintagestory.API.Config;
+
+namespace claims.src.gui.prettyGui.GuiTabs
+{
+    public class CANConflictTab : CANGuiTab
+    {
+        public CANConflictTab(ICoreClientAPI capi, IconHandler iconHandler)
+        {
+            this.capi = capi;
+            this.iconHandler = iconHandler;
+        }
+        public override void DrawTab()
+        {
+            var clientInfo = claims.clientDataStorage.clientPlayerInfo;
+            ImGui.Text(Lang.Get("claims:conflict_list"));
+
+            ImGui.BeginChild("InvitesScroll", new Vector2(0, 300), true);
+            int i = 0;
+            foreach (var conflict in claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientConflictCellElements)
+            {
+                ImGui.PushID(i);
+
+                Vector2 start = ImGui.GetCursorScreenPos();
+                float width = ImGui.GetContentRegionAvail().X;
+
+                ImGui.BeginGroup();
+
+                ImGui.Text($"Sides: {Lang.Get("claims:gui_conflict_cell_first_line", conflict.FirstAllianceName, conflict.SecondAllianceName)}");
+                ImGui.Text($"Started: {Lang.Get("claims:gui_conflict_cell_started_line", TimeFunctions.getDateFromEpochSecondsWithHoursMinutes(conflict.TimeStampCreated, true))}");
+
+                if (ImGui.Button("Peace offer"))
+                {
+                    capi.ModLoader.GetModSystem<claimsGui>().secondaryWindowTab = EnumSecondaryWindowTab.ALLIANCE_SEND_PEACE_OFFER_CONFIRM;
+                    capi.ModLoader.GetModSystem<claimsGui>().textInput = conflict.Guid;
+                    string targetAlliance = conflict.FirstAllianceName.Equals(claims.clientDataStorage.clientPlayerInfo.AllianceInfo.Name) ? conflict.SecondAllianceName : conflict.FirstAllianceName;
+                    capi.ModLoader.GetModSystem<claimsGui>().textInput2 = targetAlliance;
+                }
+
+                ImGui.SameLine();
+
+                if (ImGui.Button("Info"))
+                {
+                    capi.ModLoader.GetModSystem<claimsGui>().textInput = conflict.Guid;
+                    capi.ModLoader.GetModSystem<claimsGui>().selectedTab = EnumSelectedTab.ConflictInfoPage;
+                }
+
+
+                ImGui.EndGroup();
+
+                Vector2 end = ImGui.GetItemRectMax();
+                var draw = ImGui.GetWindowDrawList();
+
+                ImGui.PopID();
+
+                ImGui.Dummy(new Vector2(0, 8));
+                ImGui.Separator();
+            }
+            ImGui.EndChild();
+            /*==============================================================================================*/
+            /*=====================================UNDER 2 LINE=============================================*/
+            /*==============================================================================================*/
+            float availY = ImGui.GetContentRegionAvail().Y;
+            ImGui.SetCursorPosY(ImGui.GetCursorPosY() + availY - 80);
+
+
+            if (ImGui.ImageButton("allianceinfo", this.iconHandler.GetOrLoadIcon("vertical-banner"), new Vector2(60)))
+            {
+                capi.ModLoader.GetModSystem<claimsGui>().selectedTab = EnumSelectedTab.AllianceInfoPage;
+            }
+            ImGui.SameLine();
+            if (ImGui.ImageButton("conflictletters", this.iconHandler.GetOrLoadIcon("envelope"), new Vector2(60)))
+            {
+                capi.ModLoader.GetModSystem<claimsGui>().selectedTab = EnumSelectedTab.ConflictLettersPage;
+            }
+            if (ImGui.IsItemHovered())
+            {
+                ImGui.SetTooltip(Lang.Get("claims:gui-conflict-letters"));
+            }
+
+        }
+    }
+}
