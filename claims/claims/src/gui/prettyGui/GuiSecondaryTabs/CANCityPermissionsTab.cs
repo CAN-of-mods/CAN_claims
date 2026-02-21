@@ -1,7 +1,6 @@
-﻿using System.Numerics;
-using System.Runtime.ConstrainedExecution;
-using claims.src.perms;
+﻿using claims.src.perms;
 using ImGuiNET;
+using System.Numerics;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
@@ -9,13 +8,13 @@ using Vintagestory.Client.NoObf;
 
 namespace claims.src.gui.prettyGui.GuiSecondaryTabs
 {
-    public class CANPermissionsTab : CANGuiSecondaryTab
+    public class CANCityPermissionsTab : CANGuiSecondaryTab
     {
         private string TitleString;
         private string CommandToCallOnYes;
         private string YesButtonString;
         private string NoButtonString;
-        public CANPermissionsTab(ICoreClientAPI capi, IconHandler iconHandler, string titleString, string commandToCallOnYes, string yesButtonString = "claims:gui-yes-string", string noButtonString = "claims:gui-no-string")
+        public CANCityPermissionsTab(ICoreClientAPI capi, IconHandler iconHandler, string titleString, string commandToCallOnYes, string yesButtonString = "claims:gui-yes-string", string noButtonString = "claims:gui-no-string")
         {
             this.capi = capi;
             this.iconHandler = iconHandler;
@@ -44,10 +43,11 @@ namespace claims.src.gui.prettyGui.GuiSecondaryTabs
             {
                 cem.TriggerNewClientChatLine(
                     GlobalConstants.CurrentChatGroup,
-                    $"/plot set p friend {commandSuffix} {(friend ? "on" : "off")}",
+                    $"/city set p friend {commandSuffix} {(friend ? "on" : "off")}",
                     EnumChatType.Macro,
                     ""
                 );
+                permsHandler.setPerm(perms.PermGroup.COMRADE, permType, friend);
             }
             ImGui.SameLine();
 
@@ -55,10 +55,11 @@ namespace claims.src.gui.prettyGui.GuiSecondaryTabs
             {
                 cem.TriggerNewClientChatLine(
                     GlobalConstants.CurrentChatGroup,
-                    $"/plot set p citizen {commandSuffix} {(citizen ? "on" : "off")}",
+                    $"/city set p citizen {commandSuffix} {(citizen ? "on" : "off")}",
                     EnumChatType.Macro,
                     ""
                 );
+                permsHandler.setPerm(perms.PermGroup.CITIZEN, permType, citizen);
             }
             ImGui.SameLine();
 
@@ -66,10 +67,11 @@ namespace claims.src.gui.prettyGui.GuiSecondaryTabs
             {
                 cem.TriggerNewClientChatLine(
                     GlobalConstants.CurrentChatGroup,
-                    $"/plot set p stranger {commandSuffix} {(stranger ? "on" : "off")}",
+                    $"/city set p stranger {commandSuffix} {(stranger ? "on" : "off")}",
                     EnumChatType.Macro,
                     ""
                 );
+                permsHandler.setPerm(perms.PermGroup.STRANGER, permType, stranger);
             }
 
             ImGui.SameLine();
@@ -78,7 +80,7 @@ namespace claims.src.gui.prettyGui.GuiSecondaryTabs
             {
                 cem.TriggerNewClientChatLine(
                     GlobalConstants.CurrentChatGroup,
-                    $"/plot set p ally {commandSuffix} {(alliance ? "on" : "off")}",
+                    $"/city set p ally {commandSuffix} {(alliance ? "on" : "off")}",
                     EnumChatType.Macro,
                     ""
                 );
@@ -97,14 +99,14 @@ namespace claims.src.gui.prettyGui.GuiSecondaryTabs
             ImGui.Begin("ClaimsDetails", p_open: ref capi.ModLoader.GetModSystem<claimsGui>().secondaryWindowOpen, flags1);
             
             ImGui.Text(Lang.Get(TitleString, capi.ModLoader.GetModSystem<claimsGui>().textInput2, capi.ModLoader.GetModSystem<claimsGui>().textInput));
-            var permsHandler = claims.clientDataStorage.clientPlayerInfo.CurrentPlotInfo.PermsHandler;
+            var permsHandler = claims.clientDataStorage.clientPlayerInfo.CityInfo.PermsHandler;
             ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
             bool pvp = permsHandler.pvpFlag;
-            if (ImGui.Checkbox("PVP", ref pvp))
+            if (ImGui.Checkbox("PVP##city", ref pvp))
             {
                 clientEventManager.TriggerNewClientChatLine(
                     GlobalConstants.CurrentChatGroup,
-                    "/plot set pvp " + (pvp ? "on" : "off"),
+                    "/city set pvp " + (pvp ? "on" : "off"),
                     EnumChatType.Macro,
                     ""
                 );
@@ -117,7 +119,7 @@ namespace claims.src.gui.prettyGui.GuiSecondaryTabs
             {
                 clientEventManager.TriggerNewClientChatLine(
                     GlobalConstants.CurrentChatGroup,
-                    "/plot set fire " + (fire ? "on" : "off"),
+                    "/city set fire " + (fire ? "on" : "off"),
                     EnumChatType.Macro,
                     ""
                 );
@@ -129,7 +131,7 @@ namespace claims.src.gui.prettyGui.GuiSecondaryTabs
             {
                 clientEventManager.TriggerNewClientChatLine(
                     GlobalConstants.CurrentChatGroup,
-                    "/plot set blast " + (!blast ? "on" : "off"),
+                    "/city set blast " + (!blast ? "on" : "off"),
                     EnumChatType.Macro,
                     ""
                 );
@@ -158,7 +160,7 @@ namespace claims.src.gui.prettyGui.GuiSecondaryTabs
                 "Friend##use",
                 "Citizen##use",
                 "Stranger##use",
-                "Ally##use",
+                 "Ally##use",
                 perms.type.PermType.USE_PERM,
                 "use",
                 permsHandler,
@@ -173,7 +175,7 @@ namespace claims.src.gui.prettyGui.GuiSecondaryTabs
                 "Friend##attack",
                 "Citizen##attack",
                 "Stranger##attack",
-                "Ally##attack",
+                 "Ally##attack",
                 perms.type.PermType.ATTACK_ANIMALS_PERM,
                 "attack",
                 permsHandler,

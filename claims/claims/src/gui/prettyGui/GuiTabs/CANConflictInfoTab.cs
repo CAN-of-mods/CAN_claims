@@ -1,22 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System;
 using System.Numerics;
 using claims.src.auxialiry;
-using claims.src.gui.playerGui.GuiElements;
-using claims.src.gui.playerGui.structures.cellElements;
 using claims.src.gui.playerGui.structures;
+using claims.src.gui.playerGui.structures.cellElements;
 using claims.src.network.packets;
 using claims.src.part.structure.conflict;
 using ImGuiNET;
 using Newtonsoft.Json;
 using Vintagestory.API.Client;
 using Vintagestory.API.Config;
-using static claims.src.gui.playerGui.CANClaimsGui;
-using claims.src.network.handlers;
-using Vintagestory.API.Common;
-using Vintagestory.Client.NoObf;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace claims.src.gui.prettyGui.GuiTabs
 {

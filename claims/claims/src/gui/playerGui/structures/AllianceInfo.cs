@@ -11,7 +11,9 @@ namespace claims.src.gui.playerGui.structures
         public List<string> Cities { get; set; } = new List<string>();
         public double Balance { get; set; }
         public string Guid { get; set; }
-        public AllianceInfo(string name, string leaderName, long timeStampCreated, string prefix, List<string> cities, double balance, string guid)
+        public List<string> Hostiles { get; set; } = new();
+        public List<string> Allies { get; set; } = new();
+        public AllianceInfo(string name, string leaderName, long timeStampCreated, string prefix, List<string> cities, double balance, string guid, List<string> allies)
         {
             Name = name;
             LeaderName = leaderName;
@@ -20,6 +22,7 @@ namespace claims.src.gui.playerGui.structures
             Cities = cities;
             Balance = balance;
             Guid = guid;
+            Allies = allies;
         }
     }
 }

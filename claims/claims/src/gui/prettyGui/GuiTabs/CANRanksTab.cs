@@ -1,15 +1,7 @@
 ﻿using System.Numerics;
-using Cairo;
-using claims.src.auxialiry;
-using claims.src.gui.playerGui.GuiElements;
-using claims.src.gui.playerGui.structures.cellElements;
 using ImGuiNET;
 using Vintagestory.API.Client;
-using Vintagestory.API.Common;
 using Vintagestory.API.Config;
-using Vintagestory.Client.NoObf;
-using static System.Net.Mime.MediaTypeNames;
-using static claims.src.gui.playerGui.CANClaimsGui;
 
 namespace claims.src.gui.prettyGui.GuiTabs
 {

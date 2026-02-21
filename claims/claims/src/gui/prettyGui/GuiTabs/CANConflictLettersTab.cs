@@ -38,16 +38,23 @@ namespace claims.src.gui.prettyGui.GuiTabs
 
                 ImGui.BeginGroup();
 
-                string cellName = string.Format("{0} x {1}", letter.From, letter.To);
-                ImGui.Text(cellName);
+                ImGui.Text(Lang.Get("claims:gui-conflict-letter-from", letter.From));
+                ImGui.Text(Lang.Get("claims:gui-conflict-letter-to", letter.To));
+
                 
                 string expDate = TimeFunctions.getDateFromEpochSecondsWithHoursMinutes(letter.TimeStampExpire, true);
-                ImGui.Text(expDate);
-                
-              
-                
+                ImGui.Text(Lang.Get("claims:gui-conflict-exp-date", expDate));
 
-                if (ImGui.ImageButton("cancel", this.iconHandler.GetOrLoadIcon("sword-brandish"), new Vector2(16)))
+
+
+                ImGui.SameLine();
+                float buttonSize = 32f;
+
+                float avail = ImGui.GetContentRegionAvail().X;
+
+                ImGui.SetCursorPosX(ImGui.GetCursorPosX() + (avail - buttonSize) * 0.2f);
+                ImGui.SetCursorPosY(ImGui.GetCursorPosY() - 20);
+                if (ImGui.ImageButton("cancel", this.iconHandler.GetOrLoadIcon("sword-brandish"), new Vector2(32)))
                 {
                     ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                     if (letter.Purpose == LetterPurpose.START_CONFLICT)
@@ -81,12 +88,27 @@ namespace claims.src.gui.prettyGui.GuiTabs
                         {
                             toRemove.Add(cell);
                         }
+                    }                  
+                }
+                if (letter.Purpose == LetterPurpose.START_CONFLICT)
+                {
+                    if (ImGui.IsItemHovered())
+                    {
+                        ImGui.SetTooltip(Lang.Get("claims:gui-conflict-cancel-button"));
+                    }
+                }
+                else
+                {
+                    if (ImGui.IsItemHovered())
+                    {
+                        ImGui.SetTooltip(Lang.Get("claims:gui-conflict-denystop-button"));
                     }
                 }
                 ImGui.SameLine();
+                ImGui.SetCursorPosY(ImGui.GetCursorPosY() - 20);
                 if (claims.clientDataStorage.clientPlayerInfo.AllianceInfo?.Guid?.Equals(letter.ToGuid) ?? false)
                 {
-                    if (ImGui.ImageButton("acceptconflict", this.iconHandler.GetOrLoadIcon("peace-dove"), new Vector2(16)))
+                    if (ImGui.ImageButton("acceptconflict", this.iconHandler.GetOrLoadIcon("peace-dove"), new Vector2(32)))
                     {
                         ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                         if (letter.Purpose == LetterPurpose.START_CONFLICT)
@@ -122,6 +144,20 @@ namespace claims.src.gui.prettyGui.GuiTabs
                             }
                         }
                     }
+                    if (letter.Purpose == LetterPurpose.START_CONFLICT)
+                    {
+                        if (ImGui.IsItemHovered())
+                        {
+                            ImGui.SetTooltip(Lang.Get("claims:gui-conflict-accept-button"));
+                        }
+                    }
+                    else
+                    {
+                        if (ImGui.IsItemHovered())
+                        {
+                            ImGui.SetTooltip(Lang.Get("claims:gui-conflict-stop-button"));
+                        }
+                    }
                 }
 
                 ImGui.EndGroup();
@@ -140,7 +176,7 @@ namespace claims.src.gui.prettyGui.GuiTabs
                 foreach(var it in toRemove)
                 claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientConflictLetterCellElements.Remove(it);
             }
-            if (ImGui.ImageButton("newconflict", this.iconHandler.GetOrLoadIcon("sword-brandish"), new Vector2(16)))
+            if (ImGui.ImageButton("newconflict", this.iconHandler.GetOrLoadIcon("sword-brandish"), new Vector2(32)))
             {
                 capi.ModLoader.GetModSystem<claimsGui>().secondaryWindowTab = EnumSecondaryWindowTab.ALLIANCE_SEND_NEW_CONFLICT_LETTER_NEED_NAME;
             }

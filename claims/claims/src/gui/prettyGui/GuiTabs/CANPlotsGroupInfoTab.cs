@@ -5,7 +5,6 @@ using claims.src.gui.playerGui.structures.cellElements;
 using ImGuiNET;
 using Vintagestory.API.Client;
 using Vintagestory.API.Config;
-using static claims.src.gui.playerGui.CANClaimsGui;
 
 namespace claims.src.gui.prettyGui.GuiTabs
 {

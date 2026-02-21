@@ -3,14 +3,12 @@ using System.Linq;
 using System.Numerics;
 using claims.src.auxialiry;
 using claims.src.gui.playerGui.structures.cellElements;
-using claims.src.network.handlers;
 using claims.src.rights;
 using ImGuiNET;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.Client.NoObf;
-using static claims.src.gui.playerGui.CANClaimsGui;
 
 namespace claims.src.gui.prettyGui.GuiTabs
 {

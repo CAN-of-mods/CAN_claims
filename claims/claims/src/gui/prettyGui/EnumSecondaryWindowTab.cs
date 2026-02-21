@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace claims.src.gui.prettyGui
+﻿namespace claims.src.gui.prettyGui
 {
     public enum EnumSecondaryWindowTab
     {
@@ -21,6 +15,7 @@ namespace claims.src.gui.prettyGui
         SELECT_NEW_ALLIANCE_NAME, INVITE_TO_ALLIANCE_NEED_NAME, KICK_FROM_ALLIANCE_NEED_NAME, UNINVITE_TO_ALLIANCE,
         LEAVE_ALLIANCE_CONFIRM, NEW_ALLIANCE_NEED_NAME, ALLIANCE_PREFIX_NEED_NAME, ALLIANCE_SEND_NEW_CONFLICT_LETTER_NEED_NAME,
         ALLIANCE_SEND_PEACE_OFFER_CONFIRM,
-        CITY_PLOTS_PERMISSIONS, CITY_RANK_DELETE_CONFIRM, CITY_RANK_CREATION_NEED_NAME
+        CITY_PLOTS_PERMISSIONS, CITY_RANK_DELETE_CONFIRM, CITY_RANK_CREATION_NEED_NAME,
+        ALLIANCE_SEND_NEW_UNION_LETTER_NEED_NAME, ALLIANCE_CANCEL_UNION_SELECT
     }
 }

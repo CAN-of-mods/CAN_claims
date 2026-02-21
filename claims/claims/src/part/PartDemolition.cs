@@ -65,7 +65,7 @@ namespace claims.src.part
             {
                 city.getCityPlots().Remove(plot);
             }
-            if(plot.Type == PlotType.PRISON)
+            if(plot.Type == PlotType.PRISON || plot.Type == PlotType.SUMMON)
             {
                 plot.CleanUpCurrentPlotTypeData();
             }
@@ -150,6 +150,29 @@ namespace claims.src.part
             conflict.First.saveToDatabase();
             conflict.Second.saveToDatabase();
             claims.getModInstance().getDatabaseHandler().deleteFromDatabaseConflict(conflict);
+        }
+        public static void DemolishUnion(Alliance first, Alliance second)
+        {
+            foreach (var city in first.Cities)
+            {
+                foreach (var sCity in second.Cities)
+                {
+                    city.ComradeCities.Remove(sCity);
+                    city.saveToDatabase();
+                }
+            }
+            foreach (var city in second.Cities)
+            {
+                foreach (var sCity in first.Cities)
+                {
+                    city.ComradeCities.Remove(sCity);
+                    city.saveToDatabase();
+                }
+            }
+            first.ComradAlliancies.Remove(second);
+            second.ComradAlliancies.Remove(first);
+            first.saveToDatabase();
+            second.saveToDatabase();
         }
     }
 }

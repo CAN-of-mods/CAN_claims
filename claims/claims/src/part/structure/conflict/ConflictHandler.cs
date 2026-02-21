@@ -1,9 +1,6 @@
-﻿using System;
+﻿using claims.src.auxialiry;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using claims.src.auxialiry;
 
 namespace claims.src.part.structure.conflict
 {

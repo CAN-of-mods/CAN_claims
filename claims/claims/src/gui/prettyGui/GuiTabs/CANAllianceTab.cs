@@ -85,6 +85,7 @@ namespace claims.src.gui.prettyGui.GuiTabs
                     ImGui.SetTooltip(Lang.Get("claims:gui-set-alliance-prefix"));
                 }
 
+                ImGui.Text(Lang.Get("claims:gui-allies-list", string.Join(", ", clientInfo.AllianceInfo.Allies)));
 
                 /*==============================================================================================*/
                 /*=====================================UNDER 2 LINE=============================================*/
@@ -119,6 +120,15 @@ namespace claims.src.gui.prettyGui.GuiTabs
                 if (ImGui.IsItemHovered())
                 {
                     ImGui.SetTooltip(Lang.Get("claims:gui-conflicts-page"));
+                }
+                ImGui.SameLine();
+                if (ImGui.ImageButton("unionspage", this.iconHandler.GetOrLoadIcon("tower-flag"), new Vector2(60)))
+                {
+                    capi.ModLoader.GetModSystem<claimsGui>().selectedTab = EnumSelectedTab.UnionLettersPage;
+                }
+                if (ImGui.IsItemHovered())
+                {
+                    ImGui.SetTooltip(Lang.Get("claims:gui-unions-letters-page"));
                 }
             }
             else

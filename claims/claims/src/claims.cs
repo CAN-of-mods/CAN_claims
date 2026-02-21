@@ -22,6 +22,7 @@ using claims.src.network.handlers;
 using claims.src.part;
 using claims.src.part.structure.conflict;
 using claims.src.part.structure.plots;
+using claims.src.part.structure.union;
 using claims.src.perms;
 using claims.src.playerMovements;
 using claims.src.timers;
@@ -310,6 +311,7 @@ namespace claims.src
             config = null;
             economyHandler = null;
             ConflictHandler.clearAll();
+            UnionHander.clearAll();
         }
 
         public static void ShutDownClient()

@@ -216,7 +216,7 @@ namespace claims.src.gui.prettyGui.GuiTabs
                         ImGui.Text($"Time: {TimeFunctions.getDateFromEpochSecondsWithHoursMinutes(claims.clientDataStorage.clientPlayerInfo.ReceivedInvitations[i].TimeoutStamp, true).ToString()}");
 
                         if (ImGui.Button("Accept"))
-                        {
+                        {                          
                             ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                             clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, "/accept " + claims.clientDataStorage.clientPlayerInfo?.ReceivedInvitations[i].CityName, EnumChatType.Macro, "");
                         }

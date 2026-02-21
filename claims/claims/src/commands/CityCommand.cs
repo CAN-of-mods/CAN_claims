@@ -376,7 +376,7 @@ namespace claims.src.commands
             UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid, EnumPlayerRelatedInfo.CLAIMED_PLOTS);
             UsefullPacketsSend.AddToQueueCityInfoUpdate(playerInfo.City.Guid, gui.playerGui.structures.EnumPlayerRelatedInfo.CITY_DAY_PAYMENT);
             plotHere.CheckBorderPlotValue();
-            return SuccessWithParams("claims:plot_has_been_claimed", new object[] { currentPlotPosition.getPos().X, currentPlotPosition.getPos().Y });
+            return SuccessWithParams("claims:plot_has_been_claimed", new object[] { currentPlotPosition.getPos().X, currentPlotPosition.getPos().Y, claims.config.OUTPOST_PLOT_COST });
         }
         public static TextCommandResult ProcessExtraPlot(TextCommandCallingArgs args)
         {

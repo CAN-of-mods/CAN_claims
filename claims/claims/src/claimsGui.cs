@@ -20,6 +20,7 @@ namespace claims.src
         private ImGuiModSystem imguiSys;
         private IconHandler iconHandler;
         private TabDrawHandler tabDrawHandler;
+        private ImageHandler imageHandler;
         private SecondaryTabDrawHandler secondaryTabDrawHandler;
         public EnumSelectedTab selectedTab = EnumSelectedTab.CITY;
         public EnumSecondaryWindowTab _secondaryWindowTab;
@@ -49,6 +50,7 @@ namespace claims.src
             api.Input.SetHotKeyHandler("prettycangui", new ActionConsumable<KeyCombination>(this.SwitchGui));
             this.imguiSys = api.ModLoader.GetModSystem<ImGuiModSystem>();
             iconHandler = new IconHandler(api);
+            imageHandler = new ImageHandler(api);
             tabDrawHandler = new TabDrawHandler(api, iconHandler);
             secondaryTabDrawHandler = new SecondaryTabDrawHandler(api, iconHandler);
             api.Event.LevelFinalize += () =>
@@ -92,6 +94,28 @@ namespace claims.src
             ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(0.252f, 0.161f, 0.016f, 1f));
             ImGui.Begin("Claims", p_open: ref this.prettyGuiState.IsOpen,  flags1);
 
+            var assetPath = new AssetLocation("claims:textures/images/RWS_Tarot_18_Moon.jpg");
+            var asset = capi.Assets.TryGet(assetPath);
+            string p = "";
+            foreach(var it in capi.Assets.AllAssets)
+            {
+                if(it.Key.Path.Contains("Tarot"))
+                {
+                    var c = 3;
+                    asset = it.Value;
+                    p = it.Key;
+                }
+            }
+            LoadedTexture guiTex = new LoadedTexture(capi);
+
+            capi.Render.GetOrLoadTexture(
+                new AssetLocation("claims", "textures/RWS_Tarot_18_Moon.jpg"),
+                ref guiTex
+            );
+            
+
+
+
             ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0.8f, 0.4f, 0.8f, 1.0f));
             ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(0.3f, 0.5f, 0.9f, 1.0f));
             ImGui.PushStyleColor(ImGuiCol.ButtonActive, new Vector4(0.1f, 0.3f, 0.7f, 1.0f));
@@ -99,7 +123,22 @@ namespace claims.src
 
             string[] labels = { "qaitbay-citadel", "magnifying-glass", "price-tag", "flat-platform", "prisoner", "magic-portal", "huts-village" };
             string[] labelsToolTips = { "gui-city-tooltip", "gui-citizen-info-tooltip", "gui-prices-tooltip", "gui-plot-tooltip", "gui-prison-tooltip", "gui-summon-tooltip", "gui-plotsgroup-tooltip" };
+              var newTexture = capi.Render.GetOrLoadTexture(assetPath);
 
+            var draw = ImGui.GetWindowDrawList();
+
+            var p0 = ImGui.GetWindowPos();
+            var p1 = new Vector2(
+                p0.X + ImGui.GetWindowWidth(),
+                p0.Y + ImGui.GetWindowHeight()
+            );
+
+            /*draw.AddImage(
+                guiTex.TextureId,
+                p0,
+                p1
+            );*/
+            //ImGui.ImageButton("c", guiTex.TextureId, new Vector2(120));
             //int te = capi.Assets
             for (int i = 0; i < 7; i++)
             {
@@ -131,7 +170,8 @@ namespace claims.src
             this.tabDrawHandler.DrawTab(this.selectedTab);
             this.mainWindowPos = ImGui.GetWindowPos();
             this.mainWindowSize = ImGui.GetWindowSize();
-
+          
+            
             ImGui.End();
             if (this.secondaryWindowTab != EnumSecondaryWindowTab.NONE && this.secondaryWindowOpen)
             {

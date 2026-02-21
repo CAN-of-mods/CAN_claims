@@ -185,6 +185,10 @@ namespace claims.src.events
                     }
                     playerInfo.PlayerCache.getCache()[(int)PermType.BUILD_AND_DESTROY_PERM] = b;
                     return b;
+                case PlotRelation.ALLY:
+                    b = plot.getPermsHandler().getPerm(PermGroup.ALLY, PermType.BUILD_AND_DESTROY_PERM);
+                    playerInfo.PlayerCache.getCache()[(int)PermType.BUILD_AND_DESTROY_PERM] = b;
+                    return b;
             }
             return false;
         }        
@@ -280,6 +284,10 @@ namespace claims.src.events
                     }
                     playerInfo.PlayerCache.getCache()[(int)PermType.USE_PERM] = b;
                     return b;
+                case PlotRelation.ALLY:
+                    b = plot.getPermsHandler().getPerm(PermGroup.ALLY, PermType.USE_PERM);
+                    playerInfo.PlayerCache.getCache()[(int)PermType.USE_PERM] = b;
+                    return b;
             }
             return false;   
 
@@ -348,6 +356,10 @@ namespace claims.src.events
                         }
                         //use item - cloth to check for use and spawn flag block after that
                     }
+                    playerInfo.PlayerCache.getCache()[(int)PermType.USE_PERM] = b;
+                    return b;
+                case PlotRelation.ALLY:
+                    b = plot.getPermsHandler().getPerm(PermGroup.ALLY, PermType.USE_PERM);
                     playerInfo.PlayerCache.getCache()[(int)PermType.USE_PERM] = b;
                     return b;
             }
@@ -450,6 +462,10 @@ namespace claims.src.events
                     }
                     playerInfo.PlayerCache.getCache()[(int)PermType.ATTACK_ANIMALS_PERM] = b;
                     return b;
+                case PlotRelation.ALLY:
+                    b = plot.getPermsHandler().getPerm(PermGroup.ALLY, PermType.ATTACK_ANIMALS_PERM);
+                    playerInfo.PlayerCache.getCache()[(int)PermType.ATTACK_ANIMALS_PERM] = b;
+                    return b;
             }
             return false;
         }
@@ -483,7 +499,12 @@ namespace claims.src.events
                 {
                     return PlotRelation.FOE;
                 }
+                else if(plot.getCity().Alliance.ComradAlliancies.Contains(playerInfo.Alliance))
+                {
+                    return PlotRelation.ALLY;
+                }
             }
+            
             return PlotRelation.STRANGER;
         }
         public static bool canBlockDestroyWithOutCacheUpdate(PlayerInfo playerInfo, Plot plot)
@@ -559,6 +580,10 @@ namespace claims.src.events
                     }
                     //playerInfo.PlayerCache.getCache()[(int)PermType.BUILD_AND_DESTROY_PERM] = b;
                     return b;
+                case PlotRelation.ALLY:
+                    b = plot.getPermsHandler().getPerm(PermGroup.ALLY, PermType.BUILD_AND_DESTROY_PERM);
+                    playerInfo.PlayerCache.getCache()[(int)PermType.BUILD_AND_DESTROY_PERM] = b;
+                    return b;
             }
             return false;
         }
@@ -632,6 +657,10 @@ namespace claims.src.events
                         //use item - cloth to check for use and spawn flag block after that
                     }
                     //playerInfo.PlayerCache.getCache()[(int)PermType.BUILD_AND_DESTROY_PERM] = b;
+                    return b;
+                case PlotRelation.ALLY:
+                    b = plot.getPermsHandler().getPerm(PermGroup.ALLY, PermType.USE_PERM);
+                    playerInfo.PlayerCache.getCache()[(int)PermType.USE_PERM] = b;
                     return b;
             }
             return false;
@@ -707,6 +736,10 @@ namespace claims.src.events
                         //use item - cloth to check for use and spawn flag block after that
                     }
                     //playerInfo.PlayerCache.getCache()[(int)PermType.BUILD_AND_DESTROY_PERM] = b;
+                    return b;
+                case PlotRelation.ALLY:
+                    b = plot.getPermsHandler().getPerm(PermGroup.ALLY, PermType.ATTACK_ANIMALS_PERM);
+                    playerInfo.PlayerCache.getCache()[(int)PermType.ATTACK_ANIMALS_PERM] = b;
                     return b;
             }
             return false;

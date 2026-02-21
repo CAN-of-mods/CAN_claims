@@ -6,6 +6,7 @@ using claims.src.gui.playerGui.structures.cellElements;
 using claims.src.messages;
 using claims.src.part;
 using claims.src.part.structure.conflict;
+using claims.src.part.structure.union;
 using Vintagestory.API.Common;
 using Vintagestory.API.Server;
 using Vintagestory.API.Util;
@@ -80,6 +81,17 @@ namespace claims.src.events
                 if (lic.Count > 0)
                 {
                     UsefullPacketsSend.AddToQueuePlayerInfoUpdate(playerInfo.Guid, new Dictionary<string, object> { { "value", lic } }, EnumPlayerRelatedInfo.ALLIANCE_CONFLICT_ALL);
+                }
+
+                List<ClientUnionLetterCellElement> unionList = new();
+                foreach (var it in UnionHander.GetAllLettersForAlliance(playerInfo.Alliance))
+                {
+                    unionList.Add(new ClientUnionLetterCellElement(it.From.GetPartName(), it.From.Guid, it.To.GetPartName(), it.To.Guid,
+                        it.TimeStampExpire, it.Guid));
+                }
+                if (unionList.Count > 0)
+                {
+                    UsefullPacketsSend.AddToQueuePlayerInfoUpdate(playerInfo.Guid, new Dictionary<string, object> { { "value", unionList } }, EnumPlayerRelatedInfo.ALLIANCE_UNION_LETTER_ALL);
                 }
             }
 

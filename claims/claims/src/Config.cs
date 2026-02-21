@@ -37,6 +37,7 @@ namespace claims.src
         public string HOURLY_BACKUP_FILE_NAME = "backup_hourly_claims.db";
         public string PERMS_FILE_NAME = "claims_permissions.json";
         public HashSet<string> DAYTIME_MAKE_BACKUP = new HashSet<string>();
+        public int BACKUP_CHECK_TIMER_SECONDS = 10;
         public string BACKUP_FOLDER_NAME_IN_DATA_FOLDER = "claims_backups";
         public string FULL_BACKUP_FOLDER = "";
         //CHAT

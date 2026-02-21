@@ -7,13 +7,13 @@ using Vintagestory.Client.NoObf;
 
 namespace claims.src.gui.prettyGui.GuiSecondaryTabs
 {
-    public class CANSelectPlayerForRankTab : CANGuiSecondaryTab
+    public class CANSelectUnionToLeaveTab : CANGuiSecondaryTab
     {
         private string TitleString;
         private string CommandToCallOnYes;
         private string YesButtonString;
         private string NoButtonString;
-        public CANSelectPlayerForRankTab(ICoreClientAPI capi, IconHandler iconHandler, string titleString, string commandToCallOnYes, string yesButtonString = "claims:gui-yes-string", string noButtonString = "claims:gui-no-string")
+        public CANSelectUnionToLeaveTab(ICoreClientAPI capi, IconHandler iconHandler, string titleString, string commandToCallOnYes, string yesButtonString = "claims:gui-yes-string", string noButtonString = "claims:gui-no-string")
         {
             this.capi = capi;
             this.iconHandler = iconHandler;
@@ -33,14 +33,13 @@ namespace claims.src.gui.prettyGui.GuiSecondaryTabs
             ImGui.Begin("ClaimsDetails", p_open: ref capi.ModLoader.GetModSystem<claimsGui>().secondaryWindowOpen, flags1);
             
             ImGui.Text(Lang.Get(TitleString, capi.ModLoader.GetModSystem<claimsGui>().textInput));
-            ImGui.Combo("Name", ref capi.ModLoader.GetModSystem<claimsGui>().selectedComboFirst, claims.clientDataStorage.clientPlayerInfo.CityInfo.PlayersNames.ToArray(), claims.clientDataStorage.clientPlayerInfo.CityInfo.PlayersNames.Count);
+            ImGui.Combo("Name", ref capi.ModLoader.GetModSystem<claimsGui>().selectedComboFirst, claims.clientDataStorage.clientPlayerInfo.AllianceInfo.Allies.ToArray(), claims.clientDataStorage.clientPlayerInfo.AllianceInfo.Allies.Count);
 
             if (ImGui.Button(Lang.Get(YesButtonString)))
             {
                 ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
-                capi.ModLoader.GetModSystem<claimsGui>().textInput2 = claims.clientDataStorage.clientPlayerInfo.CityInfo.PlayersNames[capi.ModLoader.GetModSystem<claimsGui>().selectedComboFirst];
-                clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, this.CommandToCallOnYes + " " +
-                    capi.ModLoader.GetModSystem<claimsGui>().textInput + " "
+                capi.ModLoader.GetModSystem<claimsGui>().textInput2 = claims.clientDataStorage.clientPlayerInfo.AllianceInfo.Allies[capi.ModLoader.GetModSystem<claimsGui>().selectedComboFirst];
+                clientEventManager.TriggerNewClientChatLine(GlobalConstants.CurrentChatGroup, this.CommandToCallOnYes + " "
                     + capi.ModLoader.GetModSystem<claimsGui>().textInput2, EnumChatType.Macro, "");
                 capi.ModLoader.GetModSystem<claimsGui>().secondaryWindowTab = EnumSecondaryWindowTab.NONE;
             }

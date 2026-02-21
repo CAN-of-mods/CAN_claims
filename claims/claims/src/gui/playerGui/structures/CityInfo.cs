@@ -33,6 +33,7 @@ namespace claims.src.gui.playerGui.structures
         public List<ClientConflictLetterCellElement> ClientConflictLetterCellElements { get; set; } = new();
         public List<ClientWarRangeCellElement> ClientWarRangeCellElements { get; set; } = new();
         public List<ClientTwoWarRangesCellElement> ClientTwoWarRangesCellElement { get; set; } = new();
+        public List<ClientUnionLetterCellElement> ClientUnionLetterCellElements { get; set; } = new();
         public CityInfo()
         {
             Name = "";

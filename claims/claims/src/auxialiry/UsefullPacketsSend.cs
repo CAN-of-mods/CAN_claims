@@ -502,7 +502,8 @@ namespace claims.src.auxialiry
                     alliance.Prefix,
                     StringFunctions.GetPartsNames(alliance.Cities),
                     (double)claims.economyHandler.getBalance(alliance.MoneyAccountName),
-                    alliance.Guid
+                    alliance.Guid,
+                    StringFunctions.GetPartsNames(alliance.ComradAlliancies)
                 ));
             }
             return null;

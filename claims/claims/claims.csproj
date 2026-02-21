@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <Reference Include="caneconomy">
-      <HintPath>..\..\..\libs\caneconomy.dll</HintPath>
+      <HintPath>..\..\..\..\..\Desktop\caneconomy.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="ImGui.NET">
@@ -101,10 +101,6 @@
   <Content Remove="..\resources\assets\claims\lang\sv-se.json" />
   <Content Remove="..\resources\assets\claims\lang\uk.json" />
   <Content Remove="..\resources\assets\claims\lang\zh-cn.json" />
-</ItemGroup>
-
-<ItemGroup>
-  <PackageReference Include="Quartz" Version="3.14.0" />
 </ItemGroup>
 
 </Project>

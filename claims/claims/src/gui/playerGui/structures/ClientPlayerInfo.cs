@@ -85,6 +85,12 @@ namespace claims.src.gui.playerGui.structures
             AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.ALLIANCE_CONFLICT_WARRANGES_UPDATED, OnAllianceConflictWarrangesUpdated);
             AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_DAY_PAYMENT, OnCityDayPayment);
             AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.CITY_PERMISSIONS_UPDATED, OnCityPermissionsUpdated);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.ALLIANCE_UNION_LETTER_ADD, OnAllianceUnionLetterAdd);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.ALLIANCE_UNION_LETTER_REMOVE, OnAllianceUnionLetterRemove);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.ALLIANCE_UNION_LETTER_ALL, OnAllianceUnionLetterAll);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.ALLIANCE_ALLIES_ALL, OnAllianceAlliesAll);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.ALLIANCE_ALLY_ADDED, OnAllianceAllyAdd);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.ALLIANCE_ALLY_REMOVED, OnAllianceAllyRemove);
         }
         public ClientPlayerInfo(string cityName, string mayorName, long timeStampCreated, List<string> citizens, Dictionary<string, int> maxCountPlots, int countPlots, string prefix,
             string afterName, HashSet<string> cityTitles, EnumShowPlotMovement showPlotMovement, int PlotColor, double cityBalance, List<string> criminals)
@@ -503,6 +509,22 @@ namespace claims.src.gui.playerGui.structures
                 this.CityInfo.ClientConflictLetterCellElements.Add(it);
             }
         }
+        private void OnAllianceUnionLetterAdd(string val)
+        {
+            HashSet<ClientUnionLetterCellElement> pc = JsonConvert.DeserializeObject<HashSet<ClientUnionLetterCellElement>>(val);
+            foreach (var it in pc)
+            {
+                this.CityInfo.ClientUnionLetterCellElements.Add(it);
+            }
+        }
+        private void OnAllianceAllyAdd(string val)
+        {
+            List<string> pc = JsonConvert.DeserializeObject<List<string>>(val);
+            foreach(var it in pc)
+            {
+                this.AllianceInfo.Allies.Add(it);
+            }
+        }
         private void OnAllianceLetterRemove(string val)
         {
             HashSet<Tuple<string, LetterPurpose>> pc = JsonConvert.DeserializeObject<HashSet<Tuple<string, LetterPurpose>>>(val);
@@ -518,6 +540,29 @@ namespace claims.src.gui.playerGui.structures
                 }
             }
         }
+        private void OnAllianceUnionLetterRemove(string val)
+        {
+            HashSet<string> pc = JsonConvert.DeserializeObject<HashSet<string>>(val);
+            foreach (var it in pc)
+            {
+                foreach (var it_current in this.CityInfo.ClientUnionLetterCellElements.ToArray())
+                {
+                    if (it_current.Guid.ToString().Equals(it))
+                    {
+                        this.CityInfo.ClientUnionLetterCellElements.Remove(it_current);
+                        break;
+                    }
+                }
+            }            
+        }
+        private void OnAllianceAllyRemove(string val)
+        {
+            List<string> pc = JsonConvert.DeserializeObject<List<string>>(val);
+            foreach (var it in pc)
+            {
+                this.AllianceInfo.Allies.Remove(it);
+            }
+        }
         private void OnAllianceConflictAdd(string val)
         {
             HashSet<ClientConflictCellElement> pc = JsonConvert.DeserializeObject<HashSet<ClientConflictCellElement>>(val);
@@ -528,17 +573,32 @@ namespace claims.src.gui.playerGui.structures
         }
         private void OnAllianceLetterAll(string val)
         {
-            HashSet<string> pc = JsonConvert.DeserializeObject<HashSet<string>>(val);
+            List<ClientConflictLetterCellElement> pc = JsonConvert.DeserializeObject<List<ClientConflictLetterCellElement>>(val);
             foreach (var it in pc)
             {
                 foreach (var it_current in this.CityInfo.ClientConflictCellElements.ToArray())
                 {
-                    if (it_current.Guid.ToString().Equals(it))
-                    {
-                        this.CityInfo.ClientConflictCellElements.Remove(it_current);
-                        break;
-                    }
+                    this.CityInfo.ClientConflictCellElements.Add(it_current);
                 }
+            }
+        }
+        private void OnAllianceUnionLetterAll(string val)
+        {
+            List<ClientUnionLetterCellElement> pc = JsonConvert.DeserializeObject<List<ClientUnionLetterCellElement>>(val);
+            foreach (var it in pc)
+            {
+                foreach (var it_current in this.CityInfo.ClientUnionLetterCellElements.ToArray())
+                {
+                    this.CityInfo.ClientUnionLetterCellElements.Add(it_current);
+                }
+            }
+        }
+        private void OnAllianceAlliesAll(string val)
+        {
+            List<string> pc = JsonConvert.DeserializeObject<List<string>>(val);
+            foreach (var it in pc)
+            {
+                this.AllianceInfo.Allies.Add(it);
             }
         }
         private void OnAllianceConflictRemove(string val)

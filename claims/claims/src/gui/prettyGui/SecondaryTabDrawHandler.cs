@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using claims.src.gui.prettyGui.GuiSecondaryTabs;
-using claims.src.gui.prettyGui.GuiTabs;
 using Vintagestory.API.Client;
 
 namespace claims.src.gui.prettyGui
@@ -57,6 +56,9 @@ namespace claims.src.gui.prettyGui
             this.TabDictionary.Add(EnumSecondaryWindowTab.CITY_PLOTSGROUP_PERMISSIONS, new CANPlotsGroupPermissionsTab(capi, iconHandler, "claims:gui-plotsgroup-permissions", "", "claims:gui-add-button"));
             this.TabDictionary.Add(EnumSecondaryWindowTab.CITY_PLOTSGROUP_PLOT_CLAIM_CONFIRM, new CANSelectPlotsGroupClaimTab(capi, iconHandler, "claims:gui-claim-plot-plotsgroup", "/c plotsgroup plotadd ", "claims:gui-confirm-button"));
             this.TabDictionary.Add(EnumSecondaryWindowTab.CITY_PLOTSGROUP_PLOT_UNCLAIM_CONFIRM, new CANSelectPlotsGroupClaimTab(capi, iconHandler, "claims:gui-claim-plot-plotsgroup", "/c plotsgroup plotremove ", "claims:gui-confirm-button"));
+            this.TabDictionary.Add(EnumSecondaryWindowTab.ALLIANCE_SEND_NEW_UNION_LETTER_NEED_NAME, new CANNeedNameTab(capi, iconHandler, "claims:gui-enter-alliance-name", "/a union declare ", "claims:gui-confirm-button"));
+            this.TabDictionary.Add(EnumSecondaryWindowTab.CITY_PLOTS_PERMISSIONS, new CANCityPermissionsTab(capi, iconHandler, "claims:gui-city-permissions-title", "", "claims:gui-add-button"));
+            this.TabDictionary.Add(EnumSecondaryWindowTab.ALLIANCE_CANCEL_UNION_SELECT, new CANSelectUnionToLeaveTab(capi, iconHandler, "claims:gui-select-union-to-leave-title", "/a union revoke", "claims:gui-confirm-button"));
             this.iconHandler = iconHandler;
         }
         public void DrawTab(EnumSecondaryWindowTab selectedTab)

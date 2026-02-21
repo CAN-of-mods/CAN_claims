@@ -1,19 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Cairo;
-using claims.src.auxialiry;
-using claims.src.gui.playerGui.structures.cellElements;
-using claims.src.network.handlers;
-using static claims.src.gui.playerGui.CANClaimsGui;
+﻿using ImGuiNET;
 using Vintagestory.API.Client;
-using Vintagestory.API.Common;
 using Vintagestory.API.Config;
-using ImGuiNET;
-using System.Numerics;
-using Vintagestory.Client.NoObf;
 
 namespace claims.src.gui.prettyGui.GuiTabs
 {
