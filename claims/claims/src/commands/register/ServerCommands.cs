@@ -7,8 +7,7 @@ using Vintagestory.API.Server;
 namespace claims.src.commands.register
 {
     public class ServerCommands
-    {
-       
+    {   
         public static void RegisterCommands(ICoreServerAPI sapi)
         {
             var parsers = sapi.ChatCommands.Parsers;
@@ -1287,6 +1286,91 @@ namespace claims.src.commands.register
                             .WithArgs(parsers.OptionalWord("string"))
                         .EndSub()
                      .EndSub()
+                     .BeginSub("union")
+                         .BeginSub("declare")
+                            .WithAlias("d")
+                            .HandleWith(commands.AllianceCommand.DeclareUnion)
+                             .WithPreCondition((TextCommandCallingArgs args) => {
+                                 if (args.Caller.Player is IServerPlayer player)
+                                 {
+                                     if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.ALLIANCE_DECLARE_UNION }))
+                                     {
+                                         return TextCommandResult.Success();
+                                     }
+                                     else
+                                     {
+                                         return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                     }
+
+                                 }
+                                 return TextCommandResult.Error("");
+                             })
+                            .WithDesc("Send letter to be allies with the second alliance.")
+                            .WithArgs(parsers.Word("allianceName"))
+                         .EndSub()
+                         .BeginSub("revoke")
+                            .WithAlias("r")
+                            .HandleWith(commands.AllianceCommand.RevokeUnion)
+                            .WithPreCondition((TextCommandCallingArgs args) => {
+                                if (args.Caller.Player is IServerPlayer player)
+                                {
+                                    if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.ALLIANCE_REVOKE_UNION }))
+                                    {
+                                        return TextCommandResult.Success();
+                                    }
+                                    else
+                                    {
+                                        return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                    }
+
+                                }
+                                return TextCommandResult.Error("");
+                            })
+                            .WithDesc("Revoke union with the alliance.")
+                            .WithArgs(parsers.Word("allianceName"))
+                         .EndSub()
+                         .BeginSub("decline")
+                            .WithAlias("dn")
+                            .HandleWith(commands.AllianceCommand.UnsendInviteUnion)
+                            .WithPreCondition((TextCommandCallingArgs args) => {
+                                if (args.Caller.Player is IServerPlayer player)
+                                {
+                                    if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.ALLIANCE_DENY_UNION }))
+                                    {
+                                        return TextCommandResult.Success();
+                                    }
+                                    else
+                                    {
+                                        return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                    }
+
+                                }
+                                return TextCommandResult.Error("");
+                            })
+                            .WithDesc("Decline letter to be allies with the second alliance.")
+                            .WithArgs(parsers.Word("allianceName"))
+                         .EndSub()
+                         .BeginSub("accept")
+                            .WithAlias("ac")
+                            .HandleWith(commands.AllianceCommand.AcceptInviteUnion)
+                            .WithPreCondition((TextCommandCallingArgs args) => {
+                                if (args.Caller.Player is IServerPlayer player)
+                                {
+                                    if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.ALLIANCE_ACCEPT_UNION }))
+                                    {
+                                        return TextCommandResult.Success();
+                                    }
+                                    else
+                                    {
+                                        return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
+                                    }
+
+                                }
+                                return TextCommandResult.Error("");
+                            })
+                            .WithDesc("Accept letter to be allies with the second alliance.")
+                            .WithArgs(parsers.Word("allianceName"))
+                         .EndSub()
                      ;
                      
         }

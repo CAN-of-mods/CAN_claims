@@ -20,7 +20,7 @@ namespace claims.src.part
         {
             string guid;
 
-            while(true)
+            while (true)
             {
                 guid = Guid.NewGuid().ToString();
                 if (claims.dataStorage.checkGuidForCityVillage(guid))
@@ -28,7 +28,7 @@ namespace claims.src.part
             }
             City city = new City(cityName, guid);
             claims.dataStorage.addCity(city);
-           // DataStorage.nameToCityDict.TryAdd(cityName, city);
+            // DataStorage.nameToCityDict.TryAdd(cityName, city);
 
             if (creator != null)
             {
@@ -44,7 +44,7 @@ namespace claims.src.part
             city.TimeStampCreated = TimeFunctions.getEpochSeconds();
 
             Plot newPlot = new Plot(pos);
-            newPlot.Price = - 1;
+            newPlot.Price = -1;
             newPlot.setCity(city);
             newPlot.Type = PlotType.MAIN_CITY_PLOT;
             claims.dataStorage.addClaimedPlot(newPlot.plotPosition, newPlot);
@@ -77,7 +77,8 @@ namespace claims.src.part
             }
 
             var player = creator != null ? claims.sapi.World.PlayerByUid(creator.Guid) : null;
-            if (player != null) {
+            if (player != null)
+            {
 
                 Dictionary<EnumPlayerRelatedInfo, string> collector = new Dictionary<EnumPlayerRelatedInfo, string>
                 {
@@ -108,14 +109,14 @@ namespace claims.src.part
                 claims.economyHandler.newAccount(city.MoneyAccountName, new Dictionary<string, object> { { "lastknownname", city.GetPartName() } });
             }
             return;
-        }      
+        }
         public static void initPrison(Plot plot, City city, IServerPlayer creator)
         {
             Guid guid;
             while (true)
             {
                 guid = Guid.NewGuid();
-                if(claims.dataStorage.prisonExistsByGUID(guid.ToString()))
+                if (claims.dataStorage.prisonExistsByGUID(guid.ToString()))
                 {
                     continue;
                 }
@@ -172,9 +173,33 @@ namespace claims.src.part
                     RightsHandler.reapplyRights(it);
                 }
             }
-            UsefullPacketsSend.AddToQueueAllianceInfoUpdate(newAlliace.Guid, new Dictionary<string, object> { { "value", newAlliace.Guid } },  EnumPlayerRelatedInfo.NEW_ALLIANCE_ALL);
+            UsefullPacketsSend.AddToQueueAllianceInfoUpdate(newAlliace.Guid, new Dictionary<string, object> { { "value", newAlliace.Guid } }, EnumPlayerRelatedInfo.NEW_ALLIANCE_ALL);
             creator.City.saveToDatabase();
             newAlliace.saveToDatabase(false);
+        }
+        public static void InitNewUnion(Alliance first, Alliance second)
+        {
+            first.ComradAlliancies.Add(second);
+            second.ComradAlliancies.Add(first);
+            foreach (var city in first.Cities)
+            {
+                foreach(var sCity in second.Cities)
+                {
+                    city.ComradeCities.Add(sCity);
+                    city.saveToDatabase();
+                }
+            }
+            foreach (var city in second.Cities)
+            {
+                foreach(var sCity in first.Cities)
+                {
+                    city.ComradeCities.Add(sCity);
+                    city.saveToDatabase();
+                }
+            }
+            first.saveToDatabase();
+            second.saveToDatabase();
+            //UsefullPacketsSend.AddToQueueUnionInfoUpdate(newUnion.Guid, new Dictionary<string, object> { { "value", newUnion.Guid } }, EnumPlayerRelatedInfo.NEW_UNION_ALL);
         }
     }
 }

@@ -1,13 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using claims.src.auxialiry;
+﻿using claims.src.auxialiry;
+using claims.src.gui.playerGui.structures;
+using claims.src.gui.playerGui.structures.cellElements;
 using claims.src.messages;
 using claims.src.part;
 using claims.src.part.structure;
 using claims.src.part.structure.conflict;
 using claims.src.rights;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using Vintagestory.API.Config;
 using Vintagestory.API.Server;
 
@@ -91,7 +93,11 @@ namespace claims.src
                         EnumPlayerPermissions.ALLIANCE_OFFER_STOP_CONFLICT,
                         EnumPlayerPermissions.ALLIANCE_ACCEPT_STOP_CONFLICT,
                         EnumPlayerPermissions.ALLIANCE_DENY_STOP_CONFLICT,
-                        EnumPlayerPermissions.ALLIANCE_WITHDRAW_MONEY
+                        EnumPlayerPermissions.ALLIANCE_WITHDRAW_MONEY,
+                        EnumPlayerPermissions.ALLIANCE_ACCEPT_UNION,
+                        EnumPlayerPermissions.ALLIANCE_DECLARE_UNION,
+                        EnumPlayerPermissions.ALLIANCE_DENY_UNION,
+                        EnumPlayerPermissions.ALLIANCE_REVOKE_UNION
                     }
                 }
 
@@ -292,6 +298,46 @@ namespace claims.src
             }
             first.Hostiles.Add(second);
             second.Hostiles.Add(first);
+        }
+        public static void AllianceAllySetHostileOnNewConflictStarted(Alliance first, Alliance second, Conflict conflict)
+        {
+            foreach(var it in first.ComradAlliancies)
+            {
+                if(it != second && !it.Hostiles.Contains(second))
+                {
+                    SetAllianciesHostile(it, second, conflict);
+                    string newConflictGuid = ConflictLetter.GetUnusedGuid().ToString();
+                    Conflict newConflict = new Conflict("", newConflictGuid);
+                    claims.dataStorage.TryAddConflict(newConflict);
+                    newConflict.First = first;
+                    newConflict.Second = second;
+                    newConflict.StartedBy = first;
+                    newConflict.State = ConflictState.CREATED;
+                    newConflict.TimeStampStarted = TimeFunctions.getEpochSeconds();
+                    newConflict.MinimumDaysBetweenBattles = claims.config.MINIMUM_DAYS_BETWEEN_BATTLES;
+
+                    UsefullPacketsSend.AddToQueueAllianceInfoUpdate(first.Guid,
+                                new Dictionary<string, object> { { "value", new ClientConflictCellElement(newConflict.GetPartName(),
+                                newConflict.First.GetPartName(), newConflict.Second.GetPartName(), newConflict.First.GetPartName(),
+                                newConflict.State, newConflict.Guid,
+                                newConflict.MinimumDaysBetweenBattles, newConflict.LastBattleDateStart, newConflict.LastBattleDateEnd,
+                                newConflict.NextBattleDateStart, newConflict.NextBattleDateEnd, newConflict.WarRanges, newConflict.FirstWarRanges,
+                                newConflict.SecondWarRanges, newConflict.TimeStampStarted) } }, EnumPlayerRelatedInfo.ALLIANCE_CONFLICT_ADD);
+                    UsefullPacketsSend.AddToQueueAllianceInfoUpdate(second.Guid,
+                        new Dictionary<string, object> { { "value", new ClientConflictCellElement(newConflict.GetPartName(),
+                                newConflict.First.GetPartName(), newConflict.Second.GetPartName(), newConflict.First.GetPartName(),
+                                newConflict.State, newConflict.Guid, newConflict.MinimumDaysBetweenBattles, newConflict.LastBattleDateStart,
+                                newConflict.LastBattleDateEnd, newConflict.NextBattleDateStart, newConflict.NextBattleDateEnd,
+                                newConflict.WarRanges, newConflict.FirstWarRanges, newConflict.SecondWarRanges, newConflict.TimeStampStarted) } },
+                        EnumPlayerRelatedInfo.ALLIANCE_CONFLICT_ADD);
+
+                    first.saveToDatabase();
+                    second.saveToDatabase();
+                    newConflict.saveToDatabase(false);
+                }
+
+            }
+           
         }
         public static void AddCityHostilesInAlliance(City city, Alliance alliance)
         {

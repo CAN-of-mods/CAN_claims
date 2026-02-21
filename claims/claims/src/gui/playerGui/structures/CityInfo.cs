@@ -10,7 +10,7 @@ namespace claims.src.gui.playerGui.structures
         public string Name { get; set; }
         public string MayorName { get; set; }
         public long TimeStampCreated { get; set; }
-        public HashSet<string> PlayersNames;
+        public List<string> PlayersNames;
         public Dictionary<string, int> MaxCountPlots { get; set; } = new();
         public int CountPlots { get; set; }
         public string Prefix { get; set; }
@@ -23,7 +23,7 @@ namespace claims.src.gui.playerGui.structures
         public double CityBalance { get; set; }
         public double CityDebt { get; set; }
         public double CityDayPayment { get; set; }
-        public HashSet<string> Criminals = new();
+        public List<string> Criminals = new();
         public PermsHandler PermsHandler { get; set; } = new();
         public List<PrisonCellElement> PrisonCells { get; set; } = new();
         public List<SummonCellElement> SummonCells { get; set; } = new();
@@ -33,6 +33,7 @@ namespace claims.src.gui.playerGui.structures
         public List<ClientConflictLetterCellElement> ClientConflictLetterCellElements { get; set; } = new();
         public List<ClientWarRangeCellElement> ClientWarRangeCellElements { get; set; } = new();
         public List<ClientTwoWarRangesCellElement> ClientTwoWarRangesCellElement { get; set; } = new();
+        public List<ClientUnionLetterCellElement> ClientUnionLetterCellElements { get; set; } = new();
         public CityInfo()
         {
             Name = "";
@@ -40,8 +41,8 @@ namespace claims.src.gui.playerGui.structures
             this.ClientWarRangeCellElements = CreateDefaultWarRangeForWeek();
             this.ClientTwoWarRangesCellElement = CreateDefaultTwoWarRangesForWeek();
         }
-        public CityInfo(string cityName, string mayorName, long timeStampCreated, HashSet<string> citizens, Dictionary<string, int> maxCountPlots, int countPlots,
-            string prefix, string afterName, HashSet<string> cityTitles, int plotsColor, double cityBalance, HashSet<string> criminals)
+        public CityInfo(string cityName, string mayorName, long timeStampCreated, List<string> citizens, Dictionary<string, int> maxCountPlots, int countPlots,
+            string prefix, string afterName, HashSet<string> cityTitles, int plotsColor, double cityBalance, List<string> criminals)
         {
             Name = cityName;
             MayorName = mayorName;

@@ -22,6 +22,7 @@ using claims.src.network.handlers;
 using claims.src.part;
 using claims.src.part.structure.conflict;
 using claims.src.part.structure.plots;
+using claims.src.part.structure.union;
 using claims.src.perms;
 using claims.src.playerMovements;
 using claims.src.timers;
@@ -115,7 +116,7 @@ namespace claims.src
             api.RegisterBlockClass("CANCaptureFlagBlock", typeof(CaptureFlagBlock));
             api.RegisterBlockEntityBehaviorClass("FlagEntity", typeof(BlockEntityBehaviorFlag));
             api.RegisterBlockBehaviorClass("Flag", typeof(BlockBehaviorFlag));
-            Environment.SetEnvironmentVariable("CAIRO_DEBUG_DISPOSE", "1");
+            //Environment.SetEnvironmentVariable("CAIRO_DEBUG_DISPOSE", "1");
         }
         public override void StartClientSide(ICoreClientAPI api)
         {
@@ -151,7 +152,7 @@ namespace claims.src
 
             capi.Event.RegisterEventBusListener(onPlayerChangePlotEvent, 0.5, "claimsPlayerChangePlot");
 
-            api.Input.RegisterHotKey("canclaimsgui", "CAN Claims GUI", GlKeys.P, HotkeyType.GUIOrOtherControls, ctrlPressed: true);
+            api.Input.RegisterHotKey("canclaimsgui", "CAN Claims GUI", GlKeys.U, HotkeyType.GUIOrOtherControls, ctrlPressed: true, shiftPressed: true);
             api.Input.SetHotKeyHandler("canclaimsgui", new ActionConsumable<KeyCombination>(this.OnHotKeySkillDialog));
 
             api.Input.RegisterHotKey("claimsplayermovementgui", "Plot info GUI", GlKeys.K, HotkeyType.GUIOrOtherControls);
@@ -310,6 +311,7 @@ namespace claims.src
             config = null;
             economyHandler = null;
             ConflictHandler.clearAll();
+            UnionHander.clearAll();
         }
 
         public static void ShutDownClient()

@@ -9,7 +9,11 @@
 
   <ItemGroup>
     <Reference Include="caneconomy">
-      <HintPath>..\..\..\libs\caneconomy.dll</HintPath>
+      <HintPath>..\..\..\..\..\Desktop\caneconomy.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="ImGui.NET">
+      <HintPath>..\..\..\..\..\libs\ImGui.NET.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.Data.Sqlite">
@@ -31,6 +35,10 @@
     <Reference Include="VintagestoryAPI">
       <HintPath>$(VINTAGE_STORY)/VintagestoryAPI.dll</HintPath>
       <Private>false</Private>
+    </Reference>
+    <Reference Include="VSImGui">
+      <HintPath>..\..\..\..\..\libs\VSImGui.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="VSSurvivalMod">
       <HintPath>$(VINTAGE_STORY)/Mods/VSSurvivalMod.dll</HintPath>
@@ -93,10 +101,6 @@
   <Content Remove="..\resources\assets\claims\lang\sv-se.json" />
   <Content Remove="..\resources\assets\claims\lang\uk.json" />
   <Content Remove="..\resources\assets\claims\lang\zh-cn.json" />
-</ItemGroup>
-
-<ItemGroup>
-  <PackageReference Include="Quartz" Version="3.14.0" />
 </ItemGroup>
 
 </Project>

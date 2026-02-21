@@ -35,7 +35,7 @@ namespace claims.src.gui.playerGui.GuiPages
             ElementBounds addCriminalBounds = currentBounds.RightCopy();
             addCriminalBounds.WithFixedWidth(25).WithFixedHeight(25);
             ElementBounds removeFriendBounds = addCriminalBounds.RightCopy();
-            compo.AddIconButton("plus", (bool t) =>
+           /* compo.AddIconButton("plus", (bool t) =>
             {
                 if (t)
                 {
@@ -51,7 +51,7 @@ namespace claims.src.gui.playerGui.GuiPages
                     gui.CreateNewCityState = EnumUpperWindowSelectedState.REMOVE_CRIMINAL;
                     gui.BuildUpperWindow();
                 }
-            }, removeFriendBounds);
+            }, removeFriendBounds);*/
 
             currentBounds.fixedWidth = lineBounds.fixedWidth;
 

@@ -1,7 +1,9 @@
 ﻿using Cairo;
+using System.Linq;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
+using Vintagestory.API.Datastructures;
 
 namespace claims.src.gui.playerGui.GuiPages
 {
@@ -15,22 +17,40 @@ namespace claims.src.gui.playerGui.GuiPages
             currentBounds.Alignment = EnumDialogArea.LeftTop;
             currentBounds.fixedY += 15;
             string currencyStr = Lang.Get("claims:gui-currency-item");
-            TextExtents textExtents = pricesTabFont.GetTextExtents(currencyStr);
-            currentBounds.fixedWidth = textExtents.Width + 10;
-            compo.AddStaticText(currencyStr,
-                   pricesTabFont,
-                   currentBounds, "currency-itme");
-
-            ElementBounds cityPriceBounds = currentBounds.RightCopy();
-            cityPriceBounds.fixedY -= 10;
-            claims.config.COINS_VALUES_TO_CODE.TryGetValue(1, out string coin_code);
-            if (coin_code != null)
+            TextExtents textExtents;
+            if (caneconomy.caneconomy.config != null && caneconomy.caneconomy.config.EXTENDED_COINS_VALUES_TO_CODE_PRIVATE.Count > 0) 
             {
-                ItemStack coin = new ItemStack(compo.Api.World.GetItem(new AssetLocation(coin_code)), 1);
-                ItemstackTextComponent currencyStack = new ItemstackTextComponent(compo.Api, coin, 48);
-                compo.AddRichtext(new RichTextComponentBase[] { currencyStack }, cityPriceBounds, "coin-item");
+                var tempBound = currentBounds;
+                textExtents = pricesTabFont.GetTextExtents(currencyStr);
+                currentBounds.fixedWidth = textExtents.Width + 10;
+                compo.AddStaticText(currencyStr,
+                       pricesTabFont,
+                       tempBound, "currency-itme");
+                foreach (var it in caneconomy.caneconomy.config.EXTENDED_COINS_VALUES_TO_CODE_PRIVATE)
+                {
+                    var coinData = it.Value;
+                    //currencyStr = coinData.CollectibleCode;
+                   
+                    tempBound = tempBound.RightCopy();
+                    tempBound.fixedWidth = 48;
+                    //tempBound.fixedY -= 10;
+
+                    ItemStack coin = new ItemStack(compo.Api.World.GetItem(new AssetLocation(coinData.CollectibleCode)), 1);
+                    if (coinData.CoinAttributes != null)
+                    {
+                        var attributeTree = new TreeAttribute();
+                        foreach (var attr in coinData.CoinAttributes)
+                        {
+                            coin.Attributes[attr.Key] = attr.Value;
+                        }
+                    }
+                    ItemstackTextComponent currencyStack = new ItemstackTextComponent(compo.Api, coin, 48);
+                    compo.AddRichtext(new RichTextComponentBase[] { currencyStack }, tempBound, "coin-item" + coinData.CollectibleCode);                  
+                }
+                currentBounds = currentBounds.BelowCopy(0, 0);
             }
-            currentBounds = currentBounds.BelowCopy(0, 0);
+            
+           
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 

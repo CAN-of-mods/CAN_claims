@@ -77,7 +77,7 @@ namespace claims.src.gui.playerGui.GuiElements
             this.richTextElem = new GuiElementRichtext(capi, VtmlUtil.Richtextify(capi, this.text, CairoFont.WhiteMediumText()), labelTextBounds);
             var addRankBounds = labelTextBounds.RightCopy().WithFixedSize(25, 25);
             addRankBounds.fixedY += 5;
-            addRankButton = new GuiElementToggleButton(capi, "wpX", "", font, (bool t) =>
+            /*addRankButton = new GuiElementToggleButton(capi, "wpX", "", font, (bool t) =>
             {
                 if (t)
                 {
@@ -85,7 +85,7 @@ namespace claims.src.gui.playerGui.GuiElements
                     claims.CANCityGui.selectedPos = this.prisonCell.SpawnPosition;
                     claims.CANCityGui.BuildUpperWindow();
                 }
-            }, addRankBounds);
+            }, addRankBounds);*/
 
             double offsetY = 35;
             double offsetX = 0;
@@ -143,7 +143,7 @@ namespace claims.src.gui.playerGui.GuiElements
                 }
             }
             richTextElem.Compose();
-            addRankButton.ComposeElements(context, imageSurface);
+            //addRankButton.ComposeElements(context, imageSurface);
             generateTexture(imageSurface, ref modcellTexture);
             ComposeElements(context, imageSurface);
             context.Dispose();
@@ -240,7 +240,7 @@ namespace claims.src.gui.playerGui.GuiElements
                 }
             }
             richTextElem.RenderInteractiveElements(deltaTime);
-            addRankButton.RenderInteractiveElements(deltaTime);
+            //addRankButton.RenderInteractiveElements(deltaTime);
         }
 
         public override void Dispose()
@@ -250,7 +250,7 @@ namespace claims.src.gui.playerGui.GuiElements
             {
                 it.Dispose();
             }
-            addRankButton.Dispose();
+            addRankButton?.Dispose();
             modcellTexture?.Dispose();
             api.Render.GLDeleteTexture(leftHighlightTextureId);
             api.Render.GLDeleteTexture(middleHighlightTextureId);
@@ -269,7 +269,7 @@ namespace claims.src.gui.playerGui.GuiElements
             {
                 it.OnMouseUpOnElement(api, args);
             }
-            addRankButton.OnMouseUpOnElement(api, args);
+            addRankButton?.OnMouseUpOnElement(api, args);
 
             int mouseX = api.Input.MouseX;
             int mouseY = api.Input.MouseY;
@@ -300,7 +300,7 @@ namespace claims.src.gui.playerGui.GuiElements
             {
                 it.OnMouseMove(api, args);
             }
-            addRankButton.OnMouseMove(api, args);
+            addRankButton?.OnMouseMove(api, args);
         }
 
         public void OnMouseDownOnElement(MouseEvent args, int elementIndex)
@@ -316,7 +316,7 @@ namespace claims.src.gui.playerGui.GuiElements
                     it.OnMouseDownOnElement(api, args);
                 }
             }
-            addRankButton.OnMouseDownOnElement(api, args);
+            addRankButton?.OnMouseDownOnElement(api, args);
         }
     }
 }
