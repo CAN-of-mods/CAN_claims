@@ -37,7 +37,7 @@ namespace claims.src.events
                     claims.DebugValSet = true;
                     return true;
                 }
-                if (claims.dataStorage.getPlot(PlotPosition.fromXZ((int)spawnPosition.X, (int)spawnPosition.Z), out Plot plot))
+                if (claims.dataStorage.GetPlot(PlotPosition.fromXZ((int)spawnPosition.X, (int)spawnPosition.Z), out Plot plot))
                 {
                     //TODO 
                     //check for plot/city flags

@@ -36,7 +36,7 @@ namespace claims.src.rustyshellfork
                 for (int j = -1; j < 2; ++j)
                 {
 
-                    claims.dataStorage.getPlot(PlotPosition.fromXZ((int)(tmpX + (i * blastRadius)),
+                    claims.dataStorage.GetPlot(PlotPosition.fromXZ((int)(tmpX + (i * blastRadius)),
                                                                           (int)(tmpZ + (j * blastRadius))), out Plot tb);
                     if (tb == null)
                     {

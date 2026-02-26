@@ -158,7 +158,7 @@ namespace claims.src.events
                         if ((Math.Abs(i) + Math.Abs(j)) != 1) continue;
                         posTmp.X = it.Value.getPos().X + i;
                         posTmp.Z = it.Value.getPos().Y + j;
-                        if (!claims.dataStorage.getPlot(posTmp, out var nearPlot))
+                        if (!claims.dataStorage.GetPlot(posTmp, out var nearPlot))
                         {
                             it.Value.BorderPlot = true;
                             goto notBorderplot;

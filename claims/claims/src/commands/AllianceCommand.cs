@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading;
+﻿using caneconomy.src.interfaces;
 using claims.src.agreement;
 using claims.src.auxialiry;
 using claims.src.delayed.cooldowns;
@@ -11,6 +10,9 @@ using claims.src.part;
 using claims.src.part.structure;
 using claims.src.part.structure.conflict;
 using claims.src.part.structure.union;
+using System;
+using System.Collections.Generic;
+using System.Threading;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Server;
@@ -19,10 +21,43 @@ namespace claims.src.commands
 {
     public class AllianceCommand : BaseCommand
     {
+        // ================= TEST HOOKS =================
+
+        internal static IDataStorage Storage = claims.dataStorage;
+        internal static EconomyHandler Economy = claims.economyHandler;
+        internal static IConfig Config = claims.config;
+
+        internal static Func<long> Now = () => TimeFunctions.getEpochSeconds();
+
+        internal static Action<Thread> RunThread = t => t.Start();
+
+        internal static System.Func<string, string> Loc = k => Lang.Get(k);
+        // ================= HELPERS =================
+
+        private static bool TryGetPlayer(IServerPlayer player, out PlayerInfo info, TextCommandResult err)
+        {
+            if (!Storage.GetPlayerByUid(player.PlayerUID, out info))
+            {
+                err.StatusMessage = Loc("claims:no_such_player_info");
+                return false;
+            }
+            return true;
+        }
+
+        private static bool RequireAlliance(PlayerInfo info, TextCommandResult err)
+        {
+            if (!info.HasAlliance())
+            {
+                err.StatusMessage = Loc("claims:no_alliance");
+                return false;
+            }
+            return true;
+        }
+
         public static TextCommandResult CreateAlliance(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
             if (playerInfo == null)
             {
                 return TextCommandResult.Error("claims:no_such_player_info");
@@ -79,7 +114,7 @@ namespace claims.src.commands
         public static TextCommandResult DeleteAlliance(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Error(Lang.Get("claims:no_such_player_info"));
             }
@@ -108,7 +143,7 @@ namespace claims.src.commands
         public static TextCommandResult LeaveAlliance(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Error(Lang.Get("claims:no_such_player_info"));
             }
@@ -177,7 +212,7 @@ namespace claims.src.commands
         public static TextCommandResult KickFromAlliance(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Error(Lang.Get("claims:no_such_player_info"));
             }
@@ -195,7 +230,7 @@ namespace claims.src.commands
             {
                 return TextCommandResult.Error(Lang.Get("claims:invalid_city_name"));
             }
-            if(!claims.dataStorage.getCityByName(name, out City city))
+            if(!claims.dataStorage.GetCityByName(name, out City city))
             {
                 return TextCommandResult.Error(Lang.Get("claims:no_such_city"));
             }
@@ -236,7 +271,7 @@ namespace claims.src.commands
         public static TextCommandResult InviteToAlliance(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Error(Lang.Get("claims:no_such_player_info"));
             }
@@ -254,7 +289,7 @@ namespace claims.src.commands
             {
                 return TextCommandResult.Error(Lang.Get("claims:invalid_city_name"));
             }
-            if(!claims.dataStorage.getCityByName(name, out City city))
+            if(!claims.dataStorage.GetCityByName(name, out City city))
             {
                 return TextCommandResult.Error(Lang.Get("claims:no_such_city"));
             }
@@ -305,7 +340,7 @@ namespace claims.src.commands
         public static TextCommandResult SetNameAlliance(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Success(Lang.Get("claims:no_such_player_info"));
             }
@@ -354,7 +389,7 @@ namespace claims.src.commands
         public static TextCommandResult SetFeeAlliance(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Success(Lang.Get("claims:no_such_player_info"));
             }
@@ -381,7 +416,7 @@ namespace claims.src.commands
         public static TextCommandResult SetCapitalAlliance(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Success(Lang.Get("claims:no_such_player_info"));
             }
@@ -399,7 +434,7 @@ namespace claims.src.commands
             {
                 return TextCommandResult.Success(Lang.Get("claims:invalid_city_name"));
             }
-            if (claims.dataStorage.getCityByName(name, out City city))
+            if (claims.dataStorage.GetCityByName(name, out City city))
             {
                 return TextCommandResult.Success(Lang.Get("claims:no_such_city"));
             }
@@ -412,7 +447,7 @@ namespace claims.src.commands
         public static TextCommandResult SetPrefixAlliance(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Success(Lang.Get("claims:no_such_player_info"));
             }
@@ -445,7 +480,7 @@ namespace claims.src.commands
         public static TextCommandResult PrintInviteList(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Success(Lang.Get("claims:no_such_player_info"));
             }
@@ -471,7 +506,7 @@ namespace claims.src.commands
         public static TextCommandResult DeclareConflict(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Success(Lang.Get("claims:no_such_player_info"));
             }
@@ -618,7 +653,7 @@ namespace claims.src.commands
         public static TextCommandResult RevokeConflict(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Success(Lang.Get("claims:no_such_player_info"));
             }
@@ -667,7 +702,7 @@ namespace claims.src.commands
         public static TextCommandResult AcceptStartConflict(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Success(Lang.Get("claims:no_such_player_info"));
             }
@@ -705,7 +740,7 @@ namespace claims.src.commands
         public static TextCommandResult DenyStartConflict(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Success(Lang.Get("claims:no_such_player_info"));
             }
@@ -742,7 +777,7 @@ namespace claims.src.commands
         public static TextCommandResult OfferStopConflict(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Success(Lang.Get("claims:no_such_player_info"));
             }
@@ -841,7 +876,7 @@ namespace claims.src.commands
         public static TextCommandResult AcceptStopConflict(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Success(Lang.Get("claims:no_such_player_info"));
             }
@@ -884,7 +919,7 @@ namespace claims.src.commands
         public static TextCommandResult DenyStopConflict(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Success(Lang.Get("claims:no_such_player_info"));
             }
@@ -924,7 +959,7 @@ namespace claims.src.commands
         public static TextCommandResult DeclareUnion(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Success(Lang.Get("claims:no_such_player_info"));
             }
@@ -1016,7 +1051,7 @@ namespace claims.src.commands
         public static TextCommandResult RevokeUnion(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Success(Lang.Get("claims:no_such_player_info"));
             }
@@ -1051,7 +1086,7 @@ namespace claims.src.commands
         public static TextCommandResult UnsendInviteUnion(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Success(Lang.Get("claims:no_such_player_info"));
             }
@@ -1084,7 +1119,7 @@ namespace claims.src.commands
         public static TextCommandResult AcceptInviteUnion(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Success(Lang.Get("claims:no_such_player_info"));
             }

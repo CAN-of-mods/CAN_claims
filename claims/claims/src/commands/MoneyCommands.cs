@@ -13,7 +13,7 @@ namespace claims.src.commands
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
 
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Success("claims:no_such_player_info");
             }
@@ -30,7 +30,7 @@ namespace claims.src.commands
             IServerPlayer player = args.Caller.Player as IServerPlayer;
             int toWithdraw = (int)args.Parsers[0].GetValue();
 
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Success("claims:no_such_player_info");
             }
@@ -57,7 +57,7 @@ namespace claims.src.commands
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
 
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Success("claims:no_such_player_info");
             }
@@ -79,7 +79,7 @@ namespace claims.src.commands
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
 
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Success("claims:no_such_player_info");
             }
@@ -96,7 +96,7 @@ namespace claims.src.commands
             IServerPlayer player = args.Caller.Player as IServerPlayer;
             int toWithdraw = (int)args.Parsers[0].GetValue();
 
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Success("claims:no_such_player_info");
             }
@@ -123,7 +123,7 @@ namespace claims.src.commands
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
 
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Success("claims:no_such_player_info");
             }

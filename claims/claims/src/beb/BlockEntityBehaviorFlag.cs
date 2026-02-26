@@ -120,7 +120,7 @@ namespace claims.src.beb
                     {
                         return;
                     }
-                    if (!claims.dataStorage.getPlot(PlotPosition.fromBlockPos(this.Pos), out var defenderPlot))
+                    if (!claims.dataStorage.GetPlot(PlotPosition.fromBlockPos(this.Pos), out var defenderPlot))
                     {
                         return;
                     }
@@ -194,13 +194,13 @@ namespace claims.src.beb
             {
                 if (this.updateRef == null)
                 {
-                    if (!claims.dataStorage.getPlayerByUid(byPlayer.PlayerUID, out var playerInfo) || !playerInfo.HasAlliance())
+                    if (!claims.dataStorage.GetPlayerByUid(byPlayer.PlayerUID, out var playerInfo) || !playerInfo.HasAlliance())
                     {
                         return;
                     }
                     Alliance alliance = playerInfo.Alliance;
                     PlotPosition currentPlotPosition = PlotPosition.fromBlockPos(this.Pos);
-                    if (!claims.dataStorage.getPlot(currentPlotPosition, out Plot plotHere))
+                    if (!claims.dataStorage.GetPlot(currentPlotPosition, out Plot plotHere))
                     {
                         return;
                     }
@@ -305,7 +305,7 @@ namespace claims.src.beb
                     }
                     else
                     {
-                        if (this.updateRef == null)
+                        if (this.updateRef != null)
                         {
                             this.Api.Event.UnregisterGameTickListener(this.updateRef.Value);
                         }

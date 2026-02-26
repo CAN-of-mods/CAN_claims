@@ -96,7 +96,7 @@ namespace claims.src.part.structure
             {
                 if (uid.Length == 0)
                     continue;
-                if (claims.dataStorage.getPlayerByUid(uid, out PlayerInfo player))
+                if (claims.dataStorage.GetPlayerByUid(uid, out PlayerInfo player))
                     prisonedPlayers.Add(player);
             }
             /*spawnPostion = JsonSerializer.Deserialize<Vec3i>(splited[0]);

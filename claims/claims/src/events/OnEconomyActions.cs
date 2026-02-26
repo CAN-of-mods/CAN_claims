@@ -26,7 +26,7 @@ namespace claims.src.events
                     claims.economyHandler.deleteAccount(rbi.AccountName);
                     if (accName.StartsWith(claims.config.CITY_ACCOUNT_STRING_PREFIX))
                     {
-                        claims.dataStorage.getCityByName(accName.Substring(claims.config.CITY_ACCOUNT_STRING_PREFIX.Length), out City city);
+                        claims.dataStorage.GetCityByName(accName.Substring(claims.config.CITY_ACCOUNT_STRING_PREFIX.Length), out City city);
                         if (city != null)
                         {
                             MessageHandler.sendMsgToPlayerInfo(city.getMayor(), Lang.Get("claims:city_bank_was_destroyed"));
@@ -36,7 +36,7 @@ namespace claims.src.events
                     }
                     else
                     {
-                        claims.dataStorage.getPlayerByUid(accName, out PlayerInfo playerInfo);
+                        claims.dataStorage.GetPlayerByUid(accName, out PlayerInfo playerInfo);
                         if (playerInfo != null)
                         {
                             MessageHandler.sendMsgToPlayerInfo(playerInfo, Lang.Get("claims:your_bank_was_destroyed"));
@@ -73,7 +73,7 @@ namespace claims.src.events
                     chestPos.Z += 1;
                 }
 
-                claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+                claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
 
                 //Remove all new lines, so we have all content as one long string
                 string signText = __instance.text.Replace("\n", "");
@@ -81,7 +81,7 @@ namespace claims.src.events
                 if (signText.StartsWith(Lang.Get("claims:economy_chest_bank_city_sign_prefix")))
                 {
                     //City bank can be created only in city claimed plot
-                    claims.dataStorage.getPlot(PlotPosition.fromXZ(chestPos.X, chestPos.Z), out Plot plot);
+                    claims.dataStorage.GetPlot(PlotPosition.fromXZ(chestPos.X, chestPos.Z), out Plot plot);
                     if (plot == null)
                     {
                         return;
@@ -182,7 +182,7 @@ namespace claims.src.events
                 else if (signText.StartsWith(Lang.Get("claims:economy_chest_bank_alliance_sign_prefix")))
                 {
                     //City bank can be created only in city claimed plot
-                    claims.dataStorage.getPlot(PlotPosition.fromXZ(chestPos.X, chestPos.Z), out Plot plot);
+                    claims.dataStorage.GetPlot(PlotPosition.fromXZ(chestPos.X, chestPos.Z), out Plot plot);
                     if (plot == null)
                     {
                         return;

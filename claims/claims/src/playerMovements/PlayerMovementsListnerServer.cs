@@ -164,7 +164,7 @@ namespace claims.src
         public void onPlayerChangePlotEvent(string eventName, ref EnumHandling handling, IAttribute data)
         {
             TreeAttribute tree = data as TreeAttribute;
-            claims.dataStorage.getPlayerByUid(tree.GetString("playerUID"), out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(tree.GetString("playerUID"), out PlayerInfo playerInfo);
             if (playerInfo == null)
             {
                 return;
@@ -185,7 +185,7 @@ namespace claims.src
                 playerInfo.PlayerCache.Reset();
             }
 
-            claims.dataStorage.getPlot(to, out Plot toPlot);
+            claims.dataStorage.GetPlot(to, out Plot toPlot);
 
             //To empty plot, so he escaped
             if (toPlot == null)
@@ -236,7 +236,7 @@ namespace claims.src
                     if ((lastPlayerPos.X != playerCurrentPos.X || lastPlayerPos.Z != playerCurrentPos.Z))
                     {
                         //Player moved
-                        claims.dataStorage.getPlayerByUid(it.PlayerUID, out PlayerInfo playerInfo);
+                        claims.dataStorage.GetPlayerByUid(it.PlayerUID, out PlayerInfo playerInfo);
                         if (playerInfo == null)
                         {
                             return;
@@ -274,7 +274,7 @@ namespace claims.src
                 }
                 else
                 {
-                    claims.dataStorage.getPlayerByUid(it.PlayerUID, out PlayerInfo playerInfo);
+                    claims.dataStorage.GetPlayerByUid(it.PlayerUID, out PlayerInfo playerInfo);
                     if (playerInfo == null)
                     {
                         return;
@@ -434,7 +434,7 @@ namespace claims.src
                 Vec2i playerZone = new Vec2i();
                 foreach (IServerPlayer pl in claims.sapi.World.AllOnlinePlayers)
                 {
-                    claims.dataStorage.getPlayerByUid(pl.PlayerUID, out PlayerInfo playerInfo);
+                    claims.dataStorage.GetPlayerByUid(pl.PlayerUID, out PlayerInfo playerInfo);
 
                     if (playerInfo == null)
                     {
@@ -453,7 +453,7 @@ namespace claims.src
                             foreach (var it in zone.Value)
                             {
                                 tmpPlotPosition.setXY(it);
-                                if (claims.dataStorage.getPlot(tmpPlotPosition, out Plot plot))
+                                if (claims.dataStorage.GetPlot(tmpPlotPosition, out Plot plot))
                                 {
                                     
                                     updatePlotsForPlayer.Add(new Tuple<Vec2i, SavedPlotInfo>(plot.getPos(), new SavedPlotInfo((int)plot.Price, plot.getPermsHandler().pvpFlag,

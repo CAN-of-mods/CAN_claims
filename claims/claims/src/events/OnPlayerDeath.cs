@@ -15,7 +15,7 @@ namespace claims.src.events
     {
         public static void Event_OnPlayerDeath(IServerPlayer byPlayer, DamageSource damageSource)
         {
-            claims.dataStorage.getPlayerByUid(byPlayer.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(byPlayer.PlayerUID, out PlayerInfo playerInfo);
 
             if (!playerInfo.isPrisoned() && damageSource != null && damageSource.SourceEntity != null && damageSource.SourceEntity is EntityPlayer)
             {
@@ -49,7 +49,7 @@ namespace claims.src.events
             }
             if (attackPlayer == null)
                 return;
-            claims.dataStorage.getPlot(PlotPosition.fromEntityyPos(killed.Entity.ServerPos), out Plot plotKilled); 
+            claims.dataStorage.GetPlot(PlotPosition.fromEntityyPos(killed.Entity.ServerPos), out Plot plotKilled); 
             if(plotKilled == null)
             {
                 return;

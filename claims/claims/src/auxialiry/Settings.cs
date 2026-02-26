@@ -10,7 +10,6 @@ namespace claims.src.auxialiry
 {
     public class Settings
     {
-        static int? itemID = null;
         public static HashSet<string> blockedNames;
         public static HashSet<string> blockedCommandsForPrison;
         public static HashSet<string> protectedAnimals;

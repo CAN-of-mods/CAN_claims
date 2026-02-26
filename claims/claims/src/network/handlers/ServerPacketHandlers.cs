@@ -27,7 +27,7 @@ namespace claims.src.network.handlers
                 {
                     //if player is logging in plot where they have permissions
                     
-                    claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+                    claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
                     if (playerInfo == null)
                     {
                         return;
@@ -119,7 +119,7 @@ namespace claims.src.network.handlers
                 else if(packet.type == PacketsContentEnum.CURRENT_PLOT_CLIENT_REQUEST)
                 {
                     var currentPos = player.Entity.ServerPos;
-                    if(claims.dataStorage.getPlot(PlotPosition.fromEntityyPos(currentPos), out Plot plot))
+                    if(claims.dataStorage.GetPlot(PlotPosition.fromEntityyPos(currentPos), out Plot plot))
                     {
                         CurrentPlotInfo cpi = new CurrentPlotInfo(plot.GetPartName(), plot.getPlotOwner()?.GetPartName() ?? "",
                             plot.Type, plot.getCustomTax(), plot.Price, plot.getPermsHandler(), plot.extraBought, plot.getPos());
@@ -146,7 +146,7 @@ namespace claims.src.network.handlers
                     //send dict with ranks
                     //add handler on client
                     var currentPos = player.Entity.ServerPos;
-                    if (claims.dataStorage.getPlot(PlotPosition.fromEntityyPos(currentPos), out Plot plot))
+                    if (claims.dataStorage.GetPlot(PlotPosition.fromEntityyPos(currentPos), out Plot plot))
                     {
                         CurrentPlotInfo cpi = new CurrentPlotInfo(plot.GetPartName(), plot.getPlotOwner()?.GetPartName() ?? "",
                             plot.Type, plot.getCustomTax(), plot.Price, plot.getPermsHandler(), plot.extraBought, plot.getPos());
@@ -163,7 +163,7 @@ namespace claims.src.network.handlers
             });
             claims.serverChannel.SetMessageHandler<PlayerGuiRelatedInfoPacket>((player, packet) =>
             {
-                claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+                claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
                 if (playerInfo == null)
                 {
                     return;

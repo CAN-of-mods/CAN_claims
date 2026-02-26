@@ -85,7 +85,8 @@ namespace claims.src.bb
                 if (beh.TimesToBreak-- > 0)
                 {
                     handling = EnumHandling.PreventDefault;
-                    byPlayer?.Entity.World.BlockAccessor.MarkBlockDirty(pos);
+                    //byPlayer?.Entity.World.BlockAccessor.MarkBlockDirty(pos);
+                    byPlayer?.Entity.World.BlockAccessor.MarkBlockEntityDirty(pos);
                     return;
                 }
                 else

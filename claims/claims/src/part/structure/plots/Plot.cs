@@ -334,7 +334,7 @@ namespace claims.src.part.structure
                     if ((Math.Abs(i) + Math.Abs(j)) != 1) continue;
                     posTmp.X = this.plotPosition.X + i;
                     posTmp.Z = this.plotPosition.Z + j;
-                    if (claims.dataStorage.getPlot(posTmp, out var targetPlot))
+                    if (claims.dataStorage.GetPlot(posTmp, out var targetPlot))
                     {
                         targetPlot.CheckBorderPlotValue();
                     }
@@ -351,7 +351,7 @@ namespace claims.src.part.structure
                     if ((Math.Abs(i) + Math.Abs(j)) != 1) continue;
                     posTmp.X = this.plotPosition.X + i;
                     posTmp.Z = this.plotPosition.Z + j;
-                    if (!claims.dataStorage.getPlot(posTmp, out var nearPlot))
+                    if (!claims.dataStorage.GetPlot(posTmp, out var nearPlot))
                     {
                         this.BorderPlot = true;
                         return;                      

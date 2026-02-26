@@ -1,7 +1,9 @@
-﻿using System.Linq;
-using System.Numerics;
-using claims.src.auxialiry;
+﻿using claims.src.auxialiry;
+using claims.src.gui.playerGui.structures.cellElements;
 using ImGuiNET;
+using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
@@ -11,6 +13,7 @@ namespace claims.src.gui.prettyGui.GuiTabs
 {
     public class CANAllianceTab : CANGuiTab
     {
+        List<ClientToAllianceInvitationCellElement> toRemove = new();
         public CANAllianceTab(ICoreClientAPI capi, IconHandler iconHandler)
         {
             this.capi = capi;
@@ -159,8 +162,8 @@ namespace claims.src.gui.prettyGui.GuiTabs
 
                     ImGui.BeginGroup();
 
-                    ImGui.Text($"City: {claims.clientDataStorage.clientPlayerInfo.ReceivedInvitations[i].CityName}");
-                    ImGui.Text($"Time: {TimeFunctions.getDateFromEpochSecondsWithHoursMinutes(claims.clientDataStorage.clientPlayerInfo.ReceivedInvitations[i].TimeoutStamp, true).ToString()}");
+                    ImGui.Text($"City: {claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientToAllianceInvitations[i].AllianceName}");
+                    ImGui.Text($"Time: {TimeFunctions.getDateFromEpochSecondsWithHoursMinutes(claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientToAllianceInvitations[i].TimeoutStamp, true).ToString()}");
 
                     if (ImGui.Button("Accept"))
                     {
@@ -169,7 +172,7 @@ namespace claims.src.gui.prettyGui.GuiTabs
                         var cell = claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientToAllianceInvitations.FirstOrDefault(c => c.AllianceName == invite.AllianceName);
                         if (cell != null)
                         {
-                            claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientToAllianceInvitations.Remove(cell);
+                            toRemove.Add(cell);
                         }
                     }
 
@@ -192,6 +195,12 @@ namespace claims.src.gui.prettyGui.GuiTabs
                     ImGui.Separator();
                 }
                 ImGui.EndChild();
+                if (toRemove.Count() > 0)
+                {
+                    foreach (var it in toRemove)
+                        claims.clientDataStorage.clientPlayerInfo.CityInfo.ClientToAllianceInvitations.Remove(it);
+                }
+                
             }          
         }
     }

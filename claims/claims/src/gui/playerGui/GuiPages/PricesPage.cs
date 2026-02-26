@@ -25,7 +25,7 @@ namespace claims.src.gui.playerGui.GuiPages
                 currentBounds.fixedWidth = textExtents.Width + 10;
                 compo.AddStaticText(currencyStr,
                        pricesTabFont,
-                       tempBound, "currency-itme");
+                       tempBound, "currency-item");
                 foreach (var it in caneconomy.caneconomy.config.EXTENDED_COINS_VALUES_TO_CODE_PRIVATE)
                 {
                     var coinData = it.Value;

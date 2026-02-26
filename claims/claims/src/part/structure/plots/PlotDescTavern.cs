@@ -28,7 +28,7 @@ namespace claims.src.part.structure.plots
                 }
                 foreach(string it in innerClaims[i].membersUids)
                 {
-                    claims.dataStorage.getPlayerByUid(it, out PlayerInfo playerInfo);
+                    claims.dataStorage.GetPlayerByUid(it, out PlayerInfo playerInfo);
                     if(playerInfo != null)
                     {
                         sb.Append(playerInfo.GetPartName());

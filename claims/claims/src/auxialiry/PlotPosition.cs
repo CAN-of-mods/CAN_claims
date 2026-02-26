@@ -124,13 +124,13 @@ namespace claims.src.auxialiry
             bList.Add(new BlockPos(x, 256, z));
             List<int> colors = new List<int>();
 
-            if(!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if(!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return;
             }
             if(toPlot == null)
             {
-                claims.dataStorage.getPlot(PlotPosition.fromEntityyPos(player.Entity.ServerPos), out toPlot);
+                claims.dataStorage.GetPlot(PlotPosition.fromEntityyPos(player.Entity.ServerPos), out toPlot);
             }
             //NO CITY, no plot
             if(toPlot == null || !toPlot.hasCity() || !playerInfo.hasCity())

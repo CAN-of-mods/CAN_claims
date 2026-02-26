@@ -171,7 +171,7 @@ namespace claims.src.blocks
             base.OnBlockPlaced(world, blockPos, byItemStack);
             if (world.Side == EnumAppSide.Server)
             {
-                claims.dataStorage.getPlot(PlotPosition.fromBlockPos(blockPos), out Plot plot);
+                claims.dataStorage.GetPlot(PlotPosition.fromBlockPos(blockPos), out Plot plot);
                 if (plot == null)
                 {
                     return;
@@ -202,7 +202,7 @@ namespace claims.src.blocks
             base.OnBlockBroken(world, pos, byPlayer, dropQuantityMultiplier);
             if (world.Side == EnumAppSide.Server)
             {
-                claims.dataStorage.getPlot(PlotPosition.fromBlockPos(pos), out Plot plot);
+                claims.dataStorage.GetPlot(PlotPosition.fromBlockPos(pos), out Plot plot);
                 if (plot == null)
                 {
                     return;

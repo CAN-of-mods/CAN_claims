@@ -514,7 +514,7 @@ namespace claims.src.database
 
         public override bool loadPlayerInfo(DataRow it)
         {
-            claims.dataStorage.getPlayerByUid(it["uid"].ToString(), out PlayerInfo tmp);
+            claims.dataStorage.GetPlayerByUid(it["uid"].ToString(), out PlayerInfo tmp);
             tmp.TimeStampFirstJoined = long.Parse(it["timestampfirstjoined"].ToString());
             tmp.TimeStampLasOnline = long.Parse(it["timestamplastonline"].ToString());
             foreach (string str in it["comrades"].ToString().Split(';'))
@@ -522,7 +522,7 @@ namespace claims.src.database
                 if (str.Length == 0)
                     continue;
 
-                claims.dataStorage.getPlayerByUid(str, out PlayerInfo plTmp);
+                claims.dataStorage.GetPlayerByUid(str, out PlayerInfo plTmp);
                 tmp.addComrade(plTmp);
             }
             if (it["city"].ToString().Length != 0)
@@ -643,14 +643,14 @@ namespace claims.src.database
             city.setIsTechnicalCity(it["istechnical"].ToString().Equals("0") ? false : true);
             if (!city.isTechnicalCity())
             {
-                claims.dataStorage.getPlayerByUid(it["mayor"].ToString(), out PlayerInfo playerInfo);
+                claims.dataStorage.GetPlayerByUid(it["mayor"].ToString(), out PlayerInfo playerInfo);
                 city.setMayor(playerInfo);
             }
             else
             {
                 if (it["mayor"].ToString().Length != 0)
                 {
-                    claims.dataStorage.getPlayerByUid(it["mayor"].ToString(), out PlayerInfo playerInfo);
+                    claims.dataStorage.GetPlayerByUid(it["mayor"].ToString(), out PlayerInfo playerInfo);
                     city.setMayor(playerInfo);
                 }
                 else
@@ -691,7 +691,7 @@ namespace claims.src.database
                 if (str.Length == 0)
                     continue;
 
-                claims.dataStorage.getPlayerByUid(str, out PlayerInfo criminalPlayer);
+                claims.dataStorage.GetPlayerByUid(str, out PlayerInfo criminalPlayer);
                 if (criminalPlayer == null)
                 {
                     continue;
@@ -851,7 +851,7 @@ namespace claims.src.database
 
         public override bool loadPlot(DataRow it)
         {
-            claims.dataStorage.getPlot(new PlotPosition(int.Parse(it["x"].ToString()), int.Parse(it["z"].ToString())), out Plot plot);
+            claims.dataStorage.GetPlot(new PlotPosition(int.Parse(it["x"].ToString()), int.Parse(it["z"].ToString())), out Plot plot);
             if (plot == null)
             {
                 MessageHandler.sendErrorMsg("loadPlot at " + it["x"].ToString() + " " + it["z"].ToString() + " failed");
@@ -860,7 +860,7 @@ namespace claims.src.database
             plot.SetPartName(it["name"].ToString());
             if (it["ownerofplot"].ToString().Length != 0)
             {
-                claims.dataStorage.getPlayerByUid(it["ownerofplot"].ToString(), out PlayerInfo playerInfo);
+                claims.dataStorage.GetPlayerByUid(it["ownerofplot"].ToString(), out PlayerInfo playerInfo);
                 playerInfo.PlayerPlots.Add(plot);
                 plot.setPlotOwner(playerInfo);
             }
@@ -1060,7 +1060,7 @@ namespace claims.src.database
             prison.DeserializeCells(it["prisonCells"].ToString());
             claims.dataStorage.getCityByGUID(it["city"].ToString(), out City city);
             prison.City = city;
-            claims.dataStorage.getPlot(new PlotPosition(int.Parse(it["x"].ToString()), int.Parse(it["z"].ToString())), out Plot plot);
+            claims.dataStorage.GetPlot(new PlotPosition(int.Parse(it["x"].ToString()), int.Parse(it["z"].ToString())), out Plot plot);
             prison.Plot = plot;
             return true;
         }
@@ -1146,7 +1146,7 @@ namespace claims.src.database
                 if (pl.Length == 0)
                     continue;
 
-                claims.dataStorage.getPlayerByUid(pl, out PlayerInfo plTmp);
+                claims.dataStorage.GetPlayerByUid(pl, out PlayerInfo plTmp);
                 cityPlotsGroup.PlayersList.Add(plTmp);
             }
 

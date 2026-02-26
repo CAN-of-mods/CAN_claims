@@ -13,7 +13,7 @@ namespace claims.src.events
             {
                 return;
             }
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
             if(playerInfo == null)
             {
                 return;

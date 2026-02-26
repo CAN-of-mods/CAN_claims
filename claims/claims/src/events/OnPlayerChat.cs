@@ -12,7 +12,7 @@ namespace claims.src.events
         public static void onPlayerChat(IServerPlayer player, int channelId, ref string message, ref string data, BoolRef consumed)
         {
 
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
             ClaimsChatType chat;
             claims.dataStorage.getPlayerChatDict().TryGetValue(player.PlayerUID, out chat);
             if (chat == ClaimsChatType.LOCAL)

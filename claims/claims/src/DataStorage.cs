@@ -19,7 +19,7 @@ using Vintagestory.API.Server;
 
 namespace claims.src
 {
-    public class DataStorage
+    public class DataStorage: IDataStorage
     {
         protected Dictionary<string, int> partToColor = new Dictionary<string, int>();
         protected Dictionary<string, int> tmpColors = new Dictionary<string, int> ();
@@ -102,7 +102,7 @@ namespace claims.src
             }
             return true;
         }
-        public bool getPlot(PlotPosition plotPosition, out Plot plot)
+        public bool GetPlot(PlotPosition plotPosition, out Plot plot)
         {
             if (claimedPlots.TryGetValue(plotPosition, out plot))
             {
@@ -131,7 +131,7 @@ namespace claims.src
         /*==============================================================================================*/
         /*=====================================PLAYERS==================================================*/
         /*==============================================================================================*/
-        public bool getPlayerByUid(string uid, out PlayerInfo playerInfo)
+        public bool GetPlayerByUid(string uid, out PlayerInfo playerInfo)
         {
             if (uidToPlayerDict.TryGetValue(uid, out playerInfo))
             {
@@ -164,7 +164,7 @@ namespace claims.src
         /*==============================================================================================*/
         /*=====================================CITY=====================================================*/
         /*==============================================================================================*/
-        public bool getCityByName(string name, out City city)
+        public bool GetCityByName(string name, out City city)
         {
             if (nameToCityDict.TryGetValue(name, out city))
             {
@@ -260,6 +260,14 @@ namespace claims.src
             if (guidToAllianceDict.TryGetValue(guid, out alliance))
             {
                 return true;
+            }
+            return false;
+        }
+        public bool RemoveAllianceByGUID(string allianceGUID)
+        {
+            if (guidToAllianceDict.TryRemove(allianceGUID, out Alliance alliance))
+            {
+                return nameToAllianceDict.TryRemove(alliance.GetPartName(), out _);
             }
             return false;
         }
@@ -636,7 +644,7 @@ namespace claims.src
                resetPlayerCacheByGUID(it.PlayerUID);
             }
         }
-        public void clearCacheForPlayersInPlot(Plot plot)
+        public void ClearCacheForPlayersInPlot(Plot plot)
         {
             foreach (var player in claims.sapi.World.AllOnlinePlayers)
             {

@@ -33,7 +33,7 @@ namespace claims.src.events
             }
 
             claims.dataStorage.addToPlayerChatDict(player.PlayerUID, ClaimsChatType.NONE);
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);            
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);            
             //NEW PLAYERINFO
             if (playerInfo == null)
             {
@@ -98,6 +98,7 @@ namespace claims.src.events
             Dictionary<string, ClientCityInfoCellElement> CityStatsCashe =
                 ObjectCacheUtil.GetOrCreate<Dictionary<string, ClientCityInfoCellElement>>(claims.sapi,
                 "claims:cityinfocache", () => new Dictionary<string, ClientCityInfoCellElement>());
+            UsefullPacketsSend.AddToQueuePlayerInfoUpdate(playerInfo.Guid, EnumPlayerRelatedInfo.PLAYER_NEXT_PAYMENT);
             UsefullPacketsSend.AddToQueuePlayerInfoUpdate(playerInfo.Guid, new Dictionary<string, object> { { "value", CityStatsCashe.Values.ToList() } }, EnumPlayerRelatedInfo.CITY_LIST_ALL);         
         }
         public static void processExistedPlayerInfoOnLogin(PlayerInfo playerInfo, IServerPlayer player)

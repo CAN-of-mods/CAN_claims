@@ -35,9 +35,21 @@ namespace claims.src.commands
             }
             return false;
         }
+        public static bool isMayorAdmin(Plot plot, PlayerInfo playerInfo, IServerPlayer player)
+        {
+            if (claims.config.ROLE_CODES_WITH_ADMIN_RIGHTS.Contains(player.Role.Code))
+            {
+                return true;
+            }
+            else if (playerInfo.hasCity() && plot.hasCity() && playerInfo.City.Equals(plot.getCity()) && plot.getCity().isMayor(playerInfo))
+            {
+                return true;
+            }
+            return false;
+        }
         public static bool CheckForPlayerPermissions(IServerPlayer player, EnumPlayerPermissions[] anyPermission)
         {
-            if (claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 foreach (var permission in anyPermission)
                 {

@@ -1,6 +1,7 @@
-﻿using System.Numerics;
-using claims.src.auxialiry;
+﻿using claims.src.auxialiry;
 using ImGuiNET;
+using System.Linq;
+using System.Numerics;
 using Vintagestory.API.Client;
 using Vintagestory.API.Config;
 
@@ -33,6 +34,10 @@ namespace claims.src.gui.prettyGui.GuiTabs
             if (ImGui.ImageButton("removefriend", this.iconHandler.GetOrLoadIcon("contract"), new Vector2(15)))
             {
                 capi.ModLoader.GetModSystem<claimsGui>().secondaryWindowTab = EnumSecondaryWindowTab.REMOVE_FRIEND;
+            }
+            if (claims.clientDataStorage.clientPlayerInfo.PlayerNextPayments.Count > 0)
+            {
+                ImGui.Text(Lang.Get("claims:player-next-payment", claims.clientDataStorage.clientPlayerInfo.PlayerNextPayments.Values.Sum().ToString()));
             }
 
 

@@ -22,7 +22,7 @@ namespace claims.src.commands
 
             //claims.sapi.SendIngameDiscovery(player as IServerPlayer, "ingamediscovery-battle-start", Lang.Get("claims:ingamediscovery-battle-start"), new object[] { 1, 2 });
             //claims.sapi.World.PlaySoundAt(new AssetLocation("game:sounds/effect/deepbell"), player.Entity, null, false, 5f, 0.5f);
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
           
             string name = Filter.filterName((string)args.LastArg);
             if (name.Length == 0 || !Filter.checkForBlockedNames(name))
@@ -91,7 +91,7 @@ namespace claims.src.commands
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
 
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
             List<Invitation> listInvitations = playerInfo.getReceivedInvitations();
             if (listInvitations.Count == 0)
             {
@@ -113,7 +113,7 @@ namespace claims.src.commands
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
 
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
 
             return TextCommandResult.Success(string.Join("", StringFunctions.makeStringPlayersName(playerInfo.Friends.ToList(), ',')));
         }
@@ -121,7 +121,7 @@ namespace claims.src.commands
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
 
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
 
             string name = Filter.filterName((string)args.LastArg);
             if (name.Length == 0 || !Filter.checkForBlockedNames(name))
@@ -153,7 +153,7 @@ namespace claims.src.commands
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
 
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
 
             string name = Filter.filterName((string)args.LastArg);
             if (name.Length == 0 || !Filter.checkForBlockedNames(name))
@@ -185,7 +185,7 @@ namespace claims.src.commands
             TextCommandResult tcr = new TextCommandResult();
             tcr.Status = EnumCommandStatus.Success;
 
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo ourPlayer);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo ourPlayer);
             if (ourPlayer != null)
             {
                 tcr.StatusMessage = ourPlayer.PermsHandler.getStringForChat() + "\n";
@@ -203,7 +203,7 @@ namespace claims.src.commands
                 return tcr;
             }
             
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
             playerInfo.PermsHandler.setAccessPerm(args.RawArgs, tcr);
             playerInfo.saveToDatabase();
             return tcr;
@@ -215,7 +215,7 @@ namespace claims.src.commands
             tcr.Status = EnumCommandStatus.Success;
 
             double futurePayment = 0;
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
             //But it is only plots, where he is an owner
             foreach (Plot plot in playerInfo.PlayerPlots)
             {
@@ -258,7 +258,7 @@ namespace claims.src.commands
             TextCommandResult tcr = new TextCommandResult();
             tcr.Status = EnumCommandStatus.Success;
 
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
             if(!playerInfo.isPrisoned())
             {
                 tcr.StatusMessage = "claims:you_are_not_prisoned";

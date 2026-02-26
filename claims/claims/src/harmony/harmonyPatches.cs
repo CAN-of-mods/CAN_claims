@@ -63,7 +63,7 @@ namespace claims.src.harmony
                 for (int j = -1; j < 2; ++j)
                 {
 
-                    claims.dataStorage.getPlot(PlotPosition.fromXZ((int)(tmpX + (i * __instance.BlastRadius)),
+                    claims.dataStorage.GetPlot(PlotPosition.fromXZ((int)(tmpX + (i * __instance.BlastRadius)),
                                                                           (int)(tmpZ + (j * __instance.BlastRadius))), out Plot tb);
                     if (tb == null)
                     {
@@ -103,7 +103,7 @@ namespace claims.src.harmony
                         __result = true;
                         return false;
                     }
-                    __result = OnPVP.canPVPAttackHere((__instance as EntityPlayer).Player as IServerPlayer, (damageSource.SourceEntity as EntityPlayer).Player as IServerPlayer);
+                    __result = OnPVP.canPVPAttackHere((damageSource.SourceEntity as EntityPlayer).Player as IServerPlayer, (__instance as EntityPlayer).Player as IServerPlayer);
                     return false;
                 }
                 else if((damageSource.SourceEntity is EntityProjectile) && (damageSource.SourceEntity as EntityProjectile).FiredBy is EntityPlayer)
@@ -113,7 +113,7 @@ namespace claims.src.harmony
                         __result = true;
                         return false;
                     }
-                    __result = OnPVP.canPVPAttackHere(((damageSource.SourceEntity as EntityProjectile).FiredBy as EntityPlayer).Player as IServerPlayer, ((damageSource.SourceEntity as EntityProjectile).FiredBy as EntityPlayer).Player as IServerPlayer);
+                    __result = OnPVP.canPVPAttackHere(((damageSource.SourceEntity as EntityProjectile).FiredBy as EntityPlayer).Player as IServerPlayer, (__instance as EntityPlayer).Player as IServerPlayer);
                     return false;
                 }                              
             }
@@ -133,7 +133,7 @@ namespace claims.src.harmony
         public static bool Prefix_On_TrySpreadFireAllDirs(BlockPos pos, Vintagestory.GameContent.BEBehaviorBurning __instance)
         {
             WorldInfo worldInfo = claims.dataStorage.getWorldInfo();
-            claims.dataStorage.getPlot(PlotPosition.fromBlockPos(pos), out Plot tmp);
+            claims.dataStorage.GetPlot(PlotPosition.fromBlockPos(pos), out Plot tmp);
 
             if (tmp == null)
             {
@@ -143,7 +143,7 @@ namespace claims.src.harmony
             {
                 return true;
             }
-            //claims.dataStorage.getPlot(new ChunkLocation(pos), out )
+            //claims.dataStorage.GetPlot(new ChunkLocation(pos), out )
             if (!worldInfo.fireForbidden && tmp.getPermsHandler().fireFlag)
             {
                 return true;
@@ -180,7 +180,7 @@ namespace claims.src.harmony
                 for (int j = -1; j < 2; ++j)
                 {
 
-                     claims.dataStorage.getPlot(PlotPosition.fromXZ((int)(tmpX + (i * __instance.BlastRadius)),
+                     claims.dataStorage.GetPlot(PlotPosition.fromXZ((int)(tmpX + (i * __instance.BlastRadius)),
                                                                            (int)(tmpZ + (j * __instance.BlastRadius))), out Plot tb);
                     if (tb == null)
                     { 
@@ -199,12 +199,12 @@ namespace claims.src.harmony
         }
         public static bool Prefix_HandleCommand(Vintagestory.Server.ServerMain __instance, string commandName, IServerPlayer player, string args, Action<TextCommandResult> onCommandComplete)
         {
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
             if (playerInfo == null)
             {
                 return false;
             }
-            claims.dataStorage.getPlot(PlotPosition.fromEntityyPos(player.Entity.ServerPos), out Plot tmpPlot);
+            claims.dataStorage.GetPlot(PlotPosition.fromEntityyPos(player.Entity.ServerPos), out Plot tmpPlot);
             if (playerInfo.isPrisoned() && playerInfo.PrisonedIn.Plot.Equals(tmpPlot))
             {
                 if (Settings.blockedCommandsForPrison.Contains(commandName) || (args.Length > 0 && Settings.blockedCommandsForPrison.Contains(args.Split(' ')[0])))
@@ -230,10 +230,10 @@ namespace claims.src.harmony
 
         public static bool Prefix_TrySpreadHorizontal(Vintagestory.GameContent.BlockBehaviorFiniteSpreadingLiquid __instance, Block ourblock, Block ourSolid, IWorldAccessor world, BlockPos pos)
         {
-            claims.dataStorage.getPlot(PlotPosition.fromBlockPos(pos), out Plot source);
+            claims.dataStorage.GetPlot(PlotPosition.fromBlockPos(pos), out Plot source);
             foreach (BlockFacing facing in BlockFacing.HORIZONTALS)
             {
-                claims.dataStorage.getPlot(PlotPosition.fromBlockPos(pos.AddCopy(facing)), out Plot dest);
+                claims.dataStorage.GetPlot(PlotPosition.fromBlockPos(pos.AddCopy(facing)), out Plot dest);
                 if (dest == null || (dest == null && source == null) || (source != null && dest.hasCity() && source.hasCity() && dest.getCity().Equals(source.getCity())))
                 {
                     MethodInfo dynMethod = __instance.GetType().GetMethod("TrySpreadIntoBlock",
@@ -248,10 +248,10 @@ namespace claims.src.harmony
         public static void Postfix_FindDownwardPaths(Vintagestory.GameContent.BlockBehaviorFiniteSpreadingLiquid __instance, IWorldAccessor world, BlockPos pos, Block ourBlock,
             List<PosAndDist> __result)
         {
-            claims.dataStorage.getPlot(PlotPosition.fromBlockPos(pos), out Plot source);
+            claims.dataStorage.GetPlot(PlotPosition.fromBlockPos(pos), out Plot source);
             foreach (var it in new List<PosAndDist>(__result))
             {
-                claims.dataStorage.getPlot(PlotPosition.fromBlockPos(it.pos), out Plot dest);
+                claims.dataStorage.GetPlot(PlotPosition.fromBlockPos(it.pos), out Plot dest);
                 if (dest == null)
                 {
                     continue;
@@ -293,7 +293,7 @@ namespace claims.src.harmony
 
             if (___canFallSideways)
             {
-                claims.dataStorage.getPlot(PlotPosition.fromEntityyPos(__instance.ServerPos), out Plot source);
+                claims.dataStorage.GetPlot(PlotPosition.fromEntityyPos(__instance.ServerPos), out Plot source);
                 for (int i = 0; i < 4; i++)
                 {
                     BlockFacing facing = BlockFacing.HORIZONTALS[i];
@@ -303,12 +303,12 @@ namespace claims.src.harmony
                     {
 
                         //Only def from wild chunk to city's chunk. Two cities back to back is problem of config.
-                        claims.dataStorage.getPlot(PlotPosition.fromXZ(pos.X + facing.Normali.X, pos.Z + facing.Normali.Z), out Plot dest);
+                        claims.dataStorage.GetPlot(PlotPosition.fromXZ(pos.X + facing.Normali.X, pos.Z + facing.Normali.Z), out Plot dest);
                         if (source == null && dest != null)
                         {
                             continue;
                         }
-                        claims.dataStorage.getPlot(PlotPosition.fromXZ(pos.X + facing.Normali.X, pos.Z + facing.Normali.Z), out dest);
+                        claims.dataStorage.GetPlot(PlotPosition.fromXZ(pos.X + facing.Normali.X, pos.Z + facing.Normali.Z), out dest);
                         if (source == null && dest != null)
                         {
                             continue;
@@ -428,7 +428,7 @@ namespace claims.src.harmony
         }
         public static bool ReviveReplace(ServerSystemEntitySimulation __instance, IServerPlayer plr)
         {
-            if(claims.dataStorage.getPlayerByUid(plr.PlayerUID, out PlayerInfo playerInfo))
+            if(claims.dataStorage.GetPlayerByUid(plr.PlayerUID, out PlayerInfo playerInfo))
             {
                 if(playerInfo.isPrisoned())
                 {

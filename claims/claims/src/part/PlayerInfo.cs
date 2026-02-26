@@ -165,6 +165,27 @@ namespace claims.src.part
         {
             this.PermsHandler.setPerms(loadedString);
         }
+        public Dictionary<string, int> GetNextPaymentsDict()
+        {
+            Dictionary<string, int> payments = new();
+
+            if (this.hasCity() && !this.City.isMayor(this))
+            {
+                payments.Add("city", this.City.fee);
+            }
+
+            double plotsPayment = 0;
+            foreach (var it in this.PlayerPlots)
+            {
+                plotsPayment += it.getCustomTax();
+            }
+
+            if (plotsPayment != 0)
+            {
+                payments.Add("plots", (int)plotsPayment);
+            }
+            return payments;
+        }
         /*********************************************************/
         public override bool saveToDatabase(bool update = true)
         {

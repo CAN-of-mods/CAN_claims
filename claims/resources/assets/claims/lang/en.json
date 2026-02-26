@@ -85,6 +85,7 @@
   "gui-city-debt": "Debt: {0}",
   "gui-city-payment": "Next city payment: {0}",
   "city_delete_reason_debt_is_too_high": "City debt is too high - {0}",
+  "player-next-payment": "Next payment: {0}",
   //ALLIANCE
   "alliance_was_deleted": "Alliance {0} was deleted.",
   "alliance_fee_too_high": "Fee is too high, maximum is {0}.",
@@ -274,6 +275,7 @@
   "prison_plot_type": "Prison",
   "temple_plot_type": "Temple",
   "cannot_remove_from_group": "Cannot remove plot from plots group.",
+  "not_your_city": "No rights to do that in the city",
 
   //RANK
   "no_such_city_rank": "No such city rank.",
@@ -389,7 +391,7 @@
 
   "game:maplayer-claims": "Claims",
 
-  "gui-currency-item": "Currency item",
+  "gui-currency-item": "Currency items",
   "gui-new-city-cost": "New city: {0}",
   "gui-city-plot-cost": "City plot claim: {0}",
   "gui-city-name-change-cost": "City name change: {0}",

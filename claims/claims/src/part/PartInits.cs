@@ -61,7 +61,7 @@ namespace claims.src.part
 
             city.saveToDatabase();
             newPlot.saveToDatabase();
-            claims.dataStorage.clearCacheForPlayersInPlot(newPlot);
+            claims.dataStorage.ClearCacheForPlayersInPlot(newPlot);
             claims.serverPlayerMovementListener.markPlotToWasReUpdated(newPlot.getPos());
             claims.dataStorage.setNowEpochZoneTimestampFromPlotPosition(newPlot.getPos());
 

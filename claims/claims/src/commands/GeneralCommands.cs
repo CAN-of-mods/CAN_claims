@@ -17,7 +17,7 @@ namespace claims.src.commands
                 tcr.StatusMessage = "claims:invalid_city_name";
                 return;
             }
-            claims.dataStorage.getCityByName(cityName, out City city);
+            claims.dataStorage.GetCityByName(cityName, out City city);
             if (city == null)
             {
                 return;

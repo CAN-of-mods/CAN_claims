@@ -11,7 +11,7 @@ namespace claims.src.commands
     {
         public static TextCommandResult onCommand(TextCommandCallingArgs args)
         {
-            claims.dataStorage.getPlayerByUid(args.Caller.Player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(args.Caller.Player.PlayerUID, out PlayerInfo playerInfo);
             if (playerInfo == null)
             {
                 return TextCommandResult.Error("");

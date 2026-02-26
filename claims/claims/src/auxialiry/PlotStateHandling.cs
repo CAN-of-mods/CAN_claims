@@ -28,7 +28,7 @@ namespace claims.src.auxialiry
                 {
                     continue;
                 }
-                claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+                claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
                 if (playerInfo == null)
                 {
                     return;
@@ -67,7 +67,7 @@ namespace claims.src.auxialiry
                 {
                     continue;
                 }
-                claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+                claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
                 if (playerInfo == null)
                 {
                     return;

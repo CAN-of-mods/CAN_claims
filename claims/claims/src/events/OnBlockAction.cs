@@ -86,7 +86,7 @@ namespace claims.src.events
         }*/
         public static bool canBlockDestroy(IServerPlayer byPlayer, BlockSelection blockSel, out string claimant)
         {
-            claims.dataStorage.getPlayerByUid(byPlayer.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(byPlayer.PlayerUID, out PlayerInfo playerInfo);
             claimant = "";
             if (playerInfo == null)
             {
@@ -194,7 +194,7 @@ namespace claims.src.events
         }        
         public static bool canBlockUse(IServerPlayer byPlayer, BlockSelection blockSel)
         {
-            claims.dataStorage.getPlayerByUid(byPlayer.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(byPlayer.PlayerUID, out PlayerInfo playerInfo);
             if (playerInfo == null)
             {
                 return false;
@@ -294,7 +294,7 @@ namespace claims.src.events
         }
         public static bool canBlockUse(IServerPlayer byPlayer, Vec3d vec3)
         {
-            claims.dataStorage.getPlayerByUid(byPlayer.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(byPlayer.PlayerUID, out PlayerInfo playerInfo);
             if (playerInfo == null)
             {
                 return false;
@@ -372,7 +372,7 @@ namespace claims.src.events
             {
                 return true;
             }
-            claims.dataStorage.getPlayerByUid(byPlayer.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(byPlayer.PlayerUID, out PlayerInfo playerInfo);
             if (playerInfo == null)
             {
                 return false;
@@ -748,7 +748,7 @@ namespace claims.src.events
         {
             canBlockDestroy(byPlayer, new BlockSelection(byPlayer.Entity.Pos.AsBlockPos, BlockFacing.NORTH, null), out var _);
             canBlockUse(byPlayer, new BlockSelection(byPlayer.Entity.Pos.AsBlockPos, BlockFacing.NORTH, null));
-            claims.dataStorage.getPlayerByUid(byPlayer.PlayerUID, out var player);
+            claims.dataStorage.GetPlayerByUid(byPlayer.PlayerUID, out var player);
             player.PlayerCache.setPlotPosition(PlotPosition.fromEntityyPos(byPlayer.Entity.Pos));
         }
     }

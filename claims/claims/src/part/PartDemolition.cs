@@ -116,12 +116,16 @@ namespace claims.src.part
                     it.ClearAllAllianceTitles();
                     RightsHandler.reapplyRights(it);
                 }
+                city.Alliance = null;
                 city.saveToDatabase();
             }
             foreach (var it in alliance.Cities)
             {
                 UsefullPacketsSend.AddToQueueCityInfoUpdate(it.Guid, EnumPlayerRelatedInfo.OWN_ALLIANCE_REMOVE);
             }
+            claims.economyHandler.deleteAccount(alliance.MoneyAccountName);
+            claims.dataStorage.RemoveAllianceByGUID(alliance.Guid);
+            //DataStorage.nameToCityDict.TryRemove(city.getPartName(), out _);
             claims.getModInstance().getDatabaseHandler().deleteFromDatabaseAlliance(alliance);
         }
         public static void DemolishConflict(Conflict conflict)

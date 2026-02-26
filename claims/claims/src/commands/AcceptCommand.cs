@@ -14,7 +14,7 @@ namespace claims.src.commands
         //FOR PLAYERS INVITATIONS
         public static TextCommandResult onCommand(TextCommandCallingArgs args)
         {
-            claims.dataStorage.getPlayerByUid(args.Caller.Player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(args.Caller.Player.PlayerUID, out PlayerInfo playerInfo);
             if(playerInfo == null)
             {
                 return TextCommandResult.Error("");
@@ -45,7 +45,7 @@ namespace claims.src.commands
         public static TextCommandResult onAcceptPlotGroup(TextCommandCallingArgs args)
         {
             //FROM ONE CITY PLAYER CAN GET ONLY ONE INVITATION TO GROUP AT THE TIME
-            claims.dataStorage.getPlayerByUid(args.Caller.Player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(args.Caller.Player.PlayerUID, out PlayerInfo playerInfo);
             if (playerInfo == null)
             {
                 return TextCommandResult.Error("");
@@ -73,7 +73,7 @@ namespace claims.src.commands
         }
         public static TextCommandResult onLeavePlotGroup(TextCommandCallingArgs args)
         {
-            claims.dataStorage.getPlayerByUid(args.Caller.Player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(args.Caller.Player.PlayerUID, out PlayerInfo playerInfo);
             if (playerInfo == null)
             {
                 return TextCommandResult.Error("");
@@ -104,7 +104,7 @@ namespace claims.src.commands
                 return TextCommandResult.Success("claims:no_city_found");
             }
 
-            claims.dataStorage.getCityByName(cityName, out City targetCity);
+            claims.dataStorage.GetCityByName(cityName, out City targetCity);
 
             if(targetCity == null)
             {
@@ -143,7 +143,7 @@ namespace claims.src.commands
             TextCommandResult tcr = new TextCommandResult();
             tcr.Status = EnumCommandStatus.Success;
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
             if (playerInfo == null)
             {
                 return tcr;

@@ -36,7 +36,7 @@ namespace claims.src.commands
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
             PlotPosition currentPlotPosition = PlotPosition.fromXZ((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Z);
-            claims.dataStorage.getPlot(currentPlotPosition, out Plot plotHere);
+            claims.dataStorage.GetPlot(currentPlotPosition, out Plot plotHere);
             if (plotHere == null)
             {
                 return TextCommandResult.Error("claims:no_city_here");
@@ -50,7 +50,7 @@ namespace claims.src.commands
         public static TextCommandResult ProcessListCities(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
             if (playerInfo == null)
             {
                 return TextCommandResult.Error("claims:no_such_player_info");
@@ -66,9 +66,9 @@ namespace claims.src.commands
             {
                 return TextCommandResult.Error("claims:invalid_city_name");
             }
-            claims.dataStorage.getCityByName(cityName, out City city);
+            claims.dataStorage.GetCityByName(cityName, out City city);
 
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
 
             if (city == null)
             {
@@ -82,7 +82,7 @@ namespace claims.src.commands
         public static TextCommandResult CreateNewCity(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
             if (playerInfo == null)
             {
                 return TextCommandResult.Error("claims:no_such_player_info");
@@ -92,7 +92,7 @@ namespace claims.src.commands
                 return TextCommandResult.Error("claims:you_already_have_city");
             }
             PlotPosition currentPlotPosition = PlotPosition.fromXZ((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Z);
-            claims.dataStorage.getPlot(currentPlotPosition, out Plot plotHere);
+            claims.dataStorage.GetPlot(currentPlotPosition, out Plot plotHere);
             if (plotHere != null)
             {
                 return TextCommandResult.Error("claims:plot_already_claimed");
@@ -127,7 +127,7 @@ namespace claims.src.commands
             AgreementHandler.addNewAgreementOrReplace(new Agreement(
                 new Thread(new ThreadStart(() =>
                 {
-                    claims.dataStorage.getPlot(currentPlotPosition, out plotHere);
+                    claims.dataStorage.GetPlot(currentPlotPosition, out plotHere);
                     if (playerInfo.hasCity() || plotHere != null)
                     {
                         return;
@@ -162,7 +162,7 @@ namespace claims.src.commands
             IServerPlayer player = args.Caller.Player as IServerPlayer;
             TextCommandResult tcr = new TextCommandResult();
             tcr.Status = EnumCommandStatus.Error;
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
             if (playerInfo == null)
             {
                 return TextCommandResult.Error("claims:no_such_player_info");
@@ -199,7 +199,7 @@ namespace claims.src.commands
             IServerPlayer player = args.Caller.Player as IServerPlayer;
 
 
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Error("claims:no_such_player_info");
             }
@@ -216,7 +216,7 @@ namespace claims.src.commands
             }
 
             PlotPosition currentPlotPosition = PlotPosition.fromXZ((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Z);
-            if (claims.dataStorage.getPlot(currentPlotPosition, out Plot plotHere))
+            if (claims.dataStorage.GetPlot(currentPlotPosition, out Plot plotHere))
             {
                 return TextCommandResult.Error("claims:plot_already_claimed");
             }
@@ -273,7 +273,7 @@ namespace claims.src.commands
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
 
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
             if (playerInfo == null)
             {
                 return TextCommandResult.Error("claims:no_such_player_info");
@@ -284,7 +284,7 @@ namespace claims.src.commands
                 return TextCommandResult.Error("claims:you_dont_have_city");
             }
             PlotPosition currentPlotPosition = PlotPosition.fromXZ((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Z);
-            claims.dataStorage.getPlot(currentPlotPosition, out Plot plotHere);
+            claims.dataStorage.GetPlot(currentPlotPosition, out Plot plotHere);
             if (plotHere == null)
             {
                 return TextCommandResult.Error("claims:plot_not_claimed");
@@ -320,7 +320,7 @@ namespace claims.src.commands
         public static TextCommandResult ClaimOutpost(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Error("claims:no_such_player_info");
             }
@@ -330,7 +330,7 @@ namespace claims.src.commands
             }
             City city = playerInfo.City;
             PlotPosition currentPlotPosition = PlotPosition.fromXZ((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Z);
-            claims.dataStorage.getPlot(currentPlotPosition, out Plot plotHere);
+            claims.dataStorage.GetPlot(currentPlotPosition, out Plot plotHere);
             if (plotHere != null)
             {
                 return TextCommandResult.Error("claims:plot_already_claimed");
@@ -381,7 +381,7 @@ namespace claims.src.commands
         public static TextCommandResult ProcessExtraPlot(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
             if (playerInfo == null)
             {
                 return TextCommandResult.Error("claims:no_such_player_info");
@@ -392,7 +392,7 @@ namespace claims.src.commands
             }
             City city = playerInfo.City;
             PlotPosition currentPlotPosition = PlotPosition.fromXZ((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Z);
-            claims.dataStorage.getPlot(currentPlotPosition, out Plot plotHere);
+            claims.dataStorage.GetPlot(currentPlotPosition, out Plot plotHere);
             if (plotHere != null)
             {
                 return TextCommandResult.Error("claims:plot_already_claimed");
@@ -447,7 +447,7 @@ namespace claims.src.commands
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
 
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
             if (playerInfo == null)
             {
                 return TextCommandResult.Success("claims:no_such_player_info");
@@ -523,7 +523,7 @@ namespace claims.src.commands
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
 
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Success("claims:no_such_player_info");
             }
@@ -564,6 +564,7 @@ namespace claims.src.commands
             targetPlayer.PlayerCache.Reset();
             UsefullPacketsSend.SendPlayerRelatedInfoOnKickFromCity(targetPlayer);
             UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid, EnumPlayerRelatedInfo.CITY_MEMBERS, EnumPlayerRelatedInfo.MAX_COUNT_PLOTS);
+            UsefullPacketsSend.AddToQueuePlayerInfoUpdate(targetPlayer.Guid, EnumPlayerRelatedInfo.PLAYER_NEXT_PAYMENT);
             return TextCommandResult.Success();
         }
         public static TextCommandResult CityLeave(TextCommandCallingArgs args)
@@ -571,7 +572,7 @@ namespace claims.src.commands
             TextCommandResult tcr = new TextCommandResult();
             IServerPlayer player = args.Caller.Player as IServerPlayer;
             tcr.Status = EnumCommandStatus.Error;
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Success("claims:no_such_player_info");
             }
@@ -591,13 +592,14 @@ namespace claims.src.commands
             claims.sapi.World.Api.Event.PushEvent("updatecityinfo", tree);
             UsefullPacketsSend.SendPlayerRelatedInfoOnKickFromCity(playerInfo);
             UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid, EnumPlayerRelatedInfo.CITY_MEMBERS, EnumPlayerRelatedInfo.MAX_COUNT_PLOTS);
+            UsefullPacketsSend.AddToQueuePlayerInfoUpdate(playerInfo.Guid, EnumPlayerRelatedInfo.PLAYER_NEXT_PAYMENT);
             return SuccessWithParams("claims:player_left_city", new object[] { playerInfo.getPartNameReplaceUnder() });
         }
         public static TextCommandResult UninviteToCity(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
 
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Success("claims:no_such_player_info");
             }
@@ -641,7 +643,7 @@ namespace claims.src.commands
         public static TextCommandResult ShowInvitesSent(TextCommandCallingArgs args)
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Success("claims:no_such_player_info");
             }
@@ -663,7 +665,7 @@ namespace claims.src.commands
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
 
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Success("claims:no_such_player_info");
             }
@@ -676,7 +678,7 @@ namespace claims.src.commands
             {
                 return TextCommandResult.Success("claims:invalid_player_name");
             }
-            claims.dataStorage.getCityByName(targetCity, out City city);
+            claims.dataStorage.GetCityByName(targetCity, out City city);
             if (city == null)
             {
                 return TextCommandResult.Success("claims:no_such_city");
@@ -713,7 +715,7 @@ namespace claims.src.commands
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
 
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
             if (playerInfo == null)
             {
                 return TextCommandResult.Success("claims:no_such_player_info");
@@ -850,7 +852,7 @@ namespace claims.src.commands
             {
                 return TextCommandResult.Error("claims:no_paramaters");
             }
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Error("claims:no_such_player_info");
             }
@@ -937,6 +939,7 @@ namespace claims.src.commands
             }
 
             city.fee = fee;
+            UsefullPacketsSend.AddToQueueCityInfoUpdate(city.Guid, EnumPlayerRelatedInfo.PLAYER_NEXT_PAYMENT);
             city.saveToDatabase();
             return SuccessWithParams("claims:city_fee_set_to", new object[] { fee });
         }
@@ -946,7 +949,7 @@ namespace claims.src.commands
             TextCommandResult tcr = new();
             tcr.Status = EnumCommandStatus.Success;
 
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
             if (playerInfo == null)
             {
                 return TextCommandResult.Success("claims:no_such_player_info");
@@ -995,7 +998,7 @@ namespace claims.src.commands
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
 
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
             if (playerInfo == null)
             {
                 return TextCommandResult.Success("claims:no_such_player");
@@ -1023,7 +1026,7 @@ namespace claims.src.commands
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
 
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
             if (playerInfo == null)
             {
                 return TextCommandResult.Success("claims:no_such_player");
@@ -1061,7 +1064,7 @@ namespace claims.src.commands
             IServerPlayer player = args.Caller.Player as IServerPlayer;
             TextCommandResult tcr = new TextCommandResult();
             tcr.Status = EnumCommandStatus.Success;
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Success("claims:no_such_player_info");
             }
@@ -1166,7 +1169,7 @@ namespace claims.src.commands
             IServerPlayer player = args.Caller.Player as IServerPlayer;
             TextCommandResult tcr = new TextCommandResult();
             tcr.Status = EnumCommandStatus.Success;
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Success("claims:no_such_player_info");
             }
@@ -1203,7 +1206,7 @@ namespace claims.src.commands
             IServerPlayer player = args.Caller.Player as IServerPlayer;
             TextCommandResult tcr = new TextCommandResult();
             tcr.Status = EnumCommandStatus.Success;
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Success("claims:no_such_player_info");
             }
@@ -1240,7 +1243,7 @@ namespace claims.src.commands
             IServerPlayer player = args.Caller.Player as IServerPlayer;
             TextCommandResult tcr = new TextCommandResult();
             tcr.Status = EnumCommandStatus.Success;
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Success("claims:no_such_player_info");
             }
@@ -1293,7 +1296,7 @@ namespace claims.src.commands
             IServerPlayer player = args.Caller.Player as IServerPlayer;
             TextCommandResult tcr = new TextCommandResult();
             tcr.Status = EnumCommandStatus.Success;
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Success("claims:no_such_player_info");
             }
@@ -1400,7 +1403,7 @@ namespace claims.src.commands
             tcr.Status = EnumCommandStatus.Error;
             City city = null;
 
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 tcr.StatusMessage = "claims:no_such_player_info";
                 return tcr;
@@ -1474,7 +1477,7 @@ namespace claims.src.commands
         {
             PlotPosition cl = plot.plotPosition.Clone();
             cl.getPos().Add(-1, 0);
-            if (claims.dataStorage.getPlot(cl, out Plot foundPlot))
+            if (claims.dataStorage.GetPlot(cl, out Plot foundPlot))
             {
                 if (foundPlot.hasCity() && foundPlot.getCity().Equals(plot.getCity()))
                 {
@@ -1482,7 +1485,7 @@ namespace claims.src.commands
                 }
             }
             cl.getPos().Add(2, 0);
-            if (claims.dataStorage.getPlot(cl, out foundPlot))
+            if (claims.dataStorage.GetPlot(cl, out foundPlot))
             {
                 if (foundPlot.hasCity() && foundPlot.getCity().Equals(plot.getCity()))
                 {
@@ -1491,7 +1494,7 @@ namespace claims.src.commands
             }
             cl.getPos().Add(-1, 0);
             cl.getPos().Add(0, -1);
-            if (claims.dataStorage.getPlot(cl, out foundPlot))
+            if (claims.dataStorage.GetPlot(cl, out foundPlot))
             {
                 if (foundPlot.hasCity() && foundPlot.getCity().Equals(plot.getCity()))
                 {
@@ -1499,7 +1502,7 @@ namespace claims.src.commands
                 }
             }
             cl.getPos().Add(0, 2);
-            if (claims.dataStorage.getPlot(cl, out foundPlot))
+            if (claims.dataStorage.GetPlot(cl, out foundPlot))
             {
                 if (foundPlot.hasCity() && foundPlot.getCity().Equals(plot.getCity()))
                 {
@@ -1512,7 +1515,7 @@ namespace claims.src.commands
         {
             city = null;
             targetPlayer = null;
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:no_such_player_info"));
                 return false;
@@ -1561,7 +1564,7 @@ namespace claims.src.commands
         {
             city = null;
             plotHere = null;
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 tcr.StatusMessage = "claims:no_such_player_info";
                 return false;
@@ -1573,7 +1576,7 @@ namespace claims.src.commands
             }
             city = playerInfo.City;
             PlotPosition currentPlotPosition = PlotPosition.fromXZ((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Z);
-            claims.dataStorage.getPlot(currentPlotPosition, out plotHere);
+            claims.dataStorage.GetPlot(currentPlotPosition, out plotHere);
             if (plotHere == null)
             {
                 tcr.StatusMessage = "claims:not_claimed";
@@ -1605,7 +1608,7 @@ namespace claims.src.commands
             TextCommandResult tcr = new();
             tcr.Status = EnumCommandStatus.Error;
 
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
             if (playerInfo == null)
             {
                 tcr.StatusMessage = "claims:no_such_player_info";
@@ -1629,7 +1632,7 @@ namespace claims.src.commands
             TextCommandResult tcr = new();
             tcr.Status = EnumCommandStatus.Error;
 
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
             if (playerInfo == null)
             {
                 tcr.StatusMessage = "claims:no_such_player_info";
@@ -1670,7 +1673,7 @@ namespace claims.src.commands
             TextCommandResult tcr = new();
             tcr.Status = EnumCommandStatus.Error;
 
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
             if (playerInfo == null)
             {
                 tcr.StatusMessage = "claims:no_such_player_info";
@@ -1709,7 +1712,7 @@ namespace claims.src.commands
         {
             targetCity = null;
             targetPlayer = null;
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
             if (playerInfo == null)
             {
                 tcr.StatusMessage = "claims:no_such_player_info";
@@ -1756,7 +1759,7 @@ namespace claims.src.commands
                 return tcr;
             }
             PlotPosition currentPlotPosition = PlotPosition.fromXZ((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Z);
-            claims.dataStorage.getPlot(currentPlotPosition, out Plot plotHere);
+            claims.dataStorage.GetPlot(currentPlotPosition, out Plot plotHere);
             if (plotHere == null)
             {
                 tcr.StatusMessage = "claims:plot_not_claimed";
@@ -1804,7 +1807,7 @@ namespace claims.src.commands
                 return tcr;
             }
             PlotPosition currentPlotPosition = PlotPosition.fromXZ((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Z);
-            claims.dataStorage.getPlot(currentPlotPosition, out Plot plotHere);
+            claims.dataStorage.GetPlot(currentPlotPosition, out Plot plotHere);
             if (plotHere == null)
             {
                 tcr.StatusMessage = "claims:plot_not_claimed";
@@ -1861,7 +1864,7 @@ namespace claims.src.commands
                 return tcr;
             }
             PlotPosition currentPlotPosition = PlotPosition.fromXZ((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Z);
-            claims.dataStorage.getPlot(currentPlotPosition, out Plot plotHere);
+            claims.dataStorage.GetPlot(currentPlotPosition, out Plot plotHere);
             
             
             string filteredName = Filter.filterName((string)args.LastArg);
@@ -1915,7 +1918,7 @@ namespace claims.src.commands
                 tcr.StatusMessage = "claims:summon_is_not_allowed";
                 return false;
             }
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out playerInfo))
             {
                 tcr.StatusMessage = "claims:no_such_player_info";
                 return false;
@@ -1933,7 +1936,7 @@ namespace claims.src.commands
             IServerPlayer player = args.Caller.Player as IServerPlayer;
             TextCommandResult tcr = new();
             tcr.Status = EnumCommandStatus.Error;
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 tcr.StatusMessage = "claims:no_such_player_info";
                 return tcr;
@@ -2018,7 +2021,7 @@ namespace claims.src.commands
             TextCommandResult tcr = new();
             tcr.Status = EnumCommandStatus.Error;
 
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
             if (playerInfo == null)
             {
                 tcr.StatusMessage = "claims:no_such_player_info";
@@ -2096,7 +2099,7 @@ namespace claims.src.commands
             TextCommandResult tcr = new();
             tcr.Status = EnumCommandStatus.Error;
 
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
             if (playerInfo == null)
             {
                 tcr.StatusMessage = "claims:no_such_player_info";
@@ -2141,7 +2144,7 @@ namespace claims.src.commands
                     plot.setPlotGroup(null);
                     claims.dataStorage.setNowEpochZoneTimestampFromPlotPosition(plot.getPos());
                     claims.serverPlayerMovementListener.markPlotToWasReUpdated(plot.getPos());
-                    claims.dataStorage.clearCacheForPlayersInPlot(plot);
+                    claims.dataStorage.ClearCacheForPlayersInPlot(plot);
                 }
             }
             claims.getModInstance().getDatabaseHandler().deleteFromDatabaseCityPlotGroup(searchedGroup);
@@ -2162,7 +2165,7 @@ namespace claims.src.commands
             TextCommandResult tcr = new();
             tcr.Status = EnumCommandStatus.Error;
 
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 tcr.StatusMessage = "claims:no_such_player_info";
                 return tcr;
@@ -2191,7 +2194,7 @@ namespace claims.src.commands
             TextCommandResult tcr = new();
             tcr.Status = EnumCommandStatus.Error;
 
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
             if (playerInfo == null)
             {
                 tcr.StatusMessage = "claims:no_such_player_info";
@@ -2241,7 +2244,7 @@ namespace claims.src.commands
             TextCommandResult tcr = new();
             tcr.Status = EnumCommandStatus.Error;
 
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
             if (playerInfo == null)
             {
                 tcr.StatusMessage = "claims:no_such_player_info";
@@ -2363,7 +2366,7 @@ namespace claims.src.commands
             TextCommandResult tcr = new();
             tcr.Status = EnumCommandStatus.Error;
 
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
             if (playerInfo == null)
             {
                 MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:no_such_player_info"));
@@ -2442,7 +2445,7 @@ namespace claims.src.commands
             tcr.Status = EnumCommandStatus.Error;
 
             //ADD PLOTGROUPNAME
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
             if (playerInfo == null)
             {
                 tcr.StatusMessage = "claims:no_such_player_info";
@@ -2455,7 +2458,7 @@ namespace claims.src.commands
                 return tcr;
             }
 
-            claims.dataStorage.getPlot(PlotPosition.fromEntityyPos(player.Entity.ServerPos), out Plot plot);
+            claims.dataStorage.GetPlot(PlotPosition.fromEntityyPos(player.Entity.ServerPos), out Plot plot);
             //NO CLAIMED PLOT HERE || VILLAGE HERE || PLOT NOT OURS
             if (plot == null || !plot.getCity().Equals(playerInfo.City))
             {
@@ -2498,7 +2501,7 @@ namespace claims.src.commands
 
             claims.dataStorage.setNowEpochZoneTimestampFromPlotPosition(plot.getPos());
             claims.serverPlayerMovementListener.markPlotToWasReUpdated(plot.getPos());
-            claims.dataStorage.clearCacheForPlayersInPlot(plot);
+            claims.dataStorage.ClearCacheForPlayersInPlot(plot);
             UsefullPacketsSend.SendCurrentPlotUpdate(player, plot);
 
             plot.setPlotGroup(searchedGroup);
@@ -2513,7 +2516,7 @@ namespace claims.src.commands
             tcr.Status = EnumCommandStatus.Error;
             //ADD PLOTGROUPNAME
 
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
             if (playerInfo == null)
             {
                 tcr.StatusMessage = "claims:no_such_player_info";
@@ -2526,7 +2529,7 @@ namespace claims.src.commands
                 return tcr;
             }
 
-            claims.dataStorage.getPlot(PlotPosition.fromEntityyPos(player.Entity.ServerPos), out Plot plot);
+            claims.dataStorage.GetPlot(PlotPosition.fromEntityyPos(player.Entity.ServerPos), out Plot plot);
             //NO CLAIMED PLOT HERE || VILLAGE HERE || PLOT NOT OURS
             if (plot == null || !plot.getCity().Equals(playerInfo.City) || !plot.hasCityPlotsGroup())
             {
@@ -2561,7 +2564,7 @@ namespace claims.src.commands
             plot.setPlotGroup(null);
             claims.dataStorage.setNowEpochZoneTimestampFromPlotPosition(plot.getPos());
             claims.serverPlayerMovementListener.markPlotToWasReUpdated(plot.getPos());
-            claims.dataStorage.clearCacheForPlayersInPlot(plot);
+            claims.dataStorage.ClearCacheForPlayersInPlot(plot);
             UsefullPacketsSend.SendCurrentPlotUpdate(player, plot);
             plot.saveToDatabase();
 
@@ -2574,7 +2577,7 @@ namespace claims.src.commands
             TextCommandResult tcr = new();
             tcr.Status = EnumCommandStatus.Success;
 
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:no_such_player_info"));
                 return tcr;
@@ -2625,7 +2628,7 @@ namespace claims.src.commands
                     plot.saveToDatabase();
                     claims.dataStorage.setNowEpochZoneTimestampFromPlotPosition(plot.getPos());
                     claims.serverPlayerMovementListener.markPlotToWasReUpdated(plot.getPos());
-                    claims.dataStorage.clearCacheForPlayersInPlot(plot);
+                    claims.dataStorage.ClearCacheForPlayersInPlot(plot);
                     UsefullPacketsSend.SendCurrentPlotUpdate(player, plot);
                 }
             }
@@ -2665,7 +2668,7 @@ namespace claims.src.commands
                     plot.saveToDatabase();
                     claims.dataStorage.setNowEpochZoneTimestampFromPlotPosition(plot.getPos());
                     claims.serverPlayerMovementListener.markPlotToWasReUpdated(plot.getPos());
-                    claims.dataStorage.clearCacheForPlayersInPlot(plot);
+                    claims.dataStorage.ClearCacheForPlayersInPlot(plot);
                     UsefullPacketsSend.SendCurrentPlotUpdate(player, plot);
                 }
             }
@@ -2704,7 +2707,7 @@ namespace claims.src.commands
                     plot.saveToDatabase();
                     claims.dataStorage.setNowEpochZoneTimestampFromPlotPosition(plot.getPos());
                     claims.serverPlayerMovementListener.markPlotToWasReUpdated(plot.getPos());
-                    claims.dataStorage.clearCacheForPlayersInPlot(plot);
+                    claims.dataStorage.ClearCacheForPlayersInPlot(plot);
                     UsefullPacketsSend.SendCurrentPlotUpdate(player, plot);
                 }
             }
@@ -2743,7 +2746,7 @@ namespace claims.src.commands
                     plot.saveToDatabase();
                     claims.dataStorage.setNowEpochZoneTimestampFromPlotPosition(plot.getPos());
                     claims.serverPlayerMovementListener.markPlotToWasReUpdated(plot.getPos());
-                    claims.dataStorage.clearCacheForPlayersInPlot(plot);
+                    claims.dataStorage.ClearCacheForPlayersInPlot(plot);
                     UsefullPacketsSend.SendCurrentPlotUpdate(player, plot);
                 }
             }
@@ -2762,7 +2765,7 @@ namespace claims.src.commands
         {
             searchedGroup = null;
             city = null;
-            if (!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if (!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 MessageHandler.sendMsgToPlayer(player, Lang.Get("claims:no_such_player_info"));
                 return false;

@@ -9,10 +9,10 @@ namespace claims.src.events
     {
         public static bool canPVPAttackHere(IServerPlayer attacker, IServerPlayer defend)
         {
-            claims.dataStorage.getPlot(PlotPosition.fromEntityyPos(defend.Entity.ServerPos), out Plot defendPlot);
+            claims.dataStorage.GetPlot(PlotPosition.fromEntityyPos(defend.Entity.ServerPos), out Plot defendPlot);
 
-            claims.dataStorage.getPlayerByUid(attacker.PlayerUID, out PlayerInfo attackerPlayerInfo);
-            claims.dataStorage.getPlayerByUid(defend.PlayerUID, out PlayerInfo defendPlayerInfo);
+            claims.dataStorage.GetPlayerByUid(attacker.PlayerUID, out PlayerInfo attackerPlayerInfo);
+            claims.dataStorage.GetPlayerByUid(defend.PlayerUID, out PlayerInfo defendPlayerInfo);
 
             if (claims.dataStorage.getWorldInfo().pvpEverywhere)
             {

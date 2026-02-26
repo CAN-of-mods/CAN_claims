@@ -1,14 +1,13 @@
-﻿using System;
+﻿using claims.src.rights;
+using System;
 using System.Collections.Generic;
-using claims.src.auxialiry.ClaimLimiter;
-using claims.src.rights;
 using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 
 namespace claims.src
 {
-    public class Config
+    public class Config: IConfig
     {
         //ECONOMY
         public double NEW_CITY_COST = 150;
@@ -25,10 +24,10 @@ namespace claims.src
         public double PLOT_CLAIM_PRICE = 5;
         public double MAX_CITY_FEE = 50;
         public double SUMMON_PAYMENT = 5;
-        public double NEW_ALLIANCE_COST = 300;
-        public double ALLIANCE_RENAME_COST = 50;
-        public double ALLIANCE_MAX_FEE = 50;
-        public double ALLIANCE_BASE_CARE = 50;
+        public double NEW_ALLIANCE_COST { get; set; } = 300;
+        public double ALLIANCE_RENAME_COST { get; set; } = 50;
+        public double ALLIANCE_MAX_FEE { get; set; } = 50;
+        public double ALLIANCE_BASE_CARE { get; set; } = 50;
         //DATABASE
         public string PATH_TO_DB_AND_JSON_FILES = "";
         public string DB_NAME = "claims.db";
@@ -57,14 +56,14 @@ namespace claims.src
         //INVITATIONS
         public int MAX_SENT_INVITATIONS_CITY = 20;
         public int MAX_SENT_INVITATIONS_VILLAGE = 10;
-        public bool NEED_AGREE_FOR_CONFLICT = true;
-        public int DELAY_FOR_CONFLICT_ACTIVATED = 300;
+        public bool NEED_AGREE_FOR_CONFLICT { get; set; } = true;
+        public int DELAY_FOR_CONFLICT_ACTIVATED { get; set; } = 300;
 
         public int MAX_RECEIVED_INVITATIONS_CITY = 10;
         public int MAX_RECEIVED_INVITATIONS_PLAYER = 10;
 
         public int MAX_SENT_INVITATIONS_ALLIANCE = 10;
-        public int HOUR_TIMEOUT_INVITATION_TO_ALLIANCE = 2;
+        public int HOUR_TIMEOUT_INVITATION_TO_ALLIANCE { get; set; } = 2;
 
         public bool NEED_AGREE_FOR_WAR_RANGES = true;
         public int MIN_WARRANGE_DURATION_MINUTES = 60;
@@ -84,14 +83,14 @@ namespace claims.src
         public float PVP_TIME_START = 19;
         public float PVP_TIME_END = 6;
         public long MOD_DAY_DURATION_IN_SECONDS = 86400;
-        public int SECONDS_ALLIANCE_RENAME_COOLDOWN = 10;
+        public int SECONDS_ALLIANCE_RENAME_COOLDOWN { get; set; } = 10;
         public int CHECK_FOR_WAR_TO_START_EVERY_N_SECONDS = 600;
         public int CHECK_FOR_WAR_TO_START_CALLBACK_EVERY_N_SECONDS = 960;
         public int FLAG_CAPTURE_DURATION_SECONDS = 60;
         //WAR
         public int MAX_AMOUNT_OF_CAPTURE_FLAGS_ACTIVE = 2;
         public int FLAG_REINFORCEMENT_AMOUNT = 10;
-        public int MINIMUM_DAYS_BETWEEN_BATTLES = 3;
+        public int MINIMUM_DAYS_BETWEEN_BATTLES { get; set; } = 3;
         //PATCHES
         public bool FALLING_BLOCKS_TO_CITY_PLOTS_PATCH = true;
         public bool WATER_FLOW_CITY_PLOTS_PATCH = true;
@@ -102,7 +101,7 @@ namespace claims.src
 
         //AGREEMENT
         public int AGREEMENT_TIMEOUT_SECONDS = 120;
-        public string AGREEMENT_COMMAND = "agree";
+        public string AGREEMENT_COMMAND { get; set; } = "agree";
 
         //MOVEMENT
         public int DELTA_TIME_PLAYER_POSITION_CHECK_CLIENT = 500;

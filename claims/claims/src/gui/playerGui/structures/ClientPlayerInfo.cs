@@ -23,6 +23,7 @@ namespace claims.src.gui.playerGui.structures
         public PlayerPermissions PlayerPermissions { get; set; }
         public CurrentPlotInfo CurrentPlotInfo { get; set; }
         public AllianceInfo AllianceInfo { get; set; }
+        public Dictionary<string, int> PlayerNextPayments = new();
         public List<ClientCityInfoCellElement> AllCitiesList { get; set; } = new List<ClientCityInfoCellElement>();
         private Dictionary<EnumPlayerRelatedInfo, Action<string>> AcceptChangeHandlers = new();
         public ClientPlayerInfo()
@@ -91,6 +92,7 @@ namespace claims.src.gui.playerGui.structures
             AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.ALLIANCE_ALLIES_ALL, OnAllianceAlliesAll);
             AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.ALLIANCE_ALLY_ADDED, OnAllianceAllyAdd);
             AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.ALLIANCE_ALLY_REMOVED, OnAllianceAllyRemove);
+            AcceptChangeHandlers.Add(EnumPlayerRelatedInfo.PLAYER_NEXT_PAYMENT, OnPlayerNextPaymentDict);
         }
         public ClientPlayerInfo(string cityName, string mayorName, long timeStampCreated, List<string> citizens, Dictionary<string, int> maxCountPlots, int countPlots, string prefix,
             string afterName, HashSet<string> cityTitles, EnumShowPlotMovement showPlotMovement, int PlotColor, double cityBalance, List<string> criminals)
@@ -554,6 +556,14 @@ namespace claims.src.gui.playerGui.structures
                     }
                 }
             }            
+        }
+        private void OnPlayerNextPaymentDict(string val)
+        {
+            Dictionary<string, int> pc = JsonConvert.DeserializeObject<Dictionary<string, int>>(val);
+            //if (pc.Count > 0)
+            {
+                this.PlayerNextPayments = pc;
+            }
         }
         private void OnAllianceAllyRemove(string val)
         {

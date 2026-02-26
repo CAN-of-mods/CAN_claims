@@ -1,6 +1,8 @@
-﻿using System.Linq;
-using System.Numerics;
+﻿using claims.src.gui.playerGui.structures.cellElements;
 using ImGuiNET;
+using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
@@ -10,6 +12,7 @@ namespace claims.src.gui.prettyGui.GuiTabs
 {
     public class CANPlotsGroupInvitesTab : CANGuiTab
     {
+        List<ClientToPlotsGroupInvitation> toRemove = new();
         public CANPlotsGroupInvitesTab(ICoreClientAPI capi, IconHandler iconHandler)
         {
             this.capi = capi;
@@ -43,7 +46,7 @@ namespace claims.src.gui.prettyGui.GuiTabs
                         var cell = claims.clientDataStorage.clientPlayerInfo.ReceivedPlotsGroupInvitations.FirstOrDefault(c => c.CityName == invite.CityName && c.PlotsGroupName == invite.PlotsGroupName);
                         if (cell != null)
                         {
-                            claims.clientDataStorage.clientPlayerInfo.ReceivedPlotsGroupInvitations.Remove(cell);
+                            toRemove.Add(cell);
                         }
                     }
                    /* ImGui.SameLine();
@@ -70,6 +73,11 @@ namespace claims.src.gui.prettyGui.GuiTabs
                     ImGui.Separator();
                 }
                 ImGui.EndChild();
+                if (toRemove.Count() > 0)
+                {
+                    foreach (var it in toRemove)
+                        claims.clientDataStorage.clientPlayerInfo.ReceivedPlotsGroupInvitations.Remove(it);
+                }
             }
             else
             {

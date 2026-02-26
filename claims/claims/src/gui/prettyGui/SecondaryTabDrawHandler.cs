@@ -28,7 +28,7 @@ namespace claims.src.gui.prettyGui
             this.TabDictionary.Add(EnumSecondaryWindowTab.CITY_PLOTSGROUP_ADD_NEW_NEED_NAME, new CANNeedNameTab(capi, iconHandler, "claims:gui-enter-plotsgroup-name", "/c plotsgroup create ", "claims:gui-add-button"));
             this.TabDictionary.Add(EnumSecondaryWindowTab.NEW_ALLIANCE_NEED_NAME, new CANNeedNameTab(capi, iconHandler, "claims:gui-enter-alliance-name", "/a create ", "claims:gui-create-button"));
             this.TabDictionary.Add(EnumSecondaryWindowTab.INVITE_TO_ALLIANCE_NEED_NAME, new CANNeedNameTab(capi, iconHandler, "claims:gui-enter-alliance-name", "/a invite ", "claims:gui-add-button"));
-            this.TabDictionary.Add(EnumSecondaryWindowTab.KICK_FROM_ALLIANCE_NEED_NAME, new CANNeedNameTab(capi, iconHandler, "claims:gui-enter-alliance-name", "/a kick ", "gui-remove-button"));
+            this.TabDictionary.Add(EnumSecondaryWindowTab.KICK_FROM_ALLIANCE_NEED_NAME, new CANNeedNameTab(capi, iconHandler, "claims:gui-enter-alliance-name", "/a kick ", "claims:gui-remove-button"));
             this.TabDictionary.Add(EnumSecondaryWindowTab.SELECT_NEW_ALLIANCE_NAME, new CANNeedNameTab(capi, iconHandler, "claims:gui-enter-alliance-name", "/a set name ", "claims:gui-set-button"));
             this.TabDictionary.Add(EnumSecondaryWindowTab.ALLIANCE_PREFIX_NEED_NAME, new CANNeedNameTab(capi, iconHandler, "claims:gui-enter-alliance-name", "/a set prefix ", "claims:gui-set-button"));
             this.TabDictionary.Add(EnumSecondaryWindowTab.LEAVE_ALLIANCE_CONFIRM, new CANYesNoTab(capi, iconHandler, "claims:gui-leave-alliance-confirm-button", "/alliance leave", "claims:gui-confirm-button", "claims:gui-decline-button"));

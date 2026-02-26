@@ -18,13 +18,13 @@ namespace claims.src.commands
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
 
-            claims.dataStorage.getPlot(PlotPosition.fromXZ((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Z), out Plot plot);
+            claims.dataStorage.GetPlot(PlotPosition.fromXZ((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Z), out Plot plot);
             if (plot == null)
             {
                 return TextCommandResult.Error("claims:plot_not_claimed");
             }
 
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
             if (!isOwnerOfPlotMayorAdmin(plot, playerInfo, player))
             {
                 return TextCommandResult.Error("");
@@ -35,7 +35,7 @@ namespace claims.src.commands
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
 
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
             if (((string)args.LastArg).Equals("on", StringComparison.OrdinalIgnoreCase) && playerInfo != null)
             {
                 playerInfo.showBorders = true;
@@ -57,13 +57,13 @@ namespace claims.src.commands
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
 
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
             if (playerInfo == null)
             {
                 return TextCommandResult.Error("claims:no_such_player");
             }
 
-            claims.dataStorage.getPlot(PlotPosition.fromXZ((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Z), out Plot plot);
+            claims.dataStorage.GetPlot(PlotPosition.fromXZ((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Z), out Plot plot);
             if (plot == null)
             {
                 return TextCommandResult.Error("claims:no_plots_here");
@@ -103,10 +103,11 @@ namespace claims.src.commands
                     playerInfo.PlayerPlots.Add(plot);
                     plot.saveToDatabase();
                     playerInfo.saveToDatabase();
-                    claims.dataStorage.clearCacheForPlayersInPlot(plot);
+                    claims.dataStorage.ClearCacheForPlayersInPlot(plot);
                     claims.dataStorage.setNowEpochZoneTimestampFromPlotPosition(plot.getPos());
                     claims.serverPlayerMovementListener.markPlotToWasReUpdated(plot.getPos());
                     UsefullPacketsSend.SendCurrentPlotUpdate(player, plot);
+                    UsefullPacketsSend.AddToQueuePlayerInfoUpdate(playerInfo.Guid, EnumPlayerRelatedInfo.PLAYER_NEXT_PAYMENT);
                     return SuccessWithParams("claims:plot_has_been_claimed_by_player_paid", new object[] { savedPrice });
                 }
                 else
@@ -120,13 +121,13 @@ namespace claims.src.commands
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
 
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
             if (playerInfo == null)
             {
                 return TextCommandResult.Error("claims:no_such_player");
             }
 
-            claims.dataStorage.getPlot(PlotPosition.fromXZ((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Z), out Plot plot);
+            claims.dataStorage.GetPlot(PlotPosition.fromXZ((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Z), out Plot plot);
             if (plot == null)
             {
                 return TextCommandResult.Error("claims:no_plots_here");
@@ -145,10 +146,11 @@ namespace claims.src.commands
                 plot.setPlotOwner(null);
                 playerInfo.PlayerPlots.Remove(plot);
                 playerInfo.saveToDatabase();
-                claims.dataStorage.clearCacheForPlayersInPlot(plot);
+                claims.dataStorage.ClearCacheForPlayersInPlot(plot);
                 claims.dataStorage.setNowEpochZoneTimestampFromPlotPosition(plot.getPos());
                 claims.serverPlayerMovementListener.markPlotToWasReUpdated(plot.getPos());
                 UsefullPacketsSend.SendCurrentPlotUpdate(player, plot);
+                UsefullPacketsSend.AddToQueuePlayerInfoUpdate(playerInfo.Guid, EnumPlayerRelatedInfo.PLAYER_NEXT_PAYMENT);
                 plot.saveToDatabase();
                 return TextCommandResult.Success("claims:plot_has_been_unclaimed_by_player");
             }
@@ -229,13 +231,13 @@ namespace claims.src.commands
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
 
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
             if (playerInfo == null)
             {
                 return TextCommandResult.Success("claims:no_such_player");
             }
 
-            claims.dataStorage.getPlot(PlotPosition.fromXZ((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Z), out Plot plot);
+            claims.dataStorage.GetPlot(PlotPosition.fromXZ((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Z), out Plot plot);
             if (plot == null)
             {
                 return TextCommandResult.Success("claims:no_plots_here");
@@ -274,19 +276,19 @@ namespace claims.src.commands
                 return TextCommandResult.Success("claims:not_negative");
             }
             PlotPosition currentPlotPosition = PlotPosition.fromXZ((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Z);
-            if(!claims.dataStorage.getPlot(currentPlotPosition, out Plot plotHere))
+            if(!claims.dataStorage.GetPlot(currentPlotPosition, out Plot plotHere))
             {
                 return TextCommandResult.Success("claims:plot_not_claimed");
             }
 
-            if(!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if(!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Success("claims:no_such_player");
             }
 
-            if (!isOwnerOfPlotMayorAdmin(plotHere, playerInfo, player))
+            if(!playerInfo.hasCity() || !playerInfo.City.Equals(plotHere.getCity()))
             {
-                return TextCommandResult.Success("claims:not_owner_or_mayor");
+                return TextCommandResult.Success("claims:not_your_city");
             }
             
             if (!plotHere.setCustomTax(tax))
@@ -297,6 +299,10 @@ namespace claims.src.commands
             claims.dataStorage.setNowEpochZoneTimestampFromPlotPosition(plotHere.getPos());
             claims.serverPlayerMovementListener.markPlotToWasReUpdated(plotHere.getPos());
             UsefullPacketsSend.SendCurrentPlotUpdate(player, plotHere);
+            if(plotHere.hasPlotOwner())
+            {
+                UsefullPacketsSend.AddToQueuePlayerInfoUpdate(plotHere.getPlotOwner().Guid, EnumPlayerRelatedInfo.PLAYER_NEXT_PAYMENT);
+            }
             plotHere.saveToDatabase();
             
             return TextCommandResult.Success();
@@ -309,19 +315,19 @@ namespace claims.src.commands
             if (PlotInfo.nameToPlotType.ContainsKey((string)args.LastArg))
             {
                 PlotPosition currentPlotPosition = PlotPosition.fromXZ((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Z);
-                if(!claims.dataStorage.getPlot(currentPlotPosition, out Plot plotHere))
+                if(!claims.dataStorage.GetPlot(currentPlotPosition, out Plot plotHere))
                 {
                     return TextCommandResult.Success("claims:plot_not_claimed");
                 }
 
-                if(!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+                if(!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
                 {
                     return TextCommandResult.Success("claims:no_such_player");
                 }
 
-                if (!isOwnerOfPlotMayorAdmin(plotHere, playerInfo, player))
+                if (!playerInfo.hasCity() || !playerInfo.City.Equals(plotHere.getCity()))
                 {
-                    return TextCommandResult.Success("claims:not_owner_or_mayor");
+                    return TextCommandResult.Success("claims:not_your_city");
                 }
                 TextCommandResult tcr = new();
                 tcr.Status = EnumCommandStatus.Success;
@@ -346,7 +352,7 @@ namespace claims.src.commands
             TextCommandResult tcr = new();
             tcr.Status = EnumCommandStatus.Success;
 
-            claims.dataStorage.getPlot(PlotPosition.fromXZ((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Z), out Plot plot);
+            claims.dataStorage.GetPlot(PlotPosition.fromXZ((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Z), out Plot plot);
             if (plot == null)
             {
                 return TextCommandResult.Success();
@@ -356,7 +362,7 @@ namespace claims.src.commands
             {
                 return TextCommandResult.Success();
             }
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
             if (!isOwnerOfPlotMayorAdmin(plot, playerInfo, player))
             {
                 return TextCommandResult.Success();
@@ -367,7 +373,7 @@ namespace claims.src.commands
             claims.dataStorage.setNowEpochZoneTimestampFromPlotPosition(plot.getPos());
             claims.serverPlayerMovementListener.markPlotToWasReUpdated(plot.getPos());
             plot.saveToDatabase();
-            claims.dataStorage.clearCacheForPlayersInPlot(plot);
+            claims.dataStorage.ClearCacheForPlayersInPlot(plot);
             UsefullPacketsSend.SendCurrentPlotUpdate(player, plot);
             return TextCommandResult.Success();
         }
@@ -375,19 +381,19 @@ namespace claims.src.commands
         {
             IServerPlayer player = args.Caller.Player as IServerPlayer;
 
-            if(!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if(!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Success("claims:no_such_player");
             }
 
-            if(!claims.dataStorage.getPlot(PlotPosition.fromXZ((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Z), out Plot plot))
+            if(!claims.dataStorage.GetPlot(PlotPosition.fromXZ((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Z), out Plot plot))
             {
                 return TextCommandResult.Success("claims:no_plots_here");
             }
 
-            if (!isOwnerOfPlotMayorAdmin(plot, playerInfo, player))
+            if (!playerInfo.hasCity() || !playerInfo.City.Equals(plot.getCity()))
             {
-                return TextCommandResult.Success("claims:not_owner_or_mayor");
+                return TextCommandResult.Success("claims:not_your_city");
             }
 
             int price = (int)args.LastArg;
@@ -409,18 +415,18 @@ namespace claims.src.commands
             TextCommandResult tcr = new();
             tcr.Status = EnumCommandStatus.Success;
 
-            if(!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if(!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return TextCommandResult.Success("claims:no_such_player");
             }
 
-            if(!claims.dataStorage.getPlot(PlotPosition.fromXZ((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Z), out Plot plot))
+            if(!claims.dataStorage.GetPlot(PlotPosition.fromXZ((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Z), out Plot plot))
             {
                 return TextCommandResult.Success("claims:no_plots_here");
             }
-            if (!isOwnerOfPlotMayorAdmin(plot, playerInfo, player))
+            if (!playerInfo.hasCity() || !playerInfo.City.Equals(plot.getCity()))
             {
-                return TextCommandResult.Success("claims:not_owner_or_mayor");
+                return TextCommandResult.Success("claims:not_your_city");
             }
 
             plot.Price = -1;
@@ -437,14 +443,14 @@ namespace claims.src.commands
         public static bool HelperFunctionSetFlag(IServerPlayer player, out Plot plotHere, TextCommandResult tcr)
         {
             PlotPosition currentPlotPosition = PlotPosition.fromXZ((int)player.Entity.ServerPos.X, (int)player.Entity.ServerPos.Z);
-            claims.dataStorage.getPlot(currentPlotPosition, out plotHere);
+            claims.dataStorage.GetPlot(currentPlotPosition, out plotHere);
             if (plotHere == null)
             {
                 tcr.StatusMessage = "claims:plot_not_claimed";
                 return false;
             }
 
-            claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+            claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
             if (playerInfo == null)
             {
                 tcr.StatusMessage = "claims:no_such_player";

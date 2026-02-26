@@ -45,7 +45,7 @@ namespace claims.src.auxialiry
         {
             Dictionary<EnumPlayerRelatedInfo, string> collector = new Dictionary<EnumPlayerRelatedInfo, string>();
 
-            if(!claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
+            if(!claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo))
             {
                 return;
             }
@@ -125,6 +125,7 @@ namespace claims.src.auxialiry
                     collector.Add(EnumPlayerRelatedInfo.PLAYER_PREFIX, playerInfo.Prefix);
                     collector.Add(EnumPlayerRelatedInfo.PLAYER_AFTER_NAME, playerInfo.AfterName);
                     collector.Add(EnumPlayerRelatedInfo.PLAYER_CITY_TITLES, JsonConvert.SerializeObject(playerInfo.getCityTitles()));
+                    collector.Add(EnumPlayerRelatedInfo.PLAYER_NEXT_PAYMENT, JsonConvert.SerializeObject(playerInfo.GetNextPaymentsDict()));
                 }
                 claims.serverChannel.SendPacket(
                     new SavedPlotsPacket()
@@ -300,7 +301,7 @@ namespace claims.src.auxialiry
                     var playerCollector = new Dictionary<EnumPlayerRelatedInfo, string>();
                     if (playerDelayedInfoCollector.Remove(citizen.PlayerName, out Dictionary<EnumPlayerRelatedInfo, Dictionary<string, List<object>>> dictInfo))
                     {
-                        if (claims.dataStorage.getPlayerByUid(citizen.PlayerUID, out PlayerInfo playerInfo))
+                        if (claims.dataStorage.GetPlayerByUid(citizen.PlayerUID, out PlayerInfo playerInfo))
                         {
                             playerCollector = CollectFullInfo(playerInfo, null, dictInfo);
 
@@ -342,7 +343,7 @@ namespace claims.src.auxialiry
                 if (!playerDelayedInfoCollector.Remove(currentPlayerUid,
                                                                     out Dictionary<EnumPlayerRelatedInfo, Dictionary<string, List<object>>> listToUpdate)) continue;
 
-                if (!claims.dataStorage.getPlayerByUid(currentPlayerUid, out PlayerInfo playerInfo)) continue;
+                if (!claims.dataStorage.GetPlayerByUid(currentPlayerUid, out PlayerInfo playerInfo)) continue;
               
                 Dictionary<EnumPlayerRelatedInfo, string> collector = CollectFullInfo(playerInfo, playerInfo.hasCity() ? playerInfo.City : null, listToUpdate);
             
@@ -483,7 +484,7 @@ namespace claims.src.auxialiry
             }
             foreach (var player in claims.sapi.World.AllOnlinePlayers)
             {
-                claims.dataStorage.getPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
+                claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
                 if (playerInfo == null)
                 {
                     continue;
@@ -611,6 +612,11 @@ namespace claims.src.auxialiry
                                 }
                                 result[pair.Key] = JsonConvert.SerializeObject(plotsgroupCellElements);
                             }
+                            break;
+                        //PLAYER_NEXT_PAYMENT
+                        case EnumPlayerRelatedInfo.PLAYER_NEXT_PAYMENT:
+                            var dict = playerInfo.GetNextPaymentsDict();
+                            result[pair.Key] = JsonConvert.SerializeObject(dict);
                             break;
                         default:
                             if (pair.Value?.TryGetValue("value", out var list) ?? false)

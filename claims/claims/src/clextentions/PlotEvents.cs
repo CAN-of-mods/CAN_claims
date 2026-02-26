@@ -23,7 +23,7 @@ namespace claims.src.clextentions
             int chX = tree.GetInt("chX");
             int chZ = tree.GetInt("chZ");
             
-            if(claims.dataStorage.getPlot(new PlotPosition(chX, chZ), out var plot))
+            if(claims.dataStorage.GetPlot(new PlotPosition(chX, chZ), out var plot))
             {
                 PlotStateHandling.broadcastPlotClaimedInZone(plot);
             }           
