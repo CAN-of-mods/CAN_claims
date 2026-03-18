@@ -1,7 +1,8 @@
-﻿using System;
+﻿using ImGuiNET;
+using System;
 using System.Collections.Generic;
 using System.Numerics;
-using ImGuiNET;
+using System.Threading.Tasks;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.Client.NoObf;
@@ -90,8 +91,8 @@ public class ItemIconAtlas : IDisposable
                 uniqueStacks.Add(stack);
             }
         }
-
-        _game.Platform.LoadFrameBuffer(_frameBuffer);
+        /*int atlasTextureId = _game.Platform.CreatePositionInAtlas(atlas, task);
+        _game.Platform.LoadFrameBuffer(_frameBuffer);*/
         _game.Platform.GlEnableDepthTest();
         _game.Platform.GlDisableCullFace();
         _game.Platform.GlToggleBlend(true);
