@@ -34,7 +34,6 @@ namespace claims.src
                     { 
                         EnumPlayerPermissions.PLOT_CLAIM,
                         EnumPlayerPermissions.PLOT_UNCLAIM,
-                        EnumPlayerPermissions.PLOT_SET_ALL_CITY_PLOTS,
                         EnumPlayerPermissions.CITY_HERE,
                         EnumPlayerPermissions.CITY_INFO
 

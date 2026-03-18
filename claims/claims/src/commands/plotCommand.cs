@@ -1,9 +1,10 @@
-﻿using System;
-using claims.src.auxialiry;
+﻿using claims.src.auxialiry;
 using claims.src.gui.playerGui.structures;
 using claims.src.part;
 using claims.src.part.structure;
 using claims.src.part.structure.plots;
+using claims.src.rights;
+using System;
 using Vintagestory.API.Common;
 using Vintagestory.API.Server;
 
@@ -94,8 +95,30 @@ namespace claims.src.commands
                 //Save price localy or do not move after we change plot price
                 decimal savedPrice = (decimal)plot.Price;
 
-                if(claims.economyHandler.depositFromAToB(playerInfo.MoneyAccountName, plot.getCity().MoneyAccountName, (decimal)plot.Price).ResultState 
-                    == caneconomy.src.implementations.OperationResult.EnumOperationResultState.SUCCCESS)
+                bool paymentSuccessfull = false;
+                if(caneconomy.caneconomy.config.SELECTED_ECONOMY_HANDLER == "REAL_MONEY")
+                {
+                    var withdrawState = claims.economyHandler.withdraw(playerInfo.MoneyAccountName, (decimal)plot.Price);
+
+                    if(withdrawState.ResultState != caneconomy.src.implementations.OperationResult.EnumOperationResultState.SUCCCESS)
+                    {
+                        return TextCommandResult.Error("claims:economy_money_transaction_error");
+                    }
+                    var depositState = claims.economyHandler.deposit(plot.getCity().MoneyAccountName, (decimal)plot.Price);
+
+                    if (depositState.ResultState != caneconomy.src.implementations.OperationResult.EnumOperationResultState.SUCCCESS)
+                    {
+                        claims.economyHandler.deposit(playerInfo.MoneyAccountName, (decimal)plot.Price);
+                        return TextCommandResult.Error("claims:economy_money_transaction_error");
+                    }
+                    paymentSuccessfull = true;
+                }
+                else
+                {
+                    paymentSuccessfull = claims.economyHandler.depositFromAToB(playerInfo.MoneyAccountName, plot.getCity().MoneyAccountName, (decimal)plot.Price).ResultState
+                    == caneconomy.src.implementations.OperationResult.EnumOperationResultState.SUCCCESS;
+                }
+                if (paymentSuccessfull)
                 {
                     plot.Price = -1;
                     plot.getPermsHandler().setPerm(playerInfo.PermsHandler);
@@ -246,10 +269,18 @@ namespace claims.src.commands
             {
                 return TextCommandResult.Success("claims:no_city_here");
             }
-            if(!isOwnerOfPlotMayorAdmin(plot, playerInfo, player))
+            if(isOwnerOfPlotMayorAdmin(plot, playerInfo, player))
             {
-                return TextCommandResult.Success("claims:not_owner_or_mayor");
+                //return TextCommandResult.Success("claims:not_owner_or_mayor");
             }
+            else
+            {
+                if(plot.getCity() != playerInfo.City || !BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.PLOT_SET_ALL_CITY_PLOTS, EnumPlayerPermissions.PLOT_SET_NAME }))
+                {
+                    return TextCommandResult.Success("claims:you_dont_have_right_for_that_command");
+                }
+            }
+
             string name = Filter.filterName((string)args.LastArg);
             if (name.Length == 0 || !Filter.checkForBlockedNames(name))
             {
@@ -363,9 +394,16 @@ namespace claims.src.commands
                 return TextCommandResult.Success();
             }
             claims.dataStorage.GetPlayerByUid(player.PlayerUID, out PlayerInfo playerInfo);
-            if (!isOwnerOfPlotMayorAdmin(plot, playerInfo, player))
+            if (isOwnerOfPlotMayorAdmin(plot, playerInfo, player))
             {
-                return TextCommandResult.Success();
+                //return TextCommandResult.Success();
+            }
+            else
+            {
+                if (plot.getCity() != playerInfo.City || !BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.PLOT_SET_ALL_CITY_PLOTS, EnumPlayerPermissions.PLOT_SET_PLOT_ACCESS_PERMISSIONS }))
+                {
+                    return TextCommandResult.Success("claims:you_dont_have_right_for_that_command");
+                }
             }
 
             plot.getPermsHandler().setAccessPerm(args.RawArgs);

@@ -1483,21 +1483,6 @@ namespace claims.src.commands.register
                     /////////
                     .BeginSub("set")
                        .BeginSub("permissions")
-                            .WithPreCondition((TextCommandCallingArgs args) => {
-                                if (args.Caller.Player is IServerPlayer player)
-                                {
-                                    if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.PLOT_SET_ALL_CITY_PLOTS, EnumPlayerPermissions.PLOT_SET_PLOT_ACCESS_PERMISSIONS  }))
-                                    {
-                                        return TextCommandResult.Success();
-                                    }
-                                    else
-                                    {
-                                        return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
-                                    }
-
-                                }
-                                return TextCommandResult.Error("");
-                            })
                            .WithAlias("p")
                            .HandleWith(commands.PlotCommand.SetPermissions)
                            .WithDesc("Set plot permissions")
@@ -1564,21 +1549,6 @@ namespace claims.src.commands.register
                            .WithArgs(parsers.WordRange("state", "on", "off"))
                        .EndSub()
                        .BeginSub("name")
-                           .WithPreCondition((TextCommandCallingArgs args) => {
-                               if (args.Caller.Player is IServerPlayer player)
-                               {
-                                   if (BaseCommand.CheckForPlayerPermissions(player, new EnumPlayerPermissions[] { EnumPlayerPermissions.PLOT_SET_ALL_CITY_PLOTS, EnumPlayerPermissions.PLOT_SET_NAME }))
-                                   {
-                                       return TextCommandResult.Success();
-                                   }
-                                   else
-                                   {
-                                       return TextCommandResult.Error(Lang.Get("claims:you_dont_have_right_for_that_command"));
-                                   }
-
-                               }
-                               return TextCommandResult.Error("");
-                           })
                            .HandleWith(commands.PlotCommand.SetName)
                            .WithDesc("Set plot's name")
                            .WithArgs(parsers.Word("plotName"))

@@ -135,15 +135,15 @@ namespace claims.src.part
             {
                 foreach (City targetCity in conflict.Second.Cities)
                 {
-                    ourCity.HostileCities.Add(targetCity);
+                    ourCity.HostileCities.Remove(targetCity);
                     ourCity.saveToDatabase();
                 }
             }
-            foreach (City targetCity in conflict.First.Cities)
+            foreach (City targetCity in conflict.Second.Cities)
             {
-                foreach (City ourCity in conflict.Second.Cities)
+                foreach (City ourCity in conflict.First.Cities)
                 {
-                    targetCity.HostileCities.Add(ourCity);
+                    targetCity.HostileCities.Remove(ourCity);
                     targetCity.saveToDatabase();
                 }
             }

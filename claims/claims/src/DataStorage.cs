@@ -701,5 +701,22 @@ namespace claims.src
             }
             return true;
         }
+        public bool OutpostPlotHasDistantEnoughFromOtherCityPlots(Plot plot)
+        {
+            foreach (Plot plotInner in plot.getCity().getCityPlots())
+            {
+                if (claims.config.CAPTURED_PLOTS_DO_NOT_BLOCK_CLAIMS && plotInner.WasCaptured)
+                {
+                    continue;
+                }
+                if (MathClaims.distanceBetween(plotInner.getPos(), plot.getPos()) < claims.config.MIN_OUTPOST_DISTANCE_FROM_CITY ||
+                    MathClaims.distanceBetween(plotInner.getPos(), plot.getPos()) > claims.config.MAX_OUTPOST_DISTANCE_FROM_CITY)
+                {
+                    return false;
+                }
+            }
+            
+            return true;
+        }
     }
 }

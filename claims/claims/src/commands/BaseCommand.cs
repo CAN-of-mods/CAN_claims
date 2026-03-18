@@ -70,5 +70,15 @@ namespace claims.src.commands
                 StatusMessage = msg
             };
         }
+
+        public static TextCommandResult ErrorWithParams(string msg, object[] msgParams)
+        {
+            return new TextCommandResult
+            {
+                Status = EnumCommandStatus.Error,
+                MessageParams = msgParams,
+                StatusMessage = msg
+            };
+        }
     }
 }

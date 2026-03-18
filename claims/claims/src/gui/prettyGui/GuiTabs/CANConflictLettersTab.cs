@@ -54,7 +54,8 @@ namespace claims.src.gui.prettyGui.GuiTabs
 
                 ImGui.SetCursorPosX(ImGui.GetCursorPosX() + (avail - buttonSize) * 0.2f);
                 ImGui.SetCursorPosY(ImGui.GetCursorPosY() - 20);
-                if (ImGui.ImageButton("cancel", this.iconHandler.GetOrLoadIcon("sword-brandish"), new Vector2(32)))
+                
+                if (ImGui.ImageButton("cancel", this.iconHandler.GetOrLoadIcon("peace-dove"), new Vector2(32)))
                 {
                     ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                     if (letter.Purpose == LetterPurpose.START_CONFLICT)
@@ -108,7 +109,7 @@ namespace claims.src.gui.prettyGui.GuiTabs
                 ImGui.SetCursorPosY(ImGui.GetCursorPosY() - 20);
                 if (claims.clientDataStorage.clientPlayerInfo.AllianceInfo?.Guid?.Equals(letter.ToGuid) ?? false)
                 {
-                    if (ImGui.ImageButton("acceptconflict", this.iconHandler.GetOrLoadIcon("peace-dove"), new Vector2(32)))
+                    if (ImGui.ImageButton("acceptconflict", this.iconHandler.GetOrLoadIcon("sword-brandish"), new Vector2(32)))
                     {
                         ClientEventManager clientEventManager = (claims.capi.World as ClientMain).eventManager;
                         if (letter.Purpose == LetterPurpose.START_CONFLICT)

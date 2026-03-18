@@ -74,7 +74,7 @@ public class ItemIconAtlas : IDisposable
     {
         if (_frameBuffer == null) return;
 
-        _itemIndexMap.Clear();
+        //_itemIndexMap.Clear();
 
         var uniqueStacks = new List<ItemStack>();
         var seenKeys = new HashSet<string>();

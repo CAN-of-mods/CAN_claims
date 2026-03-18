@@ -738,6 +738,8 @@ namespace claims.src.database
                     continue;
 
                 claims.dataStorage.getCityByGUID(str, out City city1);
+                if (city1 == null)
+                    continue;
                 city.ComradeCities.Add(city1);
             }
 

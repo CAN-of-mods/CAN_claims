@@ -1,11 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using claims.src.auxialiry;
+﻿using claims.src.auxialiry;
 using claims.src.messages;
 using claims.src.part;
 using claims.src.part.structure;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading;
+using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 
 namespace claims.src.timers
@@ -267,7 +269,18 @@ namespace claims.src.timers
                     }
                     else
                     {
-                        if (claims.economyHandler.depositFromAToB(it.MoneyAccountName, city.MoneyAccountName, toPay).ResultState == caneconomy.src.implementations.OperationResult.EnumOperationResultState.SUCCCESS)
+                        bool paymentSuccessfull = false;
+                        if (caneconomy.caneconomy.config.SELECTED_ECONOMY_HANDLER == "REAL_MONEY")
+                        {
+                            var withdrawState = claims.economyHandler.withdraw(it.MoneyAccountName, (decimal)toPay);
+                            var depositState = claims.economyHandler.deposit(city.MoneyAccountName, (decimal)toPay);
+                            paymentSuccessfull = true;
+                        }
+                        else
+                        {
+                            paymentSuccessfull = claims.economyHandler.depositFromAToB(it.MoneyAccountName, city.MoneyAccountName, toPay).ResultState == caneconomy.src.implementations.OperationResult.EnumOperationResultState.SUCCCESS;
+                        }
+                        if (paymentSuccessfull)
                         {
                             MessageHandler.sendMsgToPlayerInfo(it, Lang.Get("claims:you_paid_fee_to_city", toPay.ToString(), city.getPartNameReplaceUnder()));
                         }
@@ -297,7 +310,18 @@ namespace claims.src.timers
                         }
                         else
                         {
-                            claims.economyHandler.depositFromAToB(city.MoneyAccountName, alliance.MoneyAccountName, alliance.AllianceFee);
+                            bool paymentSuccessfull = false;
+                            if (caneconomy.caneconomy.config.SELECTED_ECONOMY_HANDLER == "REAL_MONEY")
+                            {
+                                var withdrawState = claims.economyHandler.withdraw(city.MoneyAccountName, (decimal)alliance.AllianceFee);
+                                var depositState = claims.economyHandler.deposit(alliance.MoneyAccountName, (decimal)alliance.AllianceFee);
+                                paymentSuccessfull = true;
+                            }
+                            else
+                            {
+                                claims.economyHandler.depositFromAToB(city.MoneyAccountName, alliance.MoneyAccountName, alliance.AllianceFee);
+                            }
+                            //claims.economyHandler.depositFromAToB(city.MoneyAccountName, alliance.MoneyAccountName, alliance.AllianceFee);
                         }
                     }
                 }

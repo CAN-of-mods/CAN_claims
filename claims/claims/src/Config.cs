@@ -98,7 +98,8 @@ namespace claims.src
         //DISTANCE
         public int MIN_DISTANCE_FROM_OTHER_CITY_NEW_CITY = 3;
         public bool CAPTURED_PLOTS_DO_NOT_BLOCK_CLAIMS = true;
-
+        public int MAX_OUTPOST_DISTANCE_FROM_CITY = 1250;
+        public int MIN_OUTPOST_DISTANCE_FROM_CITY = 0;
         //AGREEMENT
         public int AGREEMENT_TIMEOUT_SECONDS = 120;
         public string AGREEMENT_COMMAND { get; set; } = "agree";

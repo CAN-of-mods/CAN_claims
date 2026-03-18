@@ -349,6 +349,12 @@ namespace claims.src.commands
             {
                 return TextCommandResult.Error("claims:too_close_to_another_city");
             }
+
+            if(!claims.dataStorage.OutpostPlotHasDistantEnoughFromOtherCityPlots(plotHere))
+            {
+                return ErrorWithParams("claims:doesnt_satisfy_outpost_requirements", new object[] { claims.config.MAX_OUTPOST_DISTANCE_FROM_CITY, claims.config.MIN_OUTPOST_DISTANCE_FROM_CITY });
+            }
+
             if (!claims.dataStorage.CheckClaimLimiters(playerInfo, currentPlotPosition))
             {
                 return TextCommandResult.Error("claims:too_close_to_forbidden_area");
